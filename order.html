@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Замовити 3D друк — Прайс за пластик</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .order-container { max-width: 600px; margin: 30px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .price-list { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        .price-list th, .price-list td { border-bottom: 1px solid #eee; padding: 10px; text-align: left; }
+        .price-list th { background: #2c3e50; color: white; }
+        .calc-box { background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #f39c12; }
+        select, input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .total-price { font-size: 20px; font-weight: bold; color: #27ae60; text-align: center; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">← На головну</a>
+        <div class="logo">🏗️ РОЗРАХУНОК ДРУКУ</div>
+    </header>
+
+    <div class="order-container">
+        <h2>Прайс-лист та Калькулятор</h2>
+        <table class="price-list">
+            <tr><th>Матеріал</th><th>Ціна за грам*</th></tr>
+            <tr><td>PLA (Базовий, декор)</td><td>5.00 грн</td></tr>
+            <tr><td>PETG (Міцний, гнучкий)</td><td>5.50 грн</td></tr>
+            <tr><td>ABS / ASA (Стійкий до сонця)</td><td>6.50 грн</td></tr>
+            <tr><td>TPU (Гума, флекс)</td><td>9.00 грн</td></tr>
+            <tr><td>PA (Нейлон, техніка)</td><td>12.00 грн</td></tr>
+            <tr><td>PC (Полікарбонат, надміцний)</td><td>15.00 грн</td></tr>
+            <tr><td>PVA (Водорозчинні підтримки)</td><td>18.00 грн</td></tr>
+        </table>
+        <p style="font-size: 12px; color: #777;">*У ціну вже враховано амортизацію принтера та електроенергію (4.5 грн/кВт).</p>
+
+        <div class="calc-box">
+            <h3>Попередній розрахунок:</h3>
+            <label>Оберіть пластик:</label>
+            <select id="calc_material" onchange="calculate()">
+                <option value="5">PLA (5 грн/г)</option>
+                <option value="5.5">PETG (5.5 грн/г)</option>
+                <option value="6.5">ABS / ASA (6.5 грн/г)</option>
+                <option value="9">TPU (9 грн/г)</option>
+                <option value="12">PA (Нейлон) (12 грн/г)</option>
+                <option value="15">PC (15 грн/г)</option>
+                <option value="18">PVA (18 грн/г)</option>
+            </select>
+            
+            <label>Приблизна вага (в грамах):</label>
+            <input type="number" id="calc_weight" value="50" oninput="calculate()">
+            
+            <div class="total-price" id="total_display">Сума: 250 грн</div>
+        </div>
+
+        <label>Опис замовлення (або посилання на STL):</label>
+        <textarea id="user_msg" placeholder="Напишіть, що саме потрібно, або вкажіть колір..."></textarea>
+
+        <button onclick="sendOrder('Telegram')" class="btn" style="width: 100%; background:#0088cc; border:none; margin-bottom: 10px; cursor:pointer;">Надіслати в Telegram</button>
+        <button onclick="sendOrder('WhatsApp')" class="btn" style="width: 100%; background:#25d366; border:none; cursor:pointer;">Надіслати у WhatsApp</button>
+    </div>
+
+    <script>
+        function calculate() {
+            const pricePerGram = parseFloat(document.getElementById('calc_material').value);
+            const weight = parseFloat(document.getElementById('calc_weight').value) || 0;
+            const total = pricePerGram * weight;
+            document.getElementById('total_display').innerText = `Сума: ${total.toFixed(2)} грн`;
+        }
+
+        function sendOrder(platform) {
+            const matSelect = document.getElementById('calc_material');
+            const materialName = matSelect.options[matSelect.selectedIndex].text;
+            const weight = document.getElementById('calc_weight').value;
+            const total = document.getElementById('total_display').innerText;
+            const userMsg = document.getElementById('user_msg').value;
+
+            const fullMsg = `Вітаю! Хочу замовити 3D-друк за своїм STL.\n🔹 Матеріал: ${materialName}\n🔹 Вага: ~${weight}г\n🔹 ${total}\n🔹 Коментар: ${userMsg}`;
+            const encoded = encodeURIComponent(fullMsg);
+
+            if (platform === 'Telegram') {
+                window.open(`https://t.me/Master3dmanager?text=${encoded}`, '_blank');
+            } else {
+                window.open(`https://api.whatsapp.com/send?phone=380936299811&text=${encoded}`, '_blank');
+            }
+        }
+    </script>
+</body>
+</html>

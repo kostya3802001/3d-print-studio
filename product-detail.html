@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детальний прорахунок — 3D-PRINT STUDIO</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --orange: #f39c12;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; margin: 0; }
+        
+        header { 
+            background: #000; 
+            padding: 15px 5%; 
+            border-bottom: 2px solid var(--orange); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .back-link { 
+            color: white; 
+            text-decoration: none; 
+            font-size: 14px; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            border: 1px solid #333;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .back-link:hover { background: var(--orange); color: black; border-color: var(--orange); }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+
+        .flex-box { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
+        
+        .preview-side { flex: 1; min-width: 300px; }
+        .preview-side img { width: 100%; border-radius: 15px; border: 1px solid #333; }
+        
+        /* Контейнер калькулятора */
+        .calc-side { 
+            flex: 1; 
+            min-width: 320px; 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 20px; 
+            border: 1px solid #333; 
+            box-sizing: border-box; /* Важливо для симетрії */
+        }
+
+        h2 { color: var(--orange); margin-top: 0; text-align: center; }
+
+        .input-item { margin-bottom: 15px; }
+        .input-item label { display: block; font-size: 13px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            background: #252525; 
+            border: 1px solid #444; 
+            color: white; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            box-sizing: border-box; /* Гарантує однакову ширину */
+        }
+
+        .price-summary { 
+            background: #000; padding: 20px; border-radius: 12px; margin-top: 20px;
+            border-left: 4px solid var(--orange);
+        }
+
+        .line { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .total-line { display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; font-size: 22px; font-weight: bold; color: var(--orange); }
+
+        /* ВИПРАВЛЕНА КНОПКА: БЕЗ ЗАЙВОГО, ТІЛЬКИ СИМЕТРІЯ */
+        .btn-order { 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%; 
+            box-sizing: border-box; /* Тепер вона чітко по ширині калькулятора */
+            padding: 18px; 
+            background: var(--orange); 
+            color: black; 
+            text-align: center; 
+            text-decoration: none; 
+            border-radius: 10px; 
+            font-weight: 900; 
+            margin-top: 20px; 
+            text-transform: uppercase;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-order:hover { opacity: 0.9; transform: scale(0.99); }
+
+        .pro-tip { font-size: 12px; color: #777; margin-top: 15px; line-height: 1.4; text-align: center; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="back-link">← НА ГОЛОВНУ</a>
+    <div style="color: var(--orange); font-weight: 900;">3D-PRINT STUDIO</div>
+</header>
+
+<div class="container">
+    <div class="flex-box">
+        
+        <div class="preview-side">
+            <img src="img/3.jpg" alt="Ваша модель">
+            <div style="margin-top: 20px; padding: 15px; background: #1a1a1a; border-radius: 10px; font-size: 14px; border: 1px dotted #444;">
+                <b style="color: var(--orange);">📊 Індивідуальний розрахунок:</b><br>
+                Введіть параметри ваги та часу друку з вашого слайсера для точного розрахунку вартості.
+            </div>
+        </div>
+
+        <div class="calc-side">
+            <h2>Розрахунок замовлення</h2>
+            
+            <div class="input-item">
+                <label>Вага моделі (грами):</label>
+                <input type="number" id="w_val" value="50" oninput="runCalc()">
+            </div>
+
+            <div class="input-item">
+                <label>Час друку (години):</label>
+                <input type="number" id="t_val" value="4" oninput="runCalc()">
+            </div>
+
+            <div class="input-item">
+                <label>Матеріал (Ціна за 10г):</label>
+                <select id="m_val" onchange="runCalc()">
+                    <option value="50">PLA (Базовий) — 50 грн / 10г</option>
+                    <option value="55">PETG (Технічний) — 55 грн / 10г</option>
+                    <option value="90">TPU (Гума) — 90 грн / 10г</option>
+                    <option value="120">Nylon (Технічний) — 120 грн / 10г</option>
+                    <option value="150">PC (Ударостійкий) — 150 грн / 10г</option>
+                </select>
+            </div>
+
+            <div class="input-item">
+                <label>Ваша робота (моделювання):</label>
+                <select id="s_val" onchange="runCalc()">
+                    <option value="0">Є готова модель (0 грн)</option>
+                    <option value="150">Розробка з нуля (від 150 грн)</option>
+                    <option value="400">Середня складність (від 400 грн)</option>
+                    <option value="800">Професійний інжиніринг (від 800 грн)</option>
+                </select>
+            </div>
+
+            <div class="price-summary">
+                <div class="line"><span>Вартість пластику:</span> <span id="out_m">0 грн</span></div>
+                <div class="line"><span>Час друку (10 грн/год):</span> <span id="out_t">0 грн</span></div>
+                <div class="line"><span>Робота майстра:</span> <span id="out_s">0 грн</span></div>
+                <div class="total-line"><span>РАЗОМ:</span> <span id="out_total">0 грн</span></div>
+            </div>
+
+            <a href="#" id="tg_btn" target="_blank" class="btn-order">ЗАМОВИТИ У TELEGRAM</a>
+            
+            <p class="pro-tip">
+                * Мінімальна сума замовлення — 100 грн.<br>
+                * Вартість моделювання залежить від складності геометрії.
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function runCalc() {
+        const weight = parseFloat(document.getElementById('w_val').value) || 0;
+        const hours = parseFloat(document.getElementById('t_val').value) || 0;
+        const matPrice10g = parseFloat(document.getElementById('m_val').value);
+        const servicePrice = parseFloat(document.getElementById('s_val').value);
+
+        const costMat = weight * (matPrice10g / 10);
+        const costPrint = hours * 10;
+        const total = costMat + costPrint + servicePrice;
+        
+        document.getElementById('out_m').innerText = Math.round(costMat) + " грн";
+        document.getElementById('out_t').innerText = Math.round(costPrint) + " грн";
+        document.getElementById('out_s').innerText = Math.round(servicePrice) + " грн";
+        
+        const finalPrice = Math.max(100, Math.round(total));
+        document.getElementById('out_total').innerText = finalPrice + " грн";
+
+        const msg = `🛠️ ЗАМОВЛЕННЯ:\nМатеріал: ${weight}г\nЧас: ${hours}год\nРобота: ${servicePrice}грн\n💰 ПІДСУМОК: ${finalPrice} грн`;
+        document.getElementById('tg_btn').href = `https://t.me/Master3dmanager?text=${encodeURIComponent(msg)}`;
+    }
+    window.onload = runCalc;
+</script>
+
+</body>
+</html>
