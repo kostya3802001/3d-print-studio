@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-ua="3D-PRINT STUDIO — Якість у деталях" data-pl="3D-PRINT STUDIO — Jakość w detalach">3D-PRINT STUDIO — Якість у деталях</title>
+    <title data-ua="3D-PRINT STUDIO — Промисловий 3D-друк" data-pl="3D-PRINT STUDIO — Druk przemysłowy 3D">3D-PRINT STUDIO — Промисловий 3D-друк</title>
+    <meta name="description" content="Промисловий 3D-друк у Кривому Розі. Технічні деталі, готові фігурки, друк за STL. Робота з Україною та Польщею.">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header>
@@ -13,35 +15,120 @@
         <img src="log img/Логотип.jpg" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
         3D-PRINT STUDIO
     </div>
-    <nav id="mainNav">
+    <nav>
         <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
         <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
         <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
         <a href="order.html" data-ua="Замовити" data-pl="Zamów">Замовити</a>
         <a href="login.html" id="accountLink" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
-        <span class="lang" style="cursor:pointer; margin-left: 15px;">UA | PL</span>
+        <span class="lang" style="cursor:pointer; margin-left:15px;">UA | PL</span>
     </nav>
 </header>
 
 <section class="hero">
-    <h1 data-ua="Втілюємо ваші ідеї у 3D" data-pl="Realizujemy Twoje pomysły w 3D">Втілюємо ваші ідеї у 3D</h1>
-    <p data-ua="Друк деталей та фігурок будь-якої складності.<br>Від прототипу до готового виробу." 
-       data-pl="Druk części i figurek o dowolnej złożoności.<br>Od prototypu do gotowego produktu.">
-        Друк деталей та фігурок будь-якої складності.<br>Від прототипу до готового виробу.
-    </p>
-    <a href="order.html" class="btn" data-ua="Зробити замовлення" data-pl="Złóż zamówienie">Зробити замовлення</a>
+    <div class="hero-inner">
+        <h1 data-ua="Промисловий <span>3D-друк</span><br>для реальних задач" 
+            data-pl="Przemysłowy <span>druk 3D</span><br>dla realnych zadań">
+            Промисловий <span>3D-друк</span><br>для реальних задач
+        </h1>
+        <p data-ua="Технічні деталі · Готові фігурки · STL-друк · Прототипування<br>Працюємо з Україною та Польщею"
+           data-pl="Części techniczne · Gotowe figurki · Druk STL · Prototypowanie<br>Działamy na Ukrainie iw Polsce">
+            Технічні деталі · Готові фігурки · STL-друк · Прототипування<br>
+            Працюємо з Україною та Польщею
+        </p>
+        <a href="order.html" class="cta" data-ua="Розрахувати вартість" data-pl="Oblicz koszt">Розрахувати вартість</a>
+    </div>
 </section>
 
 <section class="section">
-    <h2 class="section-title" data-ua="Наші виконані роботи" data-pl="Nasze zrealizowane prace">Наші виконані роботи</h2>
-    <div class="grid" id="portfolioContainer">
-        <p style="text-align: center; width: 100%; color: #888;" data-ua="Завантаження робіт..." data-pl="Ładowanie prac...">Завантаження робіт...</p>
+    <h2 class="section-title" data-ua="Наші послуги" data-pl="Nasze usługi">Наші послуги</h2>
+
+    <div class="grid">
+        <div class="card">
+            <img src="log img/Друк за вашим STL.jpg" alt="Друк за STL">
+            <div class="card-body">
+                <h3 data-ua="Друк за вашим STL" data-pl="Druk z Twojego STL">Друк за вашим STL</h3>
+                <p data-ua="Точний прорахунок, контроль якості та стабільний промисловий результат."
+                   data-pl="Dokładna kalkulacja, kontrola jakości i stabilny wynik przemysłowy.">
+                    Точний прорахунок, контроль якості та стабільний промисловий результат.
+                </p>
+                <div class="price" data-ua="від 5 грн / г" data-pl="od 0.60 PLN / g">від 5 грн / г</div>
+                <a href="order.html" class="btn" data-ua="Замовити" data-pl="Zamów">Замовити</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="log img/Готові фігурки.jpg" alt="Готові фігурки">
+            <div class="card-body">
+                <h3 data-ua="Готові фігурки" data-pl="Gotowe figurki">Готові фігурки</h3>
+                <p data-ua="Колекційні моделі, герої ігор та фільмів. Висока деталізація."
+                   data-pl="Modele kolekcjonerskie, bohaterowie gier i filmów. Wysoka szczegółowość.">
+                    Колекційні моделі, герої ігор та фільмів. Висока деталізація.
+                </p>
+                <div class="price" data-ua="від 75 грн" data-pl="od 8 PLN">від 75 грн</div>
+                <a href="figures.html" class="btn" data-ua="У каталог" data-pl="Do katalogu">У каталог</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="log img/Технічні деталі.jpg" alt="Технічні деталі">
+            <div class="card-body">
+                <h3 data-ua="Технічні деталі" data-pl="Części techniczne">Технічні деталі</h3>
+                <p data-ua="Шестерні, корпуси, кріплення, прототипи та дрібносерійне виробництво."
+                   data-pl="Przekładnie, obudowy, mocowania, prototypy i produkcja małoseryjna.">
+                    Шестерні, корпуси, кріплення, прототипи та дрібносерійне виробництво.
+                </p>
+                <div class="price" data-ua="індивідуально" data-pl="indywidualnie">індивідуально</div>
+                <a href="parts.html" class="btn" data-ua="Прорахувати" data-pl="Oblicz">Прорахувати</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h2 class="section-title" data-ua="Як ми працюємо" data-pl="Jak pracujemy">Як ми працюємо</h2>
+    <div class="process">
+        <div class="step">
+            <span data-ua="01" data-pl="01">01</span><br>
+            <p data-ua="Надсилаєте STL або ідею" data-pl="Wyślij STL lub pomysł">Надсилаєте STL або ідею</p>
+        </div>
+        <div class="step">
+            <span data-ua="02" data-pl="02">02</span><br>
+            <p data-ua="Робимо точний прорахунок" data-pl="Robimy dokładną kalkulację">Робимо точний прорахунок</p>
+        </div>
+        <div class="step">
+            <span data-ua="03" data-pl="03">03</span><br>
+            <p data-ua="Погодження та оплата" data-pl="Zgoda i płatność">Погодження та оплата</p>
+        </div>
+        <div class="step">
+            <span data-ua="04" data-pl="04">04</span><br>
+            <p data-ua="Друк та відправка" data-pl="Druk i wysyłka">Друк та відправка</p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h2 class="section-title" data-ua="Відгуки клієнтів" data-pl="Opinie klientów">Відгуки клієнтів</h2>
+    <div class="reviews">
+        <div class="review">
+            <strong>Олександр</strong>
+            <p data-ua="Якість дуже висока, деталь підійшла ідеально." data-pl="Jakość jest bardzo wysoka, część pasuje idealnie.">Якість дуже висока, деталь підійшла ідеально.</p>
+        </div>
+        <div class="review">
+            <strong>Mateusz (PL)</strong>
+            <p data-ua="Професійне обслуговування, швидка реалізація." data-pl="Profesjonalna obsługa, szybka realizacja.">Profesjonalna obsługa, szybka realizacja.</p>
+        </div>
+        <div class="review">
+            <strong>Ірина</strong>
+            <p data-ua="Замовляла фігурку — результат перевершив очікування." data-pl="Zamówiłem figurkę — efekt przeszedł oczekiwania.">Замовляла фігурку — результат перевершив очікування.</p>
+        </div>
     </div>
 </section>
 
 <footer>
-    <span data-ua="© 2026 3D-PRINT STUDIO · Професійний 3D друк" data-pl="© 2026 3D-PRINT STUDIO · Profesjonalny druk 3D">
-        © 2026 3D-PRINT STUDIO · Професійний 3D друк
+    <span data-ua="© 2026 3D-PRINT STUDIO · Промисловий 3D-друк · Кривий Ріг" 
+          data-pl="© 2026 3D-PRINT STUDIO · Przemysłowy druk 3D · Krzywy Róg">
+          © 2026 3D-PRINT STUDIO · Промисловий 3D-друк · Кривий Ріг
     </span>
 </footer>
 
@@ -49,7 +136,6 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const firebaseConfig = {
@@ -58,57 +144,26 @@
     projectId: "d-print-studio-25787",
     storageBucket: "d-print-studio-25787.firebasestorage.app",
     messagingSenderId: "671010955757",
-    appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
-    measurementId: "G-BJTPWXT1DY"
+    appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
   const auth = getAuth(app);
 
-  // --- ЛОГІКА РОЗУМНОГО МЕНЮ (Щоб не викидало з акаунту) ---
   const accountLink = document.getElementById('accountLink');
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      // Якщо користувач увійшов
       accountLink.href = "account.html";
       accountLink.innerText = "Мій Профіль";
       accountLink.setAttribute('data-ua', 'Мій Профіль');
       accountLink.setAttribute('data-pl', 'Mój Profil');
-      console.log("Авторизовано як:", user.email);
     } else {
-      // Якщо не увійшов
       accountLink.href = "login.html";
       accountLink.innerText = "Кабінет";
       accountLink.setAttribute('data-ua', 'Кабінет');
       accountLink.setAttribute('data-pl', 'Gabinet');
     }
-  });
-
-  // --- ЗАВАНТАЖЕННЯ ПОРТФОЛІО ---
-  const q = query(collection(db, "portfolio"), orderBy("timestamp", "desc"));
-
-  onSnapshot(q, (snapshot) => {
-    const container = document.getElementById('portfolioContainer');
-    container.innerHTML = "";
-    
-    if (snapshot.empty) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color:#666;" data-ua="Тут скоро з'являться наші нові роботи" data-pl="Wkrótce pojawią się tu nasze nowe prace">Тут скоро з'являться наші нові роботи</p>`;
-        return;
-    }
-
-    snapshot.forEach(doc => {
-      const work = doc.data();
-      container.innerHTML += `
-        <div class="card">
-            <img src="${work.imagePath}" alt="Work" style="width:100%; border-radius: 8px 8px 0 0; display: block;">
-            <div class="card-body">
-                <p style="font-size: 0.9em; color: #ccc; margin-bottom: 10px;">${work.description}</p>
-                <div style="font-size: 0.8em; color: #27ae60; font-weight: bold;">✔ Виконано</div>
-            </div>
-        </div>`;
-    });
   });
 </script>
 
