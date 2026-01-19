@@ -13,7 +13,7 @@
             border-radius: 12px;
             margin-bottom: 30px;
         }
-        /* Базовий стиль статусу */
+        /* СТАТУС: Очікування (Помаранчевий) */
         .order-status {
             display: inline-block;
             padding: 6px 14px;
@@ -22,16 +22,16 @@
             font-weight: bold;
             text-transform: uppercase;
             background: #111;
-            color: #f39c12; /* Колір для "Обробка" */
+            color: #f39c12;
             border: 1px solid #f39c12;
             transition: 0.3s;
         }
-        /* Стиль для статусу "В роботі" */
+        /* СТАТУС: В роботі (Зелений) */
         .status-confirmed {
             color: #27ae60 !important;
             border-color: #27ae60 !important;
             background: rgba(39, 174, 96, 0.1) !important;
-            box-shadow: 0 0 10px rgba(39, 174, 96, 0.2);
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.1);
         }
         .logout-btn {
             background: transparent;
@@ -54,6 +54,7 @@
             padding: 20px;
             margin-bottom: 20px;
             text-align: left;
+            position: relative;
         }
     </style>
 </head>
@@ -78,14 +79,14 @@
     <div class="hero-inner" style="margin-bottom: 50px; text-align: center;">
         <h1 data-ua="Особистий <span>кабінет</span>" data-pl="Panel <span>klienta</span>">Особистий <span>кабінет</span></h1>
         <div class="profile-info">
-            <p id="userEmail" style="font-size: 18px; color: #fff;">Завантаження...</p>
+            <p id="userEmail" style="font-size: 18px; color: #fff;">Завантаження профілю...</p>
         </div>
     </div>
 
     <h2 class="section-title" style="text-align: left; margin-bottom: 30px;" data-ua="Мої замовлення" data-pl="Moje zamówienia">Мої замовлення</h2>
     
     <div id="userOrders">
-        <p style="color: #666; text-align: center;">Завантаження замовлень...</p>
+        <p style="color: #666; text-align: center;">Завантаження списку замовлень...</p>
     </div>
 </section>
 
@@ -123,7 +124,6 @@
   });
 
   function loadUserOrders(uid) {
-    // Створюємо запит: шукаємо замовлення де userId співпадає з поточним користувачем
     const q = query(
         collection(db, "orders"), 
         where("userId", "==", uid),
@@ -142,34 +142,46 @@
       snapshot.forEach(doc => {
         const order = doc.data();
         
-        // Коректне форматування дати
-        let date = "...";
+        // Обробка дати
+        let dateString = "...";
         if (order.timestamp) {
-            date = order.timestamp.toDate().toLocaleDateString('uk-UA');
+            dateString = order.timestamp.toDate().toLocaleDateString('uk-UA', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         }
         
-        // Визначаємо стиль статусу (В роботі / Обробка)
-        const isConfirmed = order.status === "В роботі";
-        const statusClass = isConfirmed ? "order-status status-confirmed" : "order-status";
-        const statusText = isConfirmed ? "В роботі" : "Обробка";
+        // ЛОГІКА СТАТУСІВ
+        let statusClass = "order-status"; 
+        let statusText = "Очікується підтвердження"; 
+
+        if (order.status === "В роботі") {
+            statusClass = "order-status status-confirmed";
+            statusText = "Взято в роботу";
+        }
         
         container.innerHTML += `
           <div class="order-card-custom">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <span style="color:#555; font-size:12px;">${date}</span>
+                <span style="color:#555; font-size:11px;">${dateString}</span>
                 <span class="${statusClass}">${statusText}</span>
             </div>
-            <h3 style="color:#f39c12; margin-bottom:10px;">${order.name || 'Замовлення на друк'}</h3>
-            <p style="margin-bottom:5px;"><strong>Матеріал:</strong> ${order.material || 'Не вказано'}</p>
-            <p style="font-size:14px; color:#aaa; line-height:1.4;">
-                ${order.description || 'Опис відсутній'}
-            </p>
+            <h3 style="color:#f39c12; margin-bottom:10px; font-size: 18px;">${order.name || 'Замовлення на друк'}</h3>
+            <p style="margin-bottom:8px; font-size: 14px;"><strong>Матеріал:</strong> ${order.material || 'Не вказано'}</p>
+            <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px;">
+                <p style="font-size:13px; color:#ccc; line-height:1.5;">
+                    ${order.description || 'Опис відсутній'}
+                </p>
+            </div>
           </div>
         `;
       });
     }, (error) => {
-        console.error("Помилка завантаження замовлень: ", error);
-        document.getElementById('userOrders').innerHTML = "<p style='color:red; text-align:center;'>Помилка доступу до даних</p>";
+        console.error("Помилка:", error);
+        document.getElementById('userOrders').innerHTML = "<p style='color:red;'>Помилка завантаження даних</p>";
     });
   }
 
