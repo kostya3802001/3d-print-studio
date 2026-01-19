@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Готові фігурки — 3D-PRINT STUDIO</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">3D-PRINT STUDIO</div>
+    <nav>
+        <a href="index.html">Головна</a>
+        <a href="order.html">Замовити друк</a>
+        <a href="login.html">Кабінет</a>
+        <span class="lang">UA | PL</span>
+    </nav>
+</header>
+
+<section class="section">
+    <h1 class="section-title">Готові фігурки</h1>
+
+    <div class="grid">
+
+        <!-- CARD 1 -->
+        <div class="card">
+            <img src="log img/Готові фігурки.jpg" alt="Фігурка">
+            <div class="card-body">
+                <h3>Колекційні фігурки</h3>
+                <p>
+                    Герої ігор, фільмів та аніме. Друк з високою деталізацією,
+                    можливе фарбування.
+                </p>
+                <div class="price">від 75 грн</div>
+                <a href="product-detail.html" class="btn">Детальніше</a>
+            </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card">
+            <img src="log img/figures.jpg" alt="Фігурка">
+            <div class="card-body">
+                <h3>Фігурки на замовлення</h3>
+                <p>
+                    Оберемо модель разом з вами або надрукуємо за вашим STL.
+                    Різні матеріали та розміри.
+                </p>
+                <div class="price">індивідуально</div>
+                <a href="order.html" class="btn">Замовити</a>
+            </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="card">
+            <img src="log img/stl.jpg" alt="Фігурка">
+            <div class="card-body">
+                <h3>STL з каталогів</h3>
+                <p>
+                    Працюємо з каталогами типу Creality Cloud, Printables,
+                    Thingiverse. Прорахунок перед друком.
+                </p>
+                <div class="price">від 5 грн / г</div>
+                <a href="order.html" class="btn">Прорахувати</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    © 2026 3D-PRINT STUDIO · Готові фігурки та 3D-друк
+</footer>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+  authDomain: "d-print-studio-25787.firebaseapp.com",
+  projectId: "d-print-studio-25787",
+  storageBucket: "d-print-studio-25787.firebasestorage.app",
+  messagingSenderId: "671010955757",
+  appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
+  measurementId: "G-BJTPWXT1DY"
+};
+
+const app = initializeApp(firebaseConfig);
+getAnalytics(app);
+</script>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  setPersistence, 
+  browserLocalPersistence 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+  authDomain: "d-print-studio-25787.firebaseapp.com",
+  projectId: "d-print-studio-25787",
+  storageBucket: "d-print-studio-25787.firebasestorage.app",
+  messagingSenderId: "671010955757",
+  appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+
+setPersistence(auth, browserLocalPersistence);
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    localStorage.setItem("logged", "1");
+  } else {
+    localStorage.removeItem("logged");
+  }
+});
+</script>
+
+</body>
+</html>

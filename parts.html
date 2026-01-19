@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Технічні деталі — 3D-PRINT STUDIO</title>
+    <meta name="description" content="Друк технічних деталей: шестерні, корпуси, кріплення, прототипи. Промисловий 3D-друк.">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <div class="logo">3D-PRINT STUDIO</div>
+    <nav>
+        <a href="index.html">Головна</a>
+        <a href="figures.html">Фігурки</a>
+        <a href="order.html">Замовити</a>
+        <a href="login.html">Кабінет</a>
+        <span class="lang">UA | PL</span>
+    </nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" style="min-height:70vh;">
+    <div class="hero-inner">
+        <h1>
+            <span>Технічні деталі</span><br>
+            для виробництва та ремонту
+        </h1>
+        <p>
+            Шестерні · Корпуси · Кріплення · Прототипи<br>
+            Міцні матеріали та контроль геометрії
+        </p>
+        <a href="order.html" class="cta">Отримати прорахунок</a>
+    </div>
+</section>
+
+<!-- ===== TYPES ===== -->
+<section class="section">
+    <h2 class="section-title">Що ми друкуємо</h2>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Шестерні та механіка</h3>
+                <p>
+                    Прямозубі та косозубі шестерні, втулки, муфти.
+                    Посилене заповнення та зносостійкі матеріали.
+                </p>
+                <div class="price">PLA / PETG / PA / PC</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Корпуси та бокси</h3>
+                <p>
+                    Корпуси для електроніки, захисні кожухи,
+                    монтажні бокси під конкретні розміри.
+                </p>
+                <div class="price">ABS / ASA / PETG</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Кріплення та фурнітура</h3>
+                <p>
+                    Кліпси, фіксатори, тримачі, адаптери.
+                    Швидка заміна зламаних деталей.
+                </p>
+                <div class="price">PLA / PETG / TPU</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Прототипи</h3>
+                <p>
+                    Тестові деталі перед серійним виробництвом.
+                    Перевірка форми, посадок та функціоналу.
+                </p>
+                <div class="price">індивідуально</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== MATERIALS ===== -->
+<section class="section">
+    <h2 class="section-title">Матеріали</h2>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="card-body">
+                <h3>PLA</h3>
+                <p>Базовий матеріал для прототипів та нескладних деталей.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>PETG</h3>
+                <p>Міцний, вологостійкий, підходить для більшості задач.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>ABS / ASA</h3>
+                <p>Стійкий до температури та зовнішніх умов.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>TPU</h3>
+                <p>Гнучкий матеріал для амортизуючих та еластичних деталей.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>PA / Nylon</h3>
+                <p>Висока міцність та зносостійкість для механіки.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>PC</h3>
+                <p>Ударостійкий матеріал для навантажених деталей.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="section">
+    <div class="card" style="text-align:center;">
+        <div class="card-body">
+            <h3>Потрібна технічна деталь?</h3>
+            <p>
+                Надішліть STL або креслення — ми зробимо точний
+                прорахунок і запропонуємо оптимальний матеріал.
+            </p>
+            <a href="order.html" class="btn" style="margin-top:20px;">
+                Замовити прорахунок
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    © 2026 3D-PRINT STUDIO · Технічні деталі та промисловий 3D-друк
+</footer>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+  authDomain: "d-print-studio-25787.firebaseapp.com",
+  projectId: "d-print-studio-25787",
+  storageBucket: "d-print-studio-25787.firebasestorage.app",
+  messagingSenderId: "671010955757",
+  appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
+  measurementId: "G-BJTPWXT1DY"
+};
+
+const app = initializeApp(firebaseConfig);
+getAnalytics(app);
+</script>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  setPersistence, 
+  browserLocalPersistence 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+  authDomain: "d-print-studio-25787.firebaseapp.com",
+  projectId: "d-print-studio-25787",
+  storageBucket: "d-print-studio-25787.firebasestorage.app",
+  messagingSenderId: "671010955757",
+  appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+
+setPersistence(auth, browserLocalPersistence);
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    localStorage.setItem("logged", "1");
+  } else {
+    localStorage.removeItem("logged");
+  }
+});
+</script>
+
+</body>
+</html>
