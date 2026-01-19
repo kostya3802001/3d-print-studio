@@ -6,11 +6,10 @@
     <title>ADMIN PANEL — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; }
-        .admin-nav { background: #111; padding: 15px; display: flex; justify-content: center; gap: 30px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
+        body { background: #000; color: #fff; font-family: sans-serif; }
+        .admin-nav { background: #111; padding: 15px; display: flex; justify-content: center; gap: 30px; border-bottom: 1px solid #333; position: sticky; top: 0; }
         .admin-nav button { background: none; border: none; color: #888; font-weight: bold; cursor: pointer; text-transform: uppercase; padding: 10px; }
         .admin-nav button.active { color: #f39c12; border-bottom: 2px solid #f39c12; }
-        
         .admin-section { display: none; padding: 40px 5%; }
         .admin-section.active { display: block; }
         
@@ -22,36 +21,26 @@
             margin: 0 auto 20px; 
             max-width: 700px; 
             text-align: center;
-        }
-        
-        /* КНОПКА СКАТУВАННЯ */
-        .download-btn { 
-            background: #27ae60; 
-            color: white; 
-            padding: 12px 30px; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            display: inline-block; 
-            margin-top: 15px; 
-            font-weight: bold;
-            font-size: 16px;
             transition: 0.3s;
-            border: none;
         }
-        .download-btn:hover { background: #2ecc71; transform: scale(1.05); }
-
-        .delete-btn { background: none; border: 1px solid #444; color: #666; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 20px; transition: 0.3s; }
-        .delete-btn:hover { color: #e74c3c; border-color: #e74c3c; }
-        
-        h2 { color: #f39c12; }
-        strong { color: #f39c12; }
+        .download-btn { 
+            background: #27ae60; color: white; padding: 12px 25px; 
+            text-decoration: none; border-radius: 8px; display: inline-block; 
+            margin-top: 15px; font-weight: bold;
+        }
+        .confirm-btn {
+            background: #f39c12; color: #000; border: none; padding: 12px 25px;
+            border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px;
+        }
+        .status-badge { color: #27ae60; font-weight: bold; margin-top: 15px; font-size: 18px; }
+        .delete-btn { background: none; border: 1px solid #444; color: #666; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<header style="padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: #111;">
-    <div class="logo" style="font-weight: 900; letter-spacing: 1px;">3D-PRINT <span style="color:#f39c12">ADMIN</span></div>
-    <button id="logoutBtn" class="btn" style="padding: 5px 15px;">Вихід</button>
+<header style="padding: 15px 5%; display: flex; justify-content: space-between; background: #111;">
+    <div style="font-weight: 900; color: #f39c12;">3D-PRINT ADMIN</div>
+    <button id="logoutBtn" class="btn">Вихід</button>
 </header>
 
 <div class="admin-nav">
@@ -61,18 +50,16 @@
 
 <section id="orders" class="admin-section active">
     <h2 style="text-align:center; margin-bottom: 30px;">Нові запити на друк</h2>
-    <div id="ordersList">
-        <p style="text-align:center; color:#555;">Оновлення списку...</p>
-    </div>
+    <div id="ordersList"></div>
 </section>
 
 <section id="catalog" class="admin-section">
     <h2 style="text-align:center;">Керування каталогом</h2>
-    </section>
+</section>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -95,47 +82,44 @@
         document.getElementById('btn-' + id).classList.add('active');
     };
 
-    // ВИСВІТЛЕННЯ ЗАМОВЛЕНЬ
     onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snapshot) => {
         const list = document.getElementById('ordersList');
         list.innerHTML = "";
         
-        if (snapshot.empty) {
-            list.innerHTML = "<p style='text-align:center; color:#666;'>Замовлень поки немає.</p>";
-            return;
-        }
-
         snapshot.forEach(res => {
             const data = res.data();
             const id = res.id;
+
+            const downloadBtn = data.fileUrl ? `<a href="${data.fileUrl}" target="_blank" class="download-btn">⬇ ЗАВАНТАЖИТИ STL</a>` : "";
             
-            // Створюємо кнопку, якщо є посилання на файл
-            let downloadBtn = "";
-            if (data.fileUrl) {
-                downloadBtn = `<a href="${data.fileUrl}" target="_blank" class="download-btn">⬇ ЗАВАНТАЖИТИ STL</a>`;
-            } else {
-                downloadBtn = `<p style="color:#555; font-style:italic; margin-top:10px;">Файл не прикріплено</p>`;
-            }
+            // Кнопка підтвердження або статус
+            const statusAction = data.status === "В роботі" ? 
+                `<div class="status-badge">✅ В РОБОТІ</div>` : 
+                `<button onclick="confirmOrder('${id}')" class="confirm-btn">Взяти в роботу</button>`;
 
             list.innerHTML += `
-                <div class="order-card">
+                <div class="order-card" style="border-left: 5px solid ${data.status === 'В роботі' ? '#27ae60' : '#f39c12'}">
                     <p style="font-size:12px; color:#555;">${data.timestamp?.toDate().toLocaleString() || ''}</p>
                     <h3 style="margin:10px 0;">Замовник: ${data.name || 'Гість'}</h3>
-                    <p><strong>Контакт:</strong> ${data.contact || 'Немає'}</p>
-                    <p><strong>Матеріал:</strong> ${data.material || 'Не вказано'}</p>
-                    <div style="background:#1a1a1a; padding:15px; border-radius:10px; margin:15px 0; text-align:left;">
-                        <strong>Опис:</strong> ${data.description || 'Опис відсутній'}
-                    </div>
+                    <p><strong>Контакт:</strong> ${data.contact}</p>
+                    <p><strong>Матеріал:</strong> ${data.material}</p>
+                    <div style="background:#1a1a1a; padding:10px; border-radius:8px; margin:10px 0;">${data.description || 'Опис відсутній'}</div>
                     ${downloadBtn}
-                    <br>
+                    <div>${statusAction}</div>
                     <button onclick="deleteOrder('${id}')" class="delete-btn">Видалити замовлення</button>
                 </div>
             `;
         });
     });
 
+    window.confirmOrder = async (id) => {
+        if(confirm("Підтвердити замовлення? Клієнт побачить статус 'В роботі'.")) {
+            await updateDoc(doc(db, "orders", id), { status: "В роботі" });
+        }
+    };
+
     window.deleteOrder = async (id) => {
-        if(confirm("Видалити замовлення?")) await deleteDoc(doc(db, "orders", id));
+        if(confirm("Видалити?")) await deleteDoc(doc(db, "orders", id));
     };
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.href="login.html");
