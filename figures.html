@@ -3,126 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Готові фігурки — 3D-PRINT STUDIO</title>
+    <title data-ua="Фігурки — 3D-PRINT STUDIO" data-pl="Figurki — 3D-PRINT STUDIO">Фігурки — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="ui.css"></head>
-
+</head>
 <body>
 
 <header>
-    <div class="logo">3D-PRINT STUDIO</div>
+    <div class="logo">
+        <img src="log img/Логотип.jpg" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+        3D-PRINT STUDIO
+    </div>
     <nav>
-        <a href="index.html">Головна</a>
-        <a href="order.html">Замовити друк</a>
-        <a href="login.html">Кабінет</a>
-        <span class="lang">UA | PL</span>
+        <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
+        <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
+        <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
+        <a href="order.html" data-ua="Замовити" data-pl="Zamów">Замовити</a>
+        <a href="login.html" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
+        <span class="lang" style="cursor:pointer">UA | PL</span>
     </nav>
 </header>
 
 <section class="section">
-    <h1 class="section-title">Готові фігурки</h1>
-
-    <div class="grid">
-
-        <!-- CARD 1 -->
-        <div class="card">
-            <img src="log img/Готові фігурки.jpg" alt="Фігурка">
-            <div class="card-body">
-                <h3>Колекційні фігурки</h3>
-                <p>
-                    Герої ігор, фільмів та аніме. Друк з високою деталізацією,
-                    можливе фарбування.
-                </p>
-                <div class="price">від 75 грн</div>
-                <a href="product-detail.html" class="btn">Детальніше</a>
-            </div>
-        </div>
-
-        <!-- CARD 2 -->
-        <div class="card">
-            <img src="log img/figures.jpg" alt="Фігурка">
-            <div class="card-body">
-                <h3>Фігурки на замовлення</h3>
-                <p>
-                    Оберемо модель разом з вами або надрукуємо за вашим STL.
-                    Різні матеріали та розміри.
-                </p>
-                <div class="price">індивідуально</div>
-                <a href="order.html" class="btn">Замовити</a>
-            </div>
-        </div>
-
-        <!-- CARD 3 -->
-        <div class="card">
-            <img src="log img/stl.jpg" alt="Фігурка">
-            <div class="card-body">
-                <h3>STL з каталогів</h3>
-                <p>
-                    Працюємо з каталогами типу Creality Cloud, Printables,
-                    Thingiverse. Прорахунок перед друком.
-                </p>
-                <div class="price">від 5 грн / г</div>
-                <a href="order.html" class="btn">Прорахувати</a>
-            </div>
-        </div>
-
+    <h2 class="section-title" data-ua="Колекційні фігурки" data-pl="Figurki kolekcjonerskie">Колекційні фігурки</h2>
+    
+    <div class="grid" id="figuresContainer">
+        <p style="text-align: center; width: 100%;" data-ua="Завантаження каталогу..." data-pl="Ładowanie katalogu...">Завантаження каталогу...</p>
     </div>
 </section>
 
 <footer>
-    © 2026 3D-PRINT STUDIO · Готові фігурки та 3D-друк
+    <span data-ua="© 2026 3D-PRINT STUDIO" data-pl="© 2026 3D-PRINT STUDIO">© 2026 3D-PRINT STUDIO</span>
 </footer>
 
+<script src="lang.js"></script>
 
 <script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
-  authDomain: "d-print-studio-25787.firebaseapp.com",
-  projectId: "d-print-studio-25787",
-  storageBucket: "d-print-studio-25787.firebasestorage.app",
-  messagingSenderId: "671010955757",
-  appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
-  measurementId: "G-BJTPWXT1DY"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+    authDomain: "d-print-studio-25787.firebaseapp.com",
+    projectId: "d-print-studio-25787",
+    storageBucket: "d-print-studio-25787.firebasestorage.app",
+    messagingSenderId: "671010955757",
+    appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
+    measurementId: "G-BJTPWXT1DY"
+  };
 
-const app = const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-getAnalytics(app);
-</script>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
+  // Фільтруємо товари, де категорія дорівнює "figures"
+  const q = query(collection(db, "catalog"), where("category", "==", "figures"));
 
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { 
-  getAuth, 
-  onAuthStateChanged, 
-  setPersistence, 
-  browserLocalPersistence 
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  onSnapshot(q, (snapshot) => {
+    const container = document.getElementById('figuresContainer');
+    container.innerHTML = "";
+    
+    if (snapshot.empty) {
+        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;" data-ua="Наразі фігурок немає в наявності" data-pl="Obecnie brak figurek w magazynie">Наразі фігурок немає в наявності</p>`;
+        return;
+    }
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
-  authDomain: "d-print-studio-25787.firebaseapp.com",
-  projectId: "d-print-studio-25787",
-  storageBucket: "d-print-studio-25787.firebasestorage.app",
-  messagingSenderId: "671010955757",
-  appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-
-setPersistence(auth, browserLocalPersistence);
-
-onAuthStateChanged(auth, user => {
-  if(user){
-    localStorage.setItem("logged", "1");
-  } else {
-    localStorage.removeItem("logged");
-  }
-});
+    snapshot.forEach(doc => {
+      const item = doc.data();
+      container.innerHTML += `
+        <div class="card">
+            <img src="${item.image}" alt="${item.name}" style="width:100%; height:250px; object-fit:cover; border-radius: 8px 8px 0 0;">
+            <div class="card-body">
+                <h3>${item.name}</h3>
+                <div class="price" data-ua="від ${item.price} грн" data-pl="od ${item.price} PLN">від ${item.price} грн</div>
+                <a href="order.html" class="btn" data-ua="Замовити" data-pl="Zamów">Замовити</a>
+            </div>
+        </div>`;
+    });
+  });
 </script>
 
 </body>

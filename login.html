@@ -3,158 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вхід до кабінету — 3D-PRINT STUDIO</title>
-    <meta name="description" content="Вхід та реєстрація клієнта. Особистий кабінет 3D-PRINT STUDIO.">
+    <title data-ua="Вхід — 3D-PRINT STUDIO" data-pl="Logowanie — 3D-PRINT STUDIO">Вхід — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="ui.css"></head>
-
+</head>
 <body>
 
-<!-- ===== HEADER ===== -->
 <header>
-    <div class="logo">3D-PRINT STUDIO</div>
+    <div class="logo">
+        <img src="log img/Логотип.jpg" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+        3D-PRINT STUDIO
+    </div>
     <nav>
-        <a href="index.html">Головна</a>
-        <a href="order.html">Замовити</a>
-        <a href="howto.html">Як замовити</a>
-        <span class="lang">UA | PL</span>
+        <a href="index.html" data-ua="Головна" data-pl="Glowna">Головна</a>
+        <a href="order.html" data-ua="Замовити" data-pl="Zamow">Замовити</a>
+        <a href="login.html" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
+        <span class="lang" style="cursor:pointer">UA | PL</span>
     </nav>
 </header>
 
-<!-- ===== LOGIN SECTION ===== -->
 <section class="section">
-    <div class="grid" style="max-width:900px;margin:0 auto;">
-
-        <!-- ===== LOGIN ===== -->
-        <div class="card">
-            <div class="card-body">
-                <h1>Вхід</h1>
-
-                <p style="margin-bottom:20px;">
-                    Увійдіть до особистого кабінету
-                </p>
-
-                <form>
-                    <label>Email або Telegram</label>
-                    <input type="text" placeholder="email або @username" required>
-
-                    <label>Пароль</label>
-                    <input type="password" placeholder="••••••••" required>
-
-                    <button type="submit" class="btn" style="width:100%;margin-top:15px;">
-                        Увійти
-                    </button>
-                </form>
-
-                <p style="margin-top:15px;font-size:13px;color:#888;">
-                    Забули пароль? <span style="color:#f39c12;">Відновити</span>
-                </p>
-            </div>
-        </div>
-
-        <!-- ===== REGISTER ===== -->
-        <div class="card">
-            <div class="card-body">
-                <h1>Реєстрація</h1>
-
-                <p style="margin-bottom:20px;">
-                    Створіть акаунт для зручного замовлення
-                </p>
-
-                <form>
-                    <label>Імʼя</label>
-                    <input type="text" placeholder="Ваше імʼя" required>
-
-                    <label>Email або Telegram</label>
-                    <input type="text" placeholder="email або @username" required>
-
-                    <label>Пароль</label>
-                    <input type="password" placeholder="Мінімум 6 символів" required>
-
-                    <button type="submit" class="btn" style="width:100%;margin-top:15px;">
-                        Зареєструватись
-                    </button>
-                </form>
-
-                <p style="margin-top:15px;font-size:13px;color:#888;">
-                    Реєстрація дозволяє відстежувати замовлення
-                </p>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-<!-- ===== INFO ===== -->
-<section class="section">
-    <div class="card" style="max-width:600px;margin:0 auto;text-align:center;">
+    <div class="card" style="max-width: 400px; margin: 40px auto;">
         <div class="card-body">
-            <h3>Навіщо потрібен кабінет?</h3>
-            <p>
-                ✔ Історія замовлень<br>
-                ✔ Швидке повторне замовлення<br>
-                ✔ Зручний звʼязок з майстром<br>
-                ✔ Персональні знижки
-            </p>
+            <h2 id="formTitle" data-ua="Вхід у кабінет" data-pl="Logowanie do panelu">Вхід у кабінет</h2>
+            
+            <form id="authForm">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="example@mail.com" required>
+                
+                <label data-ua="Пароль" data-pl="Haslo">Пароль</label>
+                <input type="password" id="password" data-ua="Введіть пароль" data-pl="Wpisz haslo" required>
+                
+                <button type="submit" id="mainBtn" class="btn" style="width: 100%; margin-top: 20px;" data-ua="Увійти" data-pl="Zaloguj sie">Увійти</button>
+            </form>
+
+            <div style="margin-top: 15px; text-align: center; font-size: 0.9em;">
+                <span id="switchText" data-ua="Немає акаунту?" data-pl="Nie masz konta?">Немає акаунту?</span> 
+                <a href="#" id="toggleAuth" data-ua="Зареєструватися" data-pl="Zarejestruj sie">Зареєструватися</a>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- ===== FOOTER ===== -->
 <footer>
-    © 2026 3D-PRINT STUDIO · Особистий кабінет
+    <span data-ua="© 2026 3D-PRINT STUDIO" data-pl="© 2026 3D-PRINT STUDIO">© 2026 3D-PRINT STUDIO</span>
 </footer>
 
+<script src="lang.js"></script>
 
 <script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
-  authDomain: "d-print-studio-25787.firebaseapp.com",
-  projectId: "d-print-studio-25787",
-  storageBucket: "d-print-studio-25787.firebasestorage.app",
-  messagingSenderId: "671010955757",
-  appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
-  measurementId: "G-BJTPWXT1DY"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+    authDomain: "d-print-studio-25787.firebaseapp.com",
+    projectId: "d-print-studio-25787",
+    storageBucket: "d-print-studio-25787.firebasestorage.app",
+    messagingSenderId: "671010955757",
+    appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
+  };
 
-const app = const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-getAnalytics(app);
-</script>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
+  let isLoginMode = true;
+  const authForm = document.getElementById('authForm');
+  const toggleAuth = document.getElementById('toggleAuth');
+  const formTitle = document.getElementById('formTitle');
+  const mainBtn = document.getElementById('mainBtn');
+  const switchText = document.getElementById('switchText');
 
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { 
-  getAuth, 
-  onAuthStateChanged, 
-  setPersistence, 
-  browserLocalPersistence 
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  // Перемикач режимів Вхід / Реєстрація
+  toggleAuth.addEventListener('click', (e) => {
+    e.preventDefault();
+    isLoginMode = !isLoginMode;
+    
+    if (isLoginMode) {
+        formTitle.innerText = "Вхід у кабінет";
+        mainBtn.innerText = "Увійти";
+        switchText.innerText = "Немає акаунту?";
+        toggleAuth.innerText = "Зареєструватися";
+    } else {
+        formTitle.innerText = "Реєстрація";
+        mainBtn.innerText = "Створити акаунт";
+        switchText.innerText = "Вже є акаунт?";
+        toggleAuth.innerText = "Увійти";
+    }
+  });
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
-  authDomain: "d-print-studio-25787.firebaseapp.com",
-  projectId: "d-print-studio-25787",
-  storageBucket: "d-print-studio-25787.firebasestorage.app",
-  messagingSenderId: "671010955757",
-  appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
-};
+  // Логіка відправки
+  authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-
-setPersistence(auth, browserLocalPersistence);
-
-onAuthStateChanged(auth, user => {
-  if(user){
-    localStorage.setItem("logged", "1");
-  } else {
-    localStorage.removeItem("logged");
-  }
-});
+    try {
+      if (isLoginMode) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert("Акаунт створено!");
+      }
+      window.location.href = 'account.html';
+    } catch (error) {
+      alert("Помилка: " + error.message);
+    }
+  });
 </script>
 
 </body>

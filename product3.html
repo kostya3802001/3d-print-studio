@@ -2,217 +2,24 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Друк за STL — 3D-PRINT STUDIO</title>
-    <meta name="description" content="3D-друк за вашим STL. Прототипування, тестові та серійні деталі. Промисловий підхід.">
+    <title>Навушники Ultra — Купити</title>
     <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="ui.css"></head>
-
+</head>
 <body>
+    <header>
+        <a href="index.html" style="color: white; text-decoration: none;">< Назад до каталогу</a>
+    </header>
 
-<!-- ===== HEADER ===== -->
-<header>
-    <div class="logo">3D-PRINT STUDIO</div>
-    <nav>
-        <a href="index.html">Головна</a>
-        <a href="figures.html">Фігурки</a>
-        <a href="parts.html">Деталі</a>
-        <a href="order.html">Замовити</a>
-        <a href="login.html">Кабінет</a>
-        <span class="lang">UA | PL</span>
-    </nav>
-</header>
-
-<!-- ===== PRODUCT ===== -->
-<section class="section">
-    <div class="grid" style="align-items:start;">
-
-        <!-- IMAGE -->
-        <div class="card">
-            <img src="log img/Друк за вашим STL.jpg" alt="Друк за STL">
-        </div>
-
-        <!-- INFO -->
-        <div class="card">
-            <div class="card-body">
-                <h1>Друк за вашим STL</h1>
-
-                <p style="margin-top:15px;">
-                    Ви надсилаєте STL-файл — ми беремо на себе
-                    підбір матеріалу, налаштування друку та
-                    контроль якості.
-                </p>
-
-                <div class="price" style="font-size:22px;margin-top:20px;">
-                    від 5 грн / г
-                </div>
-
-                <p style="margin-top:10px;color:#9b9b9b;">
-                    Матеріали: PLA / PETG / ABS / TPU / PA / PC<br>
-                    Точність: до ±0.2 мм<br>
-                    Призначення: прототип / серія
-                </p>
-
-                <a href="order.html" class="btn" style="margin-top:25px;">
-                    Надіслати STL
-                </a>
+    <div class="product-container">
+        <div class="product-info">
+            <div class="big-img">??</div>
+            <div class="text">
+                <h1>Навушники Ultra</h1>
+                <p class="price-big">4 200 грн</p>
+                <p>Чистий звук та активне шумозаглушення. До 40 годин роботи.</p>
+                <button class="buy-btn" onclick="alert('Навушники додано в кошик!')">Додати в кошик</button>
             </div>
-        </div>
-
-    </div>
-</section>
-
-<!-- ===== BENEFITS ===== -->
-<section class="section">
-    <h2 class="section-title">Чому саме ми</h2>
-
-    <div class="grid">
-
-        <div class="card">
-            <div class="card-body">
-                <h3>Точний прорахунок</h3>
-                <p>
-                    Прорахунок за вагою, часом друку та
-                    матеріалом без «сюрпризів».
-                </p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h3>Промислові налаштування</h3>
-                <p>
-                    Оптимізація шарів, заповнення та
-                    температур під конкретну деталь.
-                </p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h3>Контроль якості</h3>
-                <p>
-                    Перевірка геометрії, розмірів та
-                    посадок перед передачею клієнту.
-                </p>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-<!-- ===== USE CASES ===== -->
-<section class="section">
-    <h2 class="section-title">Для чого підходить</h2>
-
-    <div class="grid">
-
-        <div class="card">
-            <div class="card-body">
-                <h3>Прототипування</h3>
-                <p>
-                    Швидка перевірка форми та функціоналу
-                    перед серійним виробництвом.
-                </p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h3>Малі серії</h3>
-                <p>
-                    Друк невеликих партій без дорогих форм
-                    та інструментів.
-                </p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h3>Індивідуальні вироби</h3>
-                <p>
-                    Деталі під конкретні розміри та
-                    задачі клієнта.
-                </p>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-<!-- ===== CTA ===== -->
-<section class="section">
-    <div class="card" style="text-align:center;">
-        <div class="card-body">
-            <h3>Готові надрукувати вашу модель</h3>
-            <p>
-                Надішліть STL-файл або посилання —
-                ми зробимо точний прорахунок і запропонуємо
-                оптимальні параметри друку.
-            </p>
-            <a href="order.html" class="btn" style="margin-top:20px;">
-                Надіслати STL
-            </a>
         </div>
     </div>
-</section>
-
-<!-- ===== FOOTER ===== -->
-<footer>
-    © 2026 3D-PRINT STUDIO · Друк за STL та прототипування
-</footer>
-
-
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
-  authDomain: "d-print-studio-25787.firebaseapp.com",
-  projectId: "d-print-studio-25787",
-  storageBucket: "d-print-studio-25787.firebasestorage.app",
-  messagingSenderId: "671010955757",
-  appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
-  measurementId: "G-BJTPWXT1DY"
-};
-
-const app = const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-getAnalytics(app);
-</script>
-
-
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { 
-  getAuth, 
-  onAuthStateChanged, 
-  setPersistence, 
-  browserLocalPersistence 
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
-  authDomain: "d-print-studio-25787.firebaseapp.com",
-  projectId: "d-print-studio-25787",
-  storageBucket: "d-print-studio-25787.firebasestorage.app",
-  messagingSenderId: "671010955757",
-  appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-
-setPersistence(auth, browserLocalPersistence);
-
-onAuthStateChanged(auth, user => {
-  if(user){
-    localStorage.setItem("logged", "1");
-  } else {
-    localStorage.removeItem("logged");
-  }
-});
-</script>
-
 </body>
 </html>

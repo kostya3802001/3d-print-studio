@@ -1,1 +1,94 @@
-<meta http-equiv="refresh" content="0; url=order.html">
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-ua="3D-PRINT STUDIO — Якість у деталях" data-pl="3D-PRINT STUDIO — Jakość в detalach">3D-PRINT STUDIO — Якість у деталях</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="log img/Логотип.jpg" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+        3D-PRINT STUDIO
+    </div>
+    <nav>
+        <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
+        <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
+        <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
+        <a href="order.html" data-ua="Замовити" data-pl="Zamów">Замовити</a>
+        <a href="login.html" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
+        <span class="lang" style="cursor:pointer">UA | PL</span>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1 data-ua="Втілюємо ваші ідеї у 3D" data-pl="Realizujemy Twoje pomysły w 3D">Втілюємо ваші ідеї у 3D</h1>
+    <p data-ua="Друк деталей та фігурок будь-якої складності.<br>Від прототипу до готового виробу." 
+       data-pl="Druk części i figurek o dowolnej złożoności.<br>Od prototypu до gotowego produktu.">
+        Друк деталей та фігурок будь-якої складності.<br>Від прототипу до готового виробу.
+    </p>
+    <a href="order.html" class="btn" data-ua="Зробити замовлення" data-pl="Złóż zamówienie">Зробити замовлення</a>
+</section>
+
+<section class="section">
+    <h2 class="section-title" data-ua="Наші виконані роботи" data-pl="Nasze zrealizowane prace">Наші виконані роботи</h2>
+    <div class="grid" id="portfolioContainer">
+        <p style="text-align: center; width: 100%;" data-ua="Завантаження робіт..." data-pl="Ładowanie prac...">Завантаження робіт...</p>
+    </div>
+</section>
+
+<footer>
+    <span data-ua="© 2026 3D-PRINT STUDIO · Професійний 3D друк" data-pl="© 2026 3D-PRINT STUDIO · Profesjonalny druk 3D">
+        © 2026 3D-PRINT STUDIO · Професійний 3D друк
+    </span>
+</footer>
+
+<script src="lang.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+    authDomain: "d-print-studio-25787.firebaseapp.com",
+    projectId: "d-print-studio-25787",
+    storageBucket: "d-print-studio-25787.firebasestorage.app",
+    messagingSenderId: "671010955757",
+    appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
+    measurementId: "G-BJTPWXT1DY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Отримуємо роботи для портфоліо
+  const q = query(collection(db, "portfolio"), orderBy("timestamp", "desc"));
+
+  onSnapshot(q, (snapshot) => {
+    const container = document.getElementById('portfolioContainer');
+    container.innerHTML = "";
+    
+    if (snapshot.empty) {
+        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;" data-ua="Тут скоро з'являться наші нові роботи" data-pl="Wkrótce pojawią się tu nasze nowe prace">Тут скоро з'являться наші нові роботи</p>`;
+        return;
+    }
+
+    snapshot.forEach(doc => {
+      const work = doc.data();
+      container.innerHTML += `
+        <div class="card">
+            <img src="${work.imagePath}" alt="Portfolio Item" style="width:100%; border-radius: 8px 8px 0 0;">
+            <div class="card-body">
+                <p style="font-size: 0.9em; color: #ccc; line-height: 1.4;">${work.description}</p>
+                <div style="margin-top: 10px; font-size: 0.8em; color: #27ae60; font-weight: bold;">✔ Замовлення виконано</div>
+            </div>
+        </div>`;
+    });
+  });
+</script>
+
+</body>
+</html>
