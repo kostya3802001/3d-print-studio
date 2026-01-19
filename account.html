@@ -8,22 +8,30 @@
     <style>
         .profile-info {
             background: rgba(243, 156, 18, 0.05);
-            border: 1px border: 1px solid rgba(243, 156, 18, 0.2);
+            border: 1px solid rgba(243, 156, 18, 0.2);
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
         }
+        /* Стиль для статусів */
         .order-status {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
-            background: #222;
-            color: #f39c12;
+            background: #111;
+            color: #f39c12; /* По замовчуванню помаранчевий */
             border: 1px solid #f39c12;
         }
+        /* Стиль коли замовлення вже "В роботі" */
+        .status-in-progress {
+            color: #27ae60 !important;
+            border-color: #27ae60 !important;
+            background: rgba(39, 174, 96, 0.05) !important;
+        }
+
         .logout-btn {
             background: transparent;
             color: #ff4d4d;
@@ -58,7 +66,7 @@
 </header>
 
 <section class="section">
-    <div class="hero-inner" style="margin-bottom: 50px;">
+    <div class="hero-inner" style="margin-bottom: 50px; text-align: center;">
         <h1 data-ua="Особистий <span>кабінет</span>" data-pl="Panel <span>klienta</span>">Особистий <span>кабінет</span></h1>
         <div class="profile-info">
             <p id="userEmail" style="font-size: 18px; color: #fff;">Завантаження...</p>
@@ -68,14 +76,12 @@
     <h2 class="section-title" style="text-align: left; margin-bottom: 30px;" data-ua="Мої замовлення" data-pl="Moje zamówienia">Мої замовлення</h2>
     
     <div class="grid" id="userOrders">
-        <p style="color: #666;" data-ua="У вас поки немає замовлень" data-pl="Nie masz jeszcze zamówień">У вас поки немає замовлень</p>
+        <p style="color: #666;" data-ua="Завантаження списку..." data-pl="Ładowanie listy...">Завантаження списку...</p>
     </div>
 </section>
 
 <footer>
-    <span data-ua="© 2026 3D-PRINT STUDIO · Професійний кабінет" data-pl="© 2026 3D-PRINT STUDIO · Panel profesjonalny">
-        © 2026 3D-PRINT STUDIO · Професійний кабінет
-    </span>
+    <span>© 2026 3D-PRINT STUDIO · Професійний кабінет</span>
 </footer>
 
 <script src="lang.js"></script>
@@ -103,7 +109,7 @@
       document.getElementById('userEmail').innerText = user.email;
       loadUserOrders(user.uid);
     } else {
-      window.location.href = "login.html"; // Якщо не увійшов — на сторінку входу
+      window.location.href = "login.html";
     }
   });
 
@@ -119,24 +125,30 @@
       container.innerHTML = "";
 
       if (snapshot.empty) {
-        container.innerHTML = `<p style="color: #666;" data-ua="Ви ще не робили замовлень" data-pl="Nie złożyłeś jeszcze żadnych zamówień">Ви ще не робили замовлень</p>`;
+        container.innerHTML = `<p style="color: #666;">Ви ще не робили замовлень</p>`;
         return;
       }
 
       snapshot.forEach(doc => {
         const order = doc.data();
-        const date = order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleDateString() : "...";
+        const date = order.timestamp ? order.timestamp.toDate().toLocaleDateString('uk-UA') : "...";
+        
+        // Визначаємо клас для статусу
+        const statusClass = order.status === "В роботі" ? "order-status status-in-progress" : "order-status";
+        const statusText = order.status || "Обробка";
         
         container.innerHTML += `
-          <div class="card">
+          <div class="card" style="margin-bottom: 20px;">
             <div class="card-body">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
                 <span style="color:#666; font-size:12px;">${date}</span>
-                <span class="order-status">${order.status || 'Обробка'}</span>
+                <span class="${statusClass}">${statusText}</span>
               </div>
-              <h3>${order.type}</h3>
-              <p style="margin: 10px 0;"><strong>Матеріал:</strong> ${order.material}</p>
-              <p style="font-size:13px; color:#888;">${order.description.substring(0, 100)}...</p>
+              <h3 style="color:#f39c12; margin-bottom:10px;">${order.type || 'Замовлення 3D-друку'}</h3>
+              <p><strong>Матеріал:</strong> ${order.material || 'Не вказано'}</p>
+              <p style="font-size:13px; color:#aaa; margin-top:10px; line-height:1.4;">
+                ${order.description ? order.description.substring(0, 150) : 'Без опису'}
+              </p>
             </div>
           </div>
         `;
@@ -144,7 +156,6 @@
     });
   }
 
-  // Кнопка виходу
   document.getElementById('logoutBtn').onclick = () => {
     signOut(auth).then(() => {
       window.location.href = "index.html";
