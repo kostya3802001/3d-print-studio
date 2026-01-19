@@ -5,7 +5,7 @@
     <title>Адмін-панель — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .admin-section { padding: 30px 5%; background: #000; color: #fff; min-height: 100vh; }
+        .admin-container { padding: 40px 5%; background: #000; color: #fff; min-height: 100vh; }
         .order-card {
             background: #0d0d0d;
             border: 1px solid #222;
@@ -16,31 +16,27 @@
             justify-content: space-between;
             align-items: center;
         }
-        .order-info h3 { color: #f39c12; margin-bottom: 8px; }
-        .order-info p { font-size: 14px; color: #ccc; margin: 4px 0; }
+        .info h3 { color: #f39c12; margin-bottom: 5px; }
+        .info p { font-size: 14px; color: #ccc; margin: 3px 0; }
         
-        /* Стиль кнопки */
-        .btn-accept {
+        .btn-action {
             background: #27ae60;
             color: #fff;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 20px;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
         }
-        .btn-accept:hover { background: #2ecc71; transform: scale(1.05); }
+        .btn-action:hover { background: #2ecc71; transform: scale(1.05); }
         
-        /* Плашка вже прийнятого замовлення */
-        .status-badge {
-            background: rgba(39, 174, 96, 0.1);
-            color: #27ae60;
+        .status-done {
             border: 1px solid #27ae60;
-            padding: 8px 16px;
+            color: #27ae60;
+            padding: 8px 15px;
             border-radius: 6px;
             font-size: 12px;
-            text-transform: uppercase;
         }
         h2 { border-left: 4px solid #f39c12; padding-left: 15px; margin: 40px 0 20px; }
     </style>
@@ -49,16 +45,16 @@
 
 <header>
     <div class="logo">ADMIN PANEL · 3D-PRINT STUDIO</div>
-    <nav><a href="index.html" style="color:#fff;">НА САЙТ</a></nav>
+    <nav><a href="index.html" style="color:#fff; text-decoration:none;">НА САЙТ</a></nav>
 </header>
 
-<section class="admin-section">
-    <h2>Нові замовлення (Очікують)</h2>
-    <div id="newOrders">Завантаження...</div>
+<div class="admin-container">
+    <h2>Нові запити</h2>
+    <div id="listNew"></div>
 
-    <h2>В роботі</h2>
-    <div id="activeOrders">Завантаження...</div>
-</section>
+    <h2>У роботі</h2>
+    <div id="listActive"></div>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -78,71 +74,59 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Слухаємо базу даних
+    // Перевірка, що залогінений саме ти (адмін)
+    onAuthStateChanged(auth, (user) => {
+        if (!user || user.email !== "join.the.game.notik.fols@gmail.com") {
+            window.location.href = "login.html";
+        }
+    });
+
+    // Отримуємо всі замовлення
     const q = query(collection(db, "orders"), orderBy("timestamp", "desc"));
 
     onSnapshot(q, (snapshot) => {
-        const newContainer = document.getElementById('newOrders');
-        const activeContainer = document.getElementById('activeOrders');
+        const boxNew = document.getElementById('listNew');
+        const boxActive = document.getElementById('listActive');
         
-        newContainer.innerHTML = "";
-        activeContainer.innerHTML = "";
-
-        let hasNew = false;
-        let hasActive = false;
+        boxNew.innerHTML = "";
+        boxActive.innerHTML = "";
 
         snapshot.forEach((orderDoc) => {
             const order = orderDoc.data();
             const id = orderDoc.id;
-            const date = order.timestamp ? order.timestamp.toDate().toLocaleString('uk-UA') : "Невідомо";
-
             const isConfirmed = order.status === "В роботі";
 
-            const cardHTML = `
+            const card = `
                 <div class="order-card">
-                    <div class="order-info">
+                    <div class="info">
                         <h3>${order.name || 'Без назви'}</h3>
-                        <p><strong>Клієнт ID:</strong> ${order.userId || 'Анонім'}</p>
-                        <p><strong>Матеріал:</strong> ${order.material || 'Не вказано'}</p>
-                        <p><strong>Опис:</strong> ${order.description || 'Немає опису'}</p>
-                        <p style="color:#555; font-size:11px; margin-top:10px;">${date}</p>
+                        <p><strong>ID Клієнта:</strong> ${order.userId}</p>
+                        <p><strong>Матеріал:</strong> ${order.material}</p>
+                        <p><strong>Опис:</strong> ${order.description}</p>
                     </div>
                     <div>
                         ${isConfirmed 
-                            ? '<span class="status-badge">У РОБОТІ</span>' 
-                            : `<button class="btn-accept" onclick="acceptOrder('${id}')">ПРИЙНЯТИ ЗАМОВЛЕННЯ</button>`
+                            ? '<span class="status-done">У РОБОТІ</span>' 
+                            : `<button class="btn-action" onclick="confirmOrder('${id}')">ПРИЙНЯТИ ЗАМОВЛЕННЯ</button>`
                         }
                     </div>
                 </div>
             `;
 
-            if (isConfirmed) {
-                activeContainer.innerHTML += cardHTML;
-                hasActive = true;
-            } else {
-                newContainer.innerHTML += cardHTML;
-                hasNew = true;
-            }
+            if (isConfirmed) boxActive.innerHTML += card;
+            else boxNew.innerHTML += card;
         });
-
-        if (!hasNew) newContainer.innerHTML = "<p style='color:#666;'>Нових замовлень немає</p>";
-        if (!hasActive) activeContainer.innerHTML = "<p style='color:#666;'>Немає активних проектів</p>";
     });
 
-    // ФУНКЦІЯ ПРИЙНЯТТЯ ЗАМОВЛЕННЯ
-    window.acceptOrder = async (orderId) => {
-        const orderRef = doc(db, "orders", orderId);
+    // Функція кнопки
+    window.confirmOrder = async (id) => {
+        const docRef = doc(db, "orders", id);
         try {
-            await updateDoc(orderRef, {
-                status: "В роботі"
-            });
-            // Немає потреби в alert, snapshot оновить інтерфейс миттєво
-        } catch (error) {
-            console.error("Помилка при оновленні:", error);
-            alert("Помилка доступу до бази даних");
+            await updateDoc(docRef, { status: "В роботі" });
+        } catch (e) {
+            console.error("Помилка:", e);
         }
     };
 </script>
-
 </body>
 </html>
