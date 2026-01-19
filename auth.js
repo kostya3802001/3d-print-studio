@@ -1,5 +1,5 @@
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { 
   getAuth, 
   onAuthStateChanged, 
@@ -16,7 +16,7 @@ const firebaseConfig = {
   appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
 };
 
-export const app = initializeApp(firebaseConfig);
+export const app = const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 export const auth = getAuth();
 setPersistence(auth, browserLocalPersistence);
 

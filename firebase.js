@@ -2,10 +2,10 @@
 // FIREBASE FULL INIT (PRODUCTION)
 // ===============================
 
-// ?? ВАЖНО:
-// ЗАЙДИ В Firebase Console > Project settings > Web app
-// И ЗАМЕНИ ЭТИ ДАННЫЕ НА СВОИ
-// (иначе Firebase не подключится)
+// ?? :
+//   Firebase Console > Project settings > Web app
+//      
+// ( Firebase  )
 
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
@@ -19,7 +19,7 @@ const firebaseConfig = {
 // ===============================
 // INIT
 // ===============================
-firebase.initializeApp(firebaseConfig);
+firebase.const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
 // ===============================
 // SERVICES
@@ -31,18 +31,18 @@ const db = firebase.firestore();
 // AUTH FUNCTIONS
 // ===============================
 
-// ?? ВХОД
+// ?? 
 function loginUser(email, password) {
     auth.signInWithEmailAndPassword(email, password)
         .then(() => {
             window.location.href = "account.html";
         })
         .catch(err => {
-            alert("Помилка входу: " + err.message);
+            alert(" : " + err.message);
         });
 }
 
-// ?? РЕЄСТРАЦІЯ
+// ?? ЕЄЦІ
 function registerUser(name, email, password) {
     auth.createUserWithEmailAndPassword(email, password)
         .then(cred => {
@@ -56,11 +56,11 @@ function registerUser(name, email, password) {
             window.location.href = "account.html";
         })
         .catch(err => {
-            alert("Помилка реєстрації: " + err.message);
+            alert(" : " + err.message);
         });
 }
 
-// ?? ВИХІД
+// ?? ХІ
 function logoutUser() {
     auth.signOut().then(() => {
         window.location.href = "login.html";
@@ -71,11 +71,11 @@ function logoutUser() {
 // ORDERS
 // ===============================
 
-// ?? СТВОРИТИ ЗАМОВЛЕННЯ
+// ??  
 function createOrder(data) {
     auth.onAuthStateChanged(user => {
         if (!user) {
-            alert("Увійдіть у кабінет");
+            alert("  ");
             return;
         }
 
@@ -85,7 +85,7 @@ function createOrder(data) {
             status: "new",
             created: new Date()
         }).then(() => {
-            alert("Замовлення надіслано");
+            alert(" ");
         });
     });
 }
