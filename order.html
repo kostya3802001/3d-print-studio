@@ -1,167 +1,129 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Замовити 3D-друк — 3D-PRINT STUDIO</title>
-    <meta name="description" content="Замовлення 3D-друку. Прорахунок вартості, технічні деталі, STL-друк.">
-    <link rel="stylesheet" href="style.css">
-</head>
-
+<meta charset="UTF-8">
+<title>Замовити друк</title>
+<link rel="stylesheet" href="ui.css"></head>
 <body>
 
-<!-- ===== HEADER ===== -->
-<header>
-    <div class="logo">3D-PRINT STUDIO</div>
-    <nav>
-        <a href="index.html">Головна</a>
-        <a href="figures.html">Фігурки</a>
-        <a href="parts.html">Деталі</a>
-        <a href="login.html">Кабінет</a>
-        <span class="lang">UA | PL</span>
-    </nav>
-</header>
+<h1>Замовити друк</h1>
 
-<!-- ===== ORDER ===== -->
-<section class="section">
-    <h1 class="section-title">Замовлення 3D-друку</h1>
+<form id="orderForm">
+  <input id="material" placeholder="Матеріал" required><br><br>
+  <input id="color" placeholder="Колір" required><br><br>
+  <input type="file" id="stl" accept=".stl" required><br><br>
+  <textarea id="comment" placeholder="Коментар"></textarea><br><br>
+  <button type="submit">Замовити</button>
 
-    <div class="grid">
+<hr>
+<label>Кількість (г): <input id="weight" type="number" min="1" required></label><br><br>
+<p>Ціна: <b><span id="price">0</span> ₴</b></p>
 
-        <!-- ===== FORM CARD ===== -->
-        <div class="card">
-            <div class="card-body">
-                <h3>Дані для прорахунку</h3>
-                <p>
-                    Заповніть форму — ми зробимо точний прорахунок
-                    і звʼяжемось з вами.
-                </p>
+</form>
 
-                <form>
-
-                    <label>Ваше імʼя</label>
-                    <input type="text" placeholder="Імʼя" required>
-
-                    <label>Email або Telegram</label>
-                    <input type="text" placeholder="@username або email" required>
-
-                    <label>Тип замовлення</label>
-                    <select>
-                        <option>Друк за STL</option>
-                        <option>Технічна деталь</option>
-                        <option>Фігурка</option>
-                    </select>
-
-                    <label>Матеріал</label>
-                    <select>
-                        <option>PLA</option>
-                        <option>PETG</option>
-                        <option>ABS / ASA</option>
-                        <option>TPU</option>
-                        <option>PA (Нейлон)</option>
-                        <option>PC</option>
-                    </select>
-
-                    <label>Опис або посилання на STL</label>
-                    <textarea placeholder="Коротко опишіть деталь або вставте посилання на STL" rows="4"></textarea>
-
-                    <button type="submit" class="btn" style="margin-top:20px;width:100%;">
-                        Надіслати на прорахунок
-                    </button>
-
-                </form>
-            </div>
-        </div>
-
-        <!-- ===== INFO CARD ===== -->
-        <div class="card">
-            <div class="card-body">
-                <h3>Як проходить замовлення</h3>
-
-                <div class="step" style="margin-bottom:15px;">
-                    <span>01</span><br>
-                    Ви надсилаєте STL або опис
-                </div>
-
-                <div class="step" style="margin-bottom:15px;">
-                    <span>02</span><br>
-                    Ми робимо точний прорахунок
-                </div>
-
-                <div class="step" style="margin-bottom:15px;">
-                    <span>03</span><br>
-                    Ви підтверджуєте замовлення
-                </div>
-
-                <div class="step">
-                    <span>04</span><br>
-                    Друк та відправка
-                </div>
-
-                <p style="margin-top:20px;color:#999;font-size:14px;">
-                    ✔ Мінімальна сума замовлення — 100 грн<br>
-                    ✔ Робота з Україною та Польщею
-                </p>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-<!-- ===== FOOTER ===== -->
-<footer>
-    © 2026 3D-PRINT STUDIO · Замовлення 3D-друку
-</footer>
-
+<p id="info"></p>
 
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp } 
+from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes } 
+from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
   authDomain: "d-print-studio-25787.firebaseapp.com",
   projectId: "d-print-studio-25787",
-  storageBucket: "d-print-studio-25787.firebasestorage.app",
-  messagingSenderId: "671010955757",
-  appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
-  measurementId: "G-BJTPWXT1DY"
+  storageBucket: "d-print-studio-25787.firebasestorage.app"
 };
 
-const app = const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-getAnalytics(app);
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+let user = null;
+
+onAuthStateChanged(auth, u => {
+  if(!u){
+    window.location.href = "login.html";
+    return;
+  }
+  user = u;
+});
+
+orderForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  if(!user) return;
+
+  const file = stl.files[0];
+  if(!file || !file.name.endsWith(".stl")){
+    alert("Тільки STL");
+    return;
+  }
+
+  info.textContent = "Завантаження...";
+
+  const docRef = await addDoc(collection(db,"orders"),{
+    uid: user.uid,
+    email: user.email,
+    material: material.value,
+    color: color.value,
+    comment: comment.value,
+    status: "Очікує обробки",
+    createdAt: serverTimestamp()
+  });
+
+  const storageRef = ref(storage, `orders/${docRef.id}.stl`);
+  await uploadBytes(storageRef, file);
+
+  info.textContent = "Замовлення створено";
+  orderForm.reset();
+});
+</script>
+
+
+<script>
+const PRICE_PER_GRAM = 5;
+const weightInput = document.getElementById("weight");
+const priceEl = document.getElementById("price");
+
+weightInput.addEventListener("input", ()=>{
+  const w = Number(weightInput.value)||0;
+  priceEl.textContent = w * PRICE_PER_GRAM;
+});
 </script>
 
 
 <script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { 
-  getAuth, 
-  onAuthStateChanged, 
-  setPersistence, 
-  browserLocalPersistence 
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import * as THREE from "https://unpkg.com/three@0.155.0/build/three.module.js";
+import { STLLoader } from "https://unpkg.com/three@0.155.0/examples/jsm/loaders/STLLoader.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
-  authDomain: "d-print-studio-25787.firebaseapp.com",
-  projectId: "d-print-studio-25787",
-  storageBucket: "d-print-studio-25787.firebasestorage.app",
-  messagingSenderId: "671010955757",
-  appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
-};
+const MAX = 256;
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+stl.addEventListener("change", () => {
+  const file = stl.files[0];
+  if(!file) return;
 
-setPersistence(auth, browserLocalPersistence);
+  const reader = new FileReader();
+  reader.onload = e => {
+    const loader = new STLLoader();
+    const geom = loader.parse(e.target.result);
+    geom.computeBoundingBox();
+    const b = geom.boundingBox;
 
-onAuthStateChanged(auth, user => {
-  if(user){
-    localStorage.setItem("logged", "1");
-  } else {
-    localStorage.removeItem("logged");
-  }
+    const sizeX = b.max.x - b.min.x;
+    const sizeY = b.max.y - b.min.y;
+    const sizeZ = b.max.z - b.min.z;
+
+    if(sizeX > MAX || sizeY > MAX || sizeZ > MAX){
+      alert(`Модель завелика: ${sizeX.toFixed(1)} × ${sizeY.toFixed(1)} × ${sizeZ.toFixed(1)} мм`);
+      stl.value = "";
+    }
+  };
+  reader.readAsArrayBuffer(file);
 });
 </script>
 
