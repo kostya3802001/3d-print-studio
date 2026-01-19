@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Технічна шестерня — 3D-PRINT STUDIO</title>
+    <meta name="description" content="Технічна 3D-друкована шестерня. Міцні матеріали, точна геометрія, промислове застосування.">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <div class="logo">3D-PRINT STUDIO</div>
+    <nav>
+        <a href="index.html">Головна</a>
+        <a href="figures.html">Фігурки</a>
+        <a href="parts.html">Деталі</a>
+        <a href="order.html">Замовити</a>
+        <a href="login.html">Кабінет</a>
+        <span class="lang">UA | PL</span>
+    </nav>
+</header>
+
+<!-- ===== PRODUCT ===== -->
+<section class="section">
+    <div class="grid" style="align-items:start;">
+
+        <!-- IMAGE -->
+        <div class="card">
+            <img src="log img/Технічні деталі.jpg" alt="Технічна шестерня">
+        </div>
+
+        <!-- INFO -->
+        <div class="card">
+            <div class="card-body">
+                <h1>Технічна шестерня</h1>
+
+                <p style="margin-top:15px;">
+                    Функціональна шестерня для механізмів, ремонту
+                    або заміни зламаних деталей. Друк з контролем
+                    геометрії та підбором матеріалу.
+                </p>
+
+                <div class="price" style="font-size:22px;margin-top:20px;">
+                    від 250 грн
+                </div>
+
+                <p style="margin-top:10px;color:#9b9b9b;">
+                    Матеріал: PETG / PA / PC<br>
+                    Заповнення: 40–80%<br>
+                    Точність: ±0.2 мм
+                </p>
+
+                <a href="order.html" class="btn" style="margin-top:25px;">
+                    Замовити деталь
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== DETAILS ===== -->
+<section class="section">
+    <h2 class="section-title">Технічні характеристики</h2>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Міцність</h3>
+                <p>
+                    Підбір матеріалу під навантаження.
+                    Підходить для постійної експлуатації.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Точність</h3>
+                <p>
+                    Контроль посадок, діаметрів і зубців
+                    перед друком та після.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Модифікація</h3>
+                <p>
+                    Можлива зміна геометрії, товщини,
+                    отворів та кількості зубців.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== USE CASES ===== -->
+<section class="section">
+    <h2 class="section-title">Де використовується</h2>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Ремонт обладнання</h3>
+                <p>
+                    Швидка заміна зламаних або зношених
+                    механічних елементів.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Прототипування</h3>
+                <p>
+                    Тестування механіки перед запуском
+                    серійного виробництва.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Малі серії</h3>
+                <p>
+                    Виготовлення дрібних партій без
+                    дорогої оснастки.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="section">
+    <div class="card" style="text-align:center;">
+        <div class="card-body">
+            <h3>Потрібна інша шестерня або деталь?</h3>
+            <p>
+                Надішліть STL або креслення — ми зробимо
+                точний прорахунок і підберемо матеріал.
+            </p>
+            <a href="order.html" class="btn" style="margin-top:20px;">
+                Отримати прорахунок
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    © 2026 3D-PRINT STUDIO · Технічні деталі та 3D-друк
+</footer>
+
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+  authDomain: "d-print-studio-25787.firebaseapp.com",
+  projectId: "d-print-studio-25787",
+  storageBucket: "d-print-studio-25787.firebasestorage.app",
+  messagingSenderId: "671010955757",
+  appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
+  measurementId: "G-BJTPWXT1DY"
+};
+
+const app = const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+getAnalytics(app);
+</script>
+
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  setPersistence, 
+  browserLocalPersistence 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+  authDomain: "d-print-studio-25787.firebaseapp.com",
+  projectId: "d-print-studio-25787",
+  storageBucket: "d-print-studio-25787.firebasestorage.app",
+  messagingSenderId: "671010955757",
+  appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+
+setPersistence(auth, browserLocalPersistence);
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    localStorage.setItem("logged", "1");
+  } else {
+    localStorage.removeItem("logged");
+  }
+});
+</script>
+
+</body>
+</html>
