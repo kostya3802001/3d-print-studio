@@ -32,7 +32,7 @@ body::before {
     to   { transform: rotate(360deg); }
 }
 
-/* ===== HEADER ===== */
+/* ===== HEADER & LOGO FIX ===== */
 header {
     position: sticky;
     top: 0;
@@ -54,12 +54,13 @@ header {
     font-size: 18px;
 }
 
+/* Той самий фікс для картинки логотипа */
 .logo img {
     height: 38px;
     width: auto;
     margin-right: 12px;
     border-radius: 5px;
-    border: 1px solid rgba(243, 156, 18, 0.2);
+    border: 1px solid rgba(243, 156, 18, 0.3);
 }
 
 nav a {
@@ -86,11 +87,6 @@ nav a:hover {
     font-size: 12px;
     color: #f39c12;
     cursor: pointer;
-    transition: 0.3s;
-}
-
-.lang:hover {
-    border-color: #f39c12;
 }
 
 /* ===== HERO ===== */
@@ -143,7 +139,7 @@ nav a:hover {
 
 /* ===== SECTION ===== */
 .section {
-    padding: 80px 6%;
+    padding: 100px 6%;
 }
 
 .section-title {
@@ -180,14 +176,9 @@ nav a:hover {
     width: 100%;
     height: 280px;
     object-fit: contain;
-    background: #ffffff; /* Чисто білий для кращого вигляду STL */
-    padding: 20px;
-    border-bottom: 1px solid #1f1f1f;
-    transition: transform 0.4s ease;
-}
-
-.card:hover img {
-    transform: scale(1.05);
+    background: #ffffff; /* Робимо фон картинки білим, щоб STL виглядали чітко */
+    padding: 22px;
+    border-bottom: 1px solid #1a1a1a;
 }
 
 /* ===== CARD BODY ===== */
@@ -208,7 +199,7 @@ nav a:hover {
     line-height: 1.6;
 }
 
-/* ===== PRICE ===== */
+/* ===== PRICE & BUTTONS ===== */
 .price {
     margin: 18px 0;
     font-size: 19px;
@@ -216,7 +207,6 @@ nav a:hover {
     color: #f39c12;
 }
 
-/* ===== BUTTON ===== */
 .btn {
     display: inline-block;
     padding: 13px 26px;
@@ -235,47 +225,20 @@ nav a:hover {
     background: #e67e22;
 }
 
-/* ===== PROCESS / STEPS ===== */
-.process {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 30px;
-}
-
-.step {
+/* ===== PROCESS & REVIEWS ===== */
+.step, .review {
     background: #0d0d0d;
     border-radius: 18px;
     padding: 28px;
-    border-left: 5px solid #f39c12;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-    font-size: 14px;
+    border: 1px solid rgba(255,255,255,.04);
 }
+
+.step { border-left: 5px solid #f39c12; }
 
 .step span {
     font-size: 24px;
     font-weight: 900;
     color: #f39c12;
-}
-
-/* ===== REVIEWS ===== */
-.reviews {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 28px;
-}
-
-.review {
-    background: #0d0d0d;
-    border-radius: 18px;
-    padding: 26px;
-    font-size: 14px;
-    border: 1px solid rgba(255,255,255,.04);
-}
-
-.review strong {
-    color: #f39c12;
-    display: block;
-    margin-bottom: 6px;
 }
 
 /* ===== FORM ===== */
@@ -289,12 +252,6 @@ input, select, textarea {
     border-radius: 8px;
     color: #fff;
     font-size: 14px;
-    transition: 0.3s;
-}
-
-input:focus, textarea:focus {
-    border-color: #f39c12;
-    outline: none;
 }
 
 /* ===== FOOTER ===== */
@@ -310,11 +267,8 @@ footer {
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
     header { padding: 15px 5%; }
-    .hero { min-height: 78vh; padding: 0 5%; }
     .hero h1 { font-size: 32px; }
-    .section { padding: 60px 5%; }
-    .card img { height: 230px; }
-    nav a { margin-left: 12px; font-size: 11px; }
     .logo { font-size: 15px; }
     .logo img { height: 30px; }
+    nav a { margin-left: 12px; font-size: 11px; }
 }
