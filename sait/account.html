@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій кабінет — 3D-PRINT STUDIO</title>
+    <meta name="description" content="Особистий кабінет клієнта. Історія замовлень, статуси, профіль.">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <div class="logo">3D-PRINT STUDIO</div>
+    <nav>
+        <a href="index.html">Головна</a>
+        <a href="order.html">Замовити</a>
+        <a href="howto.html">Як замовити</a>
+        <a href="login.html">Вийти</a>
+        <span class="lang">UA | PL</span>
+    </nav>
+</header>
+
+<!-- ===== ACCOUNT ===== -->
+<section class="section">
+    <h1 class="section-title">Особистий кабінет</h1>
+
+    <div class="grid">
+
+        <!-- PROFILE -->
+        <div class="card">
+            <div class="card-body">
+                <h3>Профіль</h3>
+                <p>
+                    <strong>Імʼя:</strong> Клієнт<br>
+                    <strong>Контакт:</strong> email / @telegram<br>
+                    <strong>Статус:</strong> Активний
+                </p>
+
+                <a href="#" class="btn" style="margin-top:15px;">
+                    Редагувати профіль
+                </a>
+            </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div class="card">
+            <div class="card-body">
+                <h3>Мої замовлення</h3>
+
+                <p>
+                    <strong>#1023</strong> — Друк за STL<br>
+                    <span style="color:#f39c12;">У виробництві</span>
+                </p>
+
+                <hr style="border:0;border-top:1px solid #222;margin:15px 0;">
+
+                <p>
+                    <strong>#1017</strong> — Технічна деталь<br>
+                    <span style="color:#27ae60;">Виконано</span>
+                </p>
+
+                <a href="#" class="btn" style="margin-top:15px;">
+                    Усі замовлення
+                </a>
+            </div>
+        </div>
+
+        <!-- STATUS -->
+        <div class="card">
+            <div class="card-body">
+                <h3>Статус замовлення</h3>
+                <p>
+                    🔧 Підготовка<br>
+                    🖨️ Друк<br>
+                    📦 Пакування<br>
+                    🚚 Відправка
+                </p>
+
+                <p style="margin-top:10px;color:#9b9b9b;">
+                    Оновлюється автоматично
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== BONUS ===== -->
+<section class="section">
+    <div class="card" style="max-width:700px;margin:0 auto;text-align:center;">
+        <div class="card-body">
+            <h3>Переваги кабінету</h3>
+            <p>
+                ✔ Історія замовлень<br>
+                ✔ Повторне замовлення в 1 клік<br>
+                ✔ Персональні знижки<br>
+                ✔ Прямий звʼязок з майстром
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    © 2026 3D-PRINT STUDIO · Особистий кабінет
+</footer>
+
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+  authDomain: "d-print-studio-25787.firebaseapp.com",
+  projectId: "d-print-studio-25787",
+  storageBucket: "d-print-studio-25787.firebasestorage.app",
+  messagingSenderId: "671010955757",
+  appId: "1:671010955757:web:633317a7073d5d6f6c07e4",
+  measurementId: "G-BJTPWXT1DY"
+};
+
+const app = const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+getAnalytics(app);
+</script>
+
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  setPersistence, 
+  browserLocalPersistence 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+  authDomain: "d-print-studio-25787.firebaseapp.com",
+  projectId: "d-print-studio-25787",
+  storageBucket: "d-print-studio-25787.firebasestorage.app",
+  messagingSenderId: "671010955757",
+  appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+
+setPersistence(auth, browserLocalPersistence);
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    localStorage.setItem("logged", "1");
+  } else {
+    localStorage.removeItem("logged");
+  }
+});
+</script>
+
+</body>
+</html>

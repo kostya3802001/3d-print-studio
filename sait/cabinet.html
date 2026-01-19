@@ -1,0 +1,17 @@
+
+<h1>Особистий кабінет</h1>
+<ul id="orders"></ul>
+<script type="module">
+import { auth, db } from './firebase.js';
+import { collection, query, where, onSnapshot } 
+from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+
+auth.onAuthStateChanged(u=>{
+ if(!u){alert('Увійдіть');return;}
+ const q=query(collection(db,'orders'),where('uid','==',u.uid));
+ onSnapshot(q,s=>{
+  orders.innerHTML='';
+  s.forEach(d=>orders.innerHTML+=`<li>${d.data().status}</li>`);
+ });
+});
+</script>
