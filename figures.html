@@ -3,8 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-ua="Фігурки — 3D-PRINT STUDIO" data-pl="Figurki — 3D-PRINT STUDIO">Фігурки — 3D-PRINT STUDIO</title>
+    <title>Фігурки — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Стилі для повного центрування заголовка та контенту */
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Центрує елементи горизонтально */
+            text-align: center;  /* Центрує текст всередині елементів */
+            margin-bottom: 60px;
+            width: 100%;
+        }
+
+        .section-header h1 {
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-header h1 span {
+            color: #f39c12;
+        }
+
+        .section-header p {
+            color: #9a9a9a;
+            font-size: 18px;
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        /* Контейнер для товарів */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            justify-items: center; /* Центрує картки в сітці */
+            align-items: start;
+        }
+
+        /* Центрування повідомлення про порожній каталог */
+        .empty-catalog {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-catalog p {
+            color: #555;
+            font-size: 20px;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,37 +66,38 @@
         3D-PRINT STUDIO
     </div>
     <nav>
-        <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
-        <a href="figures.html" class="active" data-ua="Фігурки" data-pl="Figurki" style="color: #f39c12;">Фігурки</a>
-        <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
-        <a href="order.html" data-ua="Замовити" data-pl="Zamów">Замовити</a>
-        <a href="login.html" id="accountLink" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
-        <span class="lang" id="langToggle" style="cursor:pointer">UA | PL</span>
+        <a href="index.html">Головна</a>
+        <a href="figures.html" class="active" style="color: #f39c12;">Фігурки</a>
+        <a href="parts.html">Деталі</a>
+        <a href="order.html">Замовити</a>
+        <a href="login.html" id="accountLink">Кабінет</a>
+        <span class="lang" id="langToggle" style="cursor:pointer; margin-left: 15px;">UA | PL</span>
     </nav>
 </header>
 
 <section class="section">
-    <div class="hero-inner" style="text-align: center; margin-bottom: 60px;">
-        <h1 data-ua="Колекційні <span>фігурки</span>" data-pl="Figurki <span>kolekcjonerskie</span>">Колекційні <span>фігурки</span></h1>
-        <p data-ua="Висока деталізація, готові моделі та друк під замовлення." data-pl="Wysoka szczegółowość, gotowe modele i druk na zamówienie.">Висока деталізація, готові моделі та друк під замовлення.</p>
+    <div class="section-header">
+        <h1 data-ua="Колекційні <span>фігурки</span>" data-pl="Figurki <span>kolekcjonerskie</span>">
+            Колекційні <span>фігурки</span>
+        </h1>
+        <p data-ua="Висока деталізація, готові моделі та друк під замовлення." data-pl="Wysoka szczegółowość, gotowe modele i druk na zamówienie.">
+            Висока деталізація, готові моделі та друк під замовлення.
+        </p>
     </div>
 
     <div class="grid" id="publicProductsList">
-        <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
-            <p style="color: #666;" data-ua="Завантаження каталогу..." data-pl="Ładowanie katalogu...">Завантаження каталогу...</p>
+        <div class="empty-catalog">
+            <p>Завантаження каталогу...</p>
         </div>
     </div>
 </section>
 
 <footer>
-    <span data-ua="© 2026 3D-PRINT STUDIO · Професійний 3D-друк" data-pl="© 2026 3D-PRINT STUDIO · Profesjonalny druk 3D">
-        © 2026 3D-PRINT STUDIO · Професійний 3D-друк
-    </span>
+    © 2026 3D-PRINT STUDIO · Професійний 3D-друк
 </footer>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -57,40 +110,26 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
-
-    // Зміна тексту кнопки Кабінет, якщо користувач увійшов
-    onAuthStateChanged(auth, (user) => {
-        const link = document.getElementById('accountLink');
-        if (user) {
-            link.href = "account.html";
-            link.innerText = "Мій Профіль";
-            link.setAttribute('data-ua', 'Мій Профіль');
-            link.setAttribute('data-pl', 'Mój Profil');
-        }
-    });
-
-    // Отримання товарів з бази Firestore
     const productsContainer = document.getElementById('publicProductsList');
 
+    // Отримання товарів в реальному часі
     onSnapshot(query(collection(db, "products"), orderBy("timestamp", "desc")), (snapshot) => {
         productsContainer.innerHTML = "";
         
         if (snapshot.empty) {
             productsContainer.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
-                    <p style="color: #666;">Наразі каталог порожній. Зайдіть пізніше!</p>
+                <div class="empty-catalog">
+                    <p data-ua="Наразі каталог порожній. Зайдіть пізніше!" data-pl="Katalog jest obecnie pusty. Zapraszamy пізніше!">Наразі каталог порожній. Зайдіть пізніше!</p>
                 </div>`;
             return;
         }
 
         snapshot.forEach((doc) => {
             const product = doc.data();
-            // Створення картки товару
             productsContainer.innerHTML += `
                 <div class="card">
-                    <img src="${product.img}" alt="${product.name}" onerror="this.src='log img/placeholder.png'">
+                    <img src="${product.img}" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
                     <div class="card-body">
                         <h3>${product.name}</h3>
                         <p>${product.desc || ''}</p>
