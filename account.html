@@ -6,65 +6,38 @@
     <title>Мій профіль — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .profile-container { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
-        
-        .user-card {
-            background: rgba(243, 156, 18, 0.1);
-            border: 1px solid #f39c12;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 40px;
-            text-align: center;
+        .profile-wrapper { padding: 50px 5%; color: #fff; }
+        .user-info-box { 
+            background: #111; 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 1px solid #f39c12; 
+            text-align: center; 
+            margin-bottom: 40px; 
         }
-
-        /* Стилі для карток замовлень */
-        .order-list { display: grid; gap: 20px; }
-        
-        .order-item {
-            background: #111;
-            border: 1px solid #222;
-            padding: 20px;
-            border-radius: 12px;
+        .orders-grid { display: grid; gap: 20px; }
+        .order-card { 
+            background: #0d0d0d; 
+            border: 1px solid #222; 
+            padding: 20px; 
+            border-radius: 10px; 
             position: relative;
-            transition: 0.3s;
         }
-
-        /* Оранжевий статус (Очікування) */
-        .status-label {
+        .status-tag {
             display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 12px;
             font-weight: bold;
-            text-transform: uppercase;
-            border: 1px solid #f39c12;
-            color: #f39c12;
             margin-bottom: 15px;
         }
-
-        /* Зелений статус (В роботі) */
-        .status-confirmed {
-            border-color: #27ae60 !important;
-            color: #27ae60 !important;
-            background: rgba(39, 174, 96, 0.1);
-            box-shadow: 0 0 10px rgba(39, 174, 96, 0.2);
-        }
-
-        .order-title { color: #f39c12; font-size: 18px; margin-bottom: 10px; }
-        .order-details { font-size: 14px; color: #ccc; line-height: 1.6; }
-        .order-date { font-size: 12px; color: #555; margin-bottom: 10px; display: block; }
+        /* Очікується */
+        .status-waiting { border: 1px solid #f39c12; color: #f39c12; }
+        /* В роботі */
+        .status-active { background: #27ae60; color: #fff; }
         
-        .logout-link {
-            color: #ff4d4d;
-            text-decoration: none;
-            font-size: 14px;
-            cursor: pointer;
-            border: 1px solid #ff4d4d;
-            padding: 5px 15px;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        .logout-link:hover { background: #ff4d4d; color: #000; }
+        .order-name { color: #f39c12; font-size: 18px; margin-bottom: 10px; }
+        .order-meta { font-size: 14px; color: #888; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -74,26 +47,24 @@
     <nav>
         <a href="index.html">Головна</a>
         <a href="order.html">Замовити</a>
-        <span id="logoutBtn" class="logout-link" style="margin-left: 20px;">Вихід</span>
     </nav>
 </header>
 
-<div class="profile-container">
-    <div class="user-card">
+<div class="profile-wrapper">
+    <div class="user-info-box">
         <h1 style="margin-bottom: 10px;">Особистий кабінет</h1>
-        <p id="userEmail" style="color: #aaa;">Завантаження...</p>
+        <p id="displayEmail" style="color: #666;">Завантаження...</p>
     </div>
 
-    <h2 style="margin-bottom: 25px; border-left: 4px solid #f39c12; padding-left: 15px;">Мої замовлення</h2>
-    
-    <div id="ordersContainer" class="order-list">
-        <p style="text-align: center; color: #666;">Шукаємо ваші замовлення...</p>
+    <h2 style="margin-bottom: 20px; border-left: 3px solid #f39c12; padding-left: 15px;">Мої замовлення</h2>
+    <div id="ordersContainer" class="orders-grid">
+        <p style="color: #444;">Шукаємо ваші замовлення у базі...</p>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -111,15 +82,15 @@
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            document.getElementById('userEmail').innerText = user.email;
-            listenToOrders(user.uid);
+            document.getElementById('displayEmail').innerText = user.email;
+            loadUserOrders(user.uid);
         } else {
             window.location.href = "login.html";
         }
     });
 
-    function listenToOrders(uid) {
-        // Запит тільки для замовлень цього користувача
+    function loadUserOrders(uid) {
+        // Запит: шукаємо замовлення, де userId дорівнює UID поточного користувача
         const q = query(
             collection(db, "orders"),
             where("userId", "==", uid),
@@ -131,46 +102,33 @@
             container.innerHTML = "";
 
             if (snapshot.empty) {
-                container.innerHTML = "<p style='text-align:center; color:#555;'>У вас ще немає замовлень. <a href='order.html' style='color:#f39c12;'>Зробити перше замовлення?</a></p>";
+                container.innerHTML = "<p style='color: #555;'>У вас поки немає замовлень. Як тільки ви залишите заявку, вона з'явиться тут.</p>";
                 return;
             }
 
             snapshot.forEach((doc) => {
-                const order = doc.data();
-                const date = order.timestamp ? order.timestamp.toDate().toLocaleString('uk-UA') : "Щойно";
+                const data = doc.data();
+                const isWorking = data.status === "В роботі";
                 
-                // Перевірка статусу
-                const isWorking = order.status === "В роботі";
-                const statusText = isWorking ? "Взято в роботу" : "Очікується підтвердження майстра";
-                const statusClass = isWorking ? "status-label status-confirmed" : "status-label";
-
                 container.innerHTML += `
-                    <div class="order-item">
-                        <span class="order-date">${date}</span>
-                        <div class="${statusClass}">${statusText}</div>
-                        <h3 class="order-title">${order.name || 'Замовлення на друк'}</h3>
-                        <div class="order-details">
-                            <p><strong>Матеріал:</strong> ${order.material || 'Не вказано'}</p>
-                            <p style="margin-top:10px; color:#999; font-style:italic;">
-                                ${order.description || 'Без опису'}
-                            </p>
+                    <div class="order-card">
+                        <div class="status-tag ${isWorking ? 'status-active' : 'status-waiting'}">
+                            ${isWorking ? 'В РОБОТІ' : 'ОЧІКУЄТЬСЯ ПІДТВЕРДЖЕННЯ'}
+                        </div>
+                        <div class="order-name">${data.name || 'Замовлення на друк'}</div>
+                        <div class="order-meta">Матеріал: ${data.material}</div>
+                        <div class="order-meta" style="margin-top:10px; font-style: italic; color: #666;">
+                            ${data.description || 'Без опису'}
                         </div>
                     </div>
                 `;
             });
         }, (error) => {
-            console.error("Error:", error);
-            // Якщо індекс ще не готовий, покажемо інструкцію
-            if (error.code === 'failed-precondition') {
-                container.innerHTML = "<p style='color:red;'>Потрібно створити індекс у Firebase (посилання в консолі F12).</p>";
-            }
+            console.error("Помилка Firestore:", error);
+            // Якщо бачиш цей текст на екрані - треба створити індекс (посилання в консолі F12)
+            document.getElementById('ordersContainer').innerHTML = "<p style='color:red;'>Помилка завантаження. Перевірте консоль браузера (F12).</p>";
         });
     }
-
-    document.getElementById('logoutBtn').onclick = () => {
-        signOut(auth).then(() => window.location.href = "index.html");
-    };
 </script>
-
 </body>
 </html>
