@@ -6,59 +6,68 @@
     <title>ADMIN PANEL — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        body { background-color: #000; color: #fff; font-family: sans-serif; }
         .admin-nav { background: #111; padding: 15px; display: flex; justify-content: center; gap: 30px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
-        .admin-nav button { background: none; border: none; color: #888; font-weight: bold; cursor: pointer; text-transform: uppercase; padding-bottom: 5px; }
+        .admin-nav button { background: none; border: none; color: #888; font-weight: bold; cursor: pointer; text-transform: uppercase; padding: 10px; }
         .admin-nav button.active { color: #f39c12; border-bottom: 2px solid #f39c12; }
+        
         .admin-section { display: none; padding: 40px 5%; }
         .admin-section.active { display: block; }
         
         .order-card { 
-            background: #0a0a0a; 
+            background: #0d0d0d; 
             border: 1px solid #333; 
             padding: 25px; 
             border-radius: 15px; 
             margin: 0 auto 20px; 
-            max-width: 800px; 
+            max-width: 700px; 
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
+        
+        /* КНОПКА СКАТУВАННЯ */
         .download-btn { 
             background: #27ae60; 
             color: white; 
-            padding: 12px 25px; 
+            padding: 12px 30px; 
             text-decoration: none; 
             border-radius: 8px; 
             display: inline-block; 
             margin-top: 15px; 
             font-weight: bold;
+            font-size: 16px;
             transition: 0.3s;
+            border: none;
         }
-        .download-btn:hover { background: #2ecc71; transform: translateY(-2px); }
-        .delete-btn { background: none; border: 1px solid #444; color: #666; padding: 5px 15px; border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 12px; }
+        .download-btn:hover { background: #2ecc71; transform: scale(1.05); }
+
+        .delete-btn { background: none; border: 1px solid #444; color: #666; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 20px; transition: 0.3s; }
         .delete-btn:hover { color: #e74c3c; border-color: #e74c3c; }
+        
+        h2 { color: #f39c12; }
+        strong { color: #f39c12; }
     </style>
 </head>
 <body>
 
-<header style="padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: #000;">
-    <div class="logo" style="color:#f39c12; font-weight:900;">ADMIN PANEL</div>
-    <button id="logoutBtn" class="btn" style="padding: 5px 15px; background: #222;">Вихід</button>
+<header style="padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: #111;">
+    <div class="logo" style="font-weight: 900; letter-spacing: 1px;">3D-PRINT <span style="color:#f39c12">ADMIN</span></div>
+    <button id="logoutBtn" class="btn" style="padding: 5px 15px;">Вихід</button>
 </header>
 
 <div class="admin-nav">
     <button onclick="showSect('orders')" id="btn-orders" class="active">Замовлення</button>
-    <button onclick="showSect('catalog')" id="btn-catalog">Керування фігурками</button>
+    <button onclick="showSect('catalog')" id="btn-catalog">Фігурки</button>
 </div>
 
 <section id="orders" class="admin-section active">
-    <h2 style="text-align:center; margin-bottom: 30px;">Нові замовлення з файлами</h2>
+    <h2 style="text-align:center; margin-bottom: 30px;">Нові запити на друк</h2>
     <div id="ordersList">
-        <p style="text-align:center; color:#555;">Завантаження замовлень...</p>
+        <p style="text-align:center; color:#555;">Оновлення списку...</p>
     </div>
 </section>
 
 <section id="catalog" class="admin-section">
-    <h2 style="text-align:center;">Товари в магазині</h2>
+    <h2 style="text-align:center;">Керування каталогом</h2>
     </section>
 
 <script type="module">
@@ -79,7 +88,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // Перемикання вкладок
     window.showSect = (id) => {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
@@ -87,47 +95,47 @@
         document.getElementById('btn-' + id).classList.add('active');
     };
 
-    // Відображення замовлень у реальному часі
+    // ВИСВІТЛЕННЯ ЗАМОВЛЕНЬ
     onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snapshot) => {
         const list = document.getElementById('ordersList');
         list.innerHTML = "";
         
         if (snapshot.empty) {
-            list.innerHTML = "<p style='text-align:center; color:#666;'>Наразі нових замовлень немає.</p>";
+            list.innerHTML = "<p style='text-align:center; color:#666;'>Замовлень поки немає.</p>";
             return;
         }
 
         snapshot.forEach(res => {
-            const o = res.data();
+            const data = res.data();
             const id = res.id;
-            const time = o.timestamp?.toDate().toLocaleString('uk-UA') || 'Дата невідома';
             
-            // Перевірка наявності файлу
-            const fileSection = o.fileUrl ? 
-                `<a href="${o.fileUrl}" target="_blank" class="download-btn">СКАЧАТИ STL ФАЙЛ</a>` : 
-                `<p style="color:#e74c3c; margin-top:15px;">Файл не було завантажено</p>`;
+            // Створюємо кнопку, якщо є посилання на файл
+            let downloadBtn = "";
+            if (data.fileUrl) {
+                downloadBtn = `<a href="${data.fileUrl}" target="_blank" class="download-btn">⬇ ЗАВАНТАЖИТИ STL</a>`;
+            } else {
+                downloadBtn = `<p style="color:#555; font-style:italic; margin-top:10px;">Файл не прикріплено</p>`;
+            }
 
             list.innerHTML += `
                 <div class="order-card">
-                    <div style="color:#f39c12; font-size:13px; margin-bottom:10px;">${time}</div>
-                    <h2 style="margin-bottom:15px;">Замовник: ${o.name || 'Анонім'}</h2>
-                    <p><strong>Контакт:</strong> <span style="color:#fff;">${o.contact || 'Не вказано'}</span></p>
-                    <p><strong>Матеріал:</strong> ${o.material || 'Не обрано'}</p>
-                    <p style="margin-top:10px; background:#1a1a1a; padding:10px; border-radius:8px;">
-                        <strong>Опис:</strong> ${o.description || 'Без опису'}
-                    </p>
-                    ${fileSection}
+                    <p style="font-size:12px; color:#555;">${data.timestamp?.toDate().toLocaleString() || ''}</p>
+                    <h3 style="margin:10px 0;">Замовник: ${data.name || 'Гість'}</h3>
+                    <p><strong>Контакт:</strong> ${data.contact || 'Немає'}</p>
+                    <p><strong>Матеріал:</strong> ${data.material || 'Не вказано'}</p>
+                    <div style="background:#1a1a1a; padding:15px; border-radius:10px; margin:15px 0; text-align:left;">
+                        <strong>Опис:</strong> ${data.description || 'Опис відсутній'}
+                    </div>
+                    ${downloadBtn}
                     <br>
-                    <button onclick="deleteOrder('${id}')" class="delete-btn">Видалити з бази</button>
+                    <button onclick="deleteOrder('${id}')" class="delete-btn">Видалити замовлення</button>
                 </div>
             `;
         });
     });
 
     window.deleteOrder = async (id) => {
-        if(confirm("Видалити це замовлення назавжди?")) {
-            await deleteDoc(doc(db, "orders", id));
-        }
+        if(confirm("Видалити замовлення?")) await deleteDoc(doc(db, "orders", id));
     };
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.href="login.html");
