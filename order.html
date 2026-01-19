@@ -3,153 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Замовити 3D-друк — 3D-PRINT STUDIO</title>
+    <title>Оформити замовлення — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Стилі для прогресу завантаження */
-        .progress-container { width: 100%; background: #222; margin: 15px 0; display: none; border-radius: 8px; overflow: hidden; height: 12px; border: 1px solid #444; }
-        .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #f39c12, #e67e22); transition: width 0.3s; }
-        #fileStatus { font-size: 14px; color: #f39c12; font-weight: bold; text-align: center; margin-top: 5px; }
-        input[type="file"] { background: #1a1a1a; border: 1px dashed #555; padding: 10px; cursor: pointer; width: 100%; color: #888; }
+        .order-form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #0d0d0d;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #222;
+        }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #f39c12; font-weight: bold; }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            background: #151515;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 8px;
+            outline: none;
+        }
+        input:focus { border-color: #f39c12; }
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #f39c12;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .submit-btn:hover { background: #e67e22; transform: translateY(-2px); }
+        .submit-btn:disabled { background: #555; cursor: not-allowed; }
+        .auth-notice {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo"><img src="log img/Логотип.jpg" alt="Logo"> 3D-PRINT STUDIO</div>
+    <div class="logo">3D-PRINT STUDIO</div>
     <nav>
-        <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
-        <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
-        <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
-        <a href="order.html" class="active" data-ua="Замовити" data-pl="Zamów">Замовити</a>
-        <a href="login.html" id="accountLink" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
-        <span class="lang" id="langToggle" style="cursor:pointer; margin-left: 10px;">UA | PL</span>
+        <a href="index.html">Головна</a>
+        <a href="account.html">Мій кабінет</a>
     </nav>
 </header>
 
-<section class="section">
-    <h1 class="section-title" data-ua="Замовлення 3D-друку" data-pl="Zamówienie druku 3D" style="text-align: center;">Замовлення 3D-друку</h1>
-
-    <div class="grid" style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
-        <div class="card" style="max-width: 550px; width: 100%;">
-            <div class="card-body">
-                <h3 data-ua="Дані для замовлення" data-pl="Dane zamówienia" style="text-align: center; color: #f39c12;">Дані для замовлення</h3>
-                
-                <form id="orderForm">
-                    <label data-ua="Ваше імʼя" data-pl="Twoje imię">Ваше імʼя</label>
-                    <input type="text" id="custName" placeholder="Імʼя" required>
-
-                    <label data-ua="Email або Telegram" data-pl="Email lub Telegram">Email або Telegram</label>
-                    <input type="text" id="custContact" placeholder="@username" required>
-
-                    <label data-ua="Матеріал" data-pl="Materiał">Матеріал</label>
-                    <select id="material">
-                        <option>PLA (Стандарт)</option>
-                        <option>PETG (Міцний)</option>
-                        <option>ABS / ASA</option>
-                        <option>TPU (Гнучкий)</option>
-                    </select>
-
-                    <label data-ua="Прикріпити STL файл" data-pl="Załącz plik STL">Прикріпити STL файл</label>
-                    <input type="file" id="fileInput" accept=".stl,.obj,.zip,.rar" required>
-                    
-                    <div class="progress-container" id="pContainer"><div class="progress-bar" id="pBar"></div></div>
-                    <div id="fileStatus"></div>
-
-                    <label data-ua="Опис замовлення" data-pl="Opis zamówienia" style="margin-top:15px; display:block;">Опис замовлення</label>
-                    <textarea id="orderDesc" placeholder="Колір, розміри, заповнення..." rows="4"></textarea>
-
-                    <button type="submit" id="submitBtn" class="btn" style="margin-top:20px; width:100%; font-weight: bold;" data-ua="Надіслати замовлення" data-pl="Wyślij zamówienie">
-                        Надіслати замовлення
-                    </button>
-                </form>
-            </div>
+<section class="order-section">
+    <div class="order-form-container">
+        <h2 style="text-align:center; margin-bottom:25px;">Нове замовлення</h2>
+        
+        <div id="authNotice" class="auth-notice">
+            Будь ласка, <a href="login.html" style="color:#ff4d4d; text-decoration:underline;">увійдіть в акаунт</a>, щоб зробити замовлення.
         </div>
+
+        <form id="orderForm">
+            <div class="form-group">
+                <label>Назва проекту / Деталі</label>
+                <input type="text" id="orderName" placeholder="Наприклад: Шестерня для авто" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Матеріал</label>
+                <select id="orderMaterial">
+                    <option value="PLA">PLA (Стандарт)</option>
+                    <option value="PETG">PETG (Міцний)</option>
+                    <option value="ABS">ABS (Термостійкий)</option>
+                    <option value="Nylon">Nylon (Зносостійкий)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Опис замовлення</label>
+                <textarea id="orderDesc" rows="5" placeholder="Вкажіть розміри, кількість та особливості..." required></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-btn">Відправити замовлення</button>
+        </form>
     </div>
 </section>
 
-<script src="lang.js"></script>
-
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
-    authDomain: "d-print-studio-25787.firebaseapp.com",
-    projectId: "d-print-studio-25787",
-    storageBucket: "d-print-studio-25787.firebasestorage.app",
-    messagingSenderId: "671010955757",
-    appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
-  };
+    const firebaseConfig = {
+        apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+        authDomain: "d-print-studio-25787.firebaseapp.com",
+        projectId: "d-print-studio-25787",
+        storageBucket: "d-print-studio-25787.firebasestorage.app",
+        messagingSenderId: "671010955757",
+        appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-  const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  onAuthStateChanged(auth, (user) => {
-    const link = document.getElementById('accountLink');
-    if (user && link) { link.href = "account.html"; link.innerText = "Мій Профіль"; }
-  });
+    let currentUser = null;
 
-  document.getElementById('orderForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const file = document.getElementById('fileInput').files[0];
-    const pBar = document.getElementById('pBar');
-    const pContainer = document.getElementById('pContainer');
-    const fileStatus = document.getElementById('fileStatus');
+    // Перевірка авторизації
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('authNotice').style.display = 'none';
+            document.getElementById('submitBtn').disabled = false;
+        } else {
+            document.getElementById('authNotice').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+        }
+    });
 
-    if (!file) { alert("Будь ласка, виберіть файл!"); return; }
+    // Відправка форми
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    btn.disabled = true;
-    btn.innerText = "Завантаження...";
-    pContainer.style.display = "block";
+        if (!currentUser) return;
 
-    try {
-        // 1. Завантаження файлу
-        const storageRef = ref(storage, 'orders/' + Date.now() + "_" + file.name);
-        const uploadTask = uploadBytesResumable(storageRef, file);
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerText = "Відправка...";
+        submitBtn.disabled = true;
 
-        const fileUrl = await new Promise((resolve, reject) => {
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    pBar.style.width = progress + "%";
-                    fileStatus.innerText = "Файл: " + Math.round(progress) + "%";
-                }, 
-                (error) => reject(error), 
-                () => getDownloadURL(uploadTask.snapshot.ref).then(resolve)
-            );
-        });
-
-        // 2. Запис у базу
-        await addDoc(collection(db, "orders"), {
-            name: document.getElementById('custName').value,
-            contact: document.getElementById('custContact').value,
-            material: document.getElementById('material').value,
+        const orderData = {
+            userId: currentUser.uid, // ПРИВ'ЯЗКА ЗАМОВЛЕННЯ ДО ЮЗЕРА
+            userEmail: currentUser.email,
+            name: document.getElementById('orderName').value,
+            material: document.getElementById('orderMaterial').value,
             description: document.getElementById('orderDesc').value,
-            fileUrl: fileUrl,
-            timestamp: new Date(),
-            userId: auth.currentUser ? auth.currentUser.uid : "guest"
-        });
+            status: "Новий", // Початковий статус
+            timestamp: serverTimestamp()
+        };
 
-        alert("Замовлення успішно прийнято!");
-        e.target.reset();
-        pContainer.style.display = "none";
-        fileStatus.innerText = "";
-        
-    } catch (error) {
-        alert("Помилка: " + error.message);
-        console.error(error);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "Надіслати замовлення";
-    }
-  };
+        try {
+            await addDoc(collection(db, "orders"), orderData);
+            alert("Замовлення успішно надіслано! Тепер ви можете бачити його в кабінеті.");
+            window.location.href = "account.html"; // Відправляємо юзера в кабінет
+        } catch (error) {
+            console.error("Помилка:", error);
+            alert("Сталася помилка при відправці. Спробуйте ще раз.");
+            submitBtn.innerText = "Відправити замовлення";
+            submitBtn.disabled = false;
+        }
+    });
 </script>
 
 </body>
