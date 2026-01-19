@@ -22,11 +22,11 @@
             font-weight: bold;
             text-transform: uppercase;
             background: #111;
-            color: #f39c12;
+            color: #f39c12; /* Колір для "Обробка" */
             border: 1px solid #f39c12;
             transition: 0.3s;
         }
-        /* Стиль для підтвердженого замовлення */
+        /* Стиль для статусу "В роботі" */
         .status-confirmed {
             color: #27ae60 !important;
             border-color: #27ae60 !important;
@@ -53,6 +53,7 @@
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
+            text-align: left;
         }
     </style>
 </head>
@@ -122,6 +123,7 @@
   });
 
   function loadUserOrders(uid) {
+    // Створюємо запит: шукаємо замовлення де userId співпадає з поточним користувачем
     const q = query(
         collection(db, "orders"), 
         where("userId", "==", uid),
@@ -139,9 +141,14 @@
 
       snapshot.forEach(doc => {
         const order = doc.data();
-        const date = order.timestamp ? order.timestamp.toDate().toLocaleDateString('uk-UA') : "...";
         
-        // Визначаємо стиль статусу
+        // Коректне форматування дати
+        let date = "...";
+        if (order.timestamp) {
+            date = order.timestamp.toDate().toLocaleDateString('uk-UA');
+        }
+        
+        // Визначаємо стиль статусу (В роботі / Обробка)
         const isConfirmed = order.status === "В роботі";
         const statusClass = isConfirmed ? "order-status status-confirmed" : "order-status";
         const statusText = isConfirmed ? "В роботі" : "Обробка";
@@ -155,11 +162,14 @@
             <h3 style="color:#f39c12; margin-bottom:10px;">${order.name || 'Замовлення на друк'}</h3>
             <p style="margin-bottom:5px;"><strong>Матеріал:</strong> ${order.material || 'Не вказано'}</p>
             <p style="font-size:14px; color:#aaa; line-height:1.4;">
-                ${order.description || 'Без опису'}
+                ${order.description || 'Опис відсутній'}
             </p>
           </div>
         `;
       });
+    }, (error) => {
+        console.error("Помилка завантаження замовлень: ", error);
+        document.getElementById('userOrders').innerHTML = "<p style='color:red; text-align:center;'>Помилка доступу до даних</p>";
     });
   }
 
