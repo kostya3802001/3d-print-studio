@@ -3,64 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN PANEL — 3D-PRINT STUDIO</title>
+    <title>Адмін-панель — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; }
-        .admin-nav { background: #111; padding: 15px; display: flex; justify-content: center; gap: 30px; border-bottom: 1px solid #333; position: sticky; top: 0; }
-        .admin-nav button { background: none; border: none; color: #888; font-weight: bold; cursor: pointer; text-transform: uppercase; padding: 10px; }
-        .admin-nav button.active { color: #f39c12; border-bottom: 2px solid #f39c12; }
-        .admin-section { display: none; padding: 40px 5%; }
-        .admin-section.active { display: block; }
-        
-        .order-card { 
-            background: #0d0d0d; 
-            border: 1px solid #333; 
-            padding: 25px; 
-            border-radius: 15px; 
-            margin: 0 auto 20px; 
-            max-width: 700px; 
-            text-align: center;
+        body { background: #050505; color: #fff; font-family: sans-serif; }
+        .admin-section { padding: 40px 5%; }
+        .order-card {
+            background: #111;
+            border: 1px solid #222;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .order-info h3 { color: #f39c12; margin-bottom: 5px; }
+        .order-info p { font-size: 14px; color: #ccc; }
+        .btn-work {
+            background: #27ae60;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
             transition: 0.3s;
         }
-        .download-btn { 
-            background: #27ae60; color: white; padding: 12px 25px; 
-            text-decoration: none; border-radius: 8px; display: inline-block; 
-            margin-top: 15px; font-weight: bold;
+        .btn-work:hover { background: #2ecc71; }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
         }
-        .confirm-btn {
-            background: #f39c12; color: #000; border: none; padding: 12px 25px;
-            border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px;
-        }
-        .status-badge { color: #27ae60; font-weight: bold; margin-top: 15px; font-size: 18px; }
-        .delete-btn { background: none; border: 1px solid #444; color: #666; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        .status-new { background: #f39c12; color: #000; }
+        .status-active { background: #27ae60; color: #fff; }
+        h2 { border-left: 4px solid #f39c12; padding-left: 15px; margin: 30px 0 20px; }
     </style>
 </head>
 <body>
 
-<header style="padding: 15px 5%; display: flex; justify-content: space-between; background: #111;">
-    <div style="font-weight: 900; color: #f39c12;">3D-PRINT ADMIN</div>
-    <button id="logoutBtn" class="btn">Вихід</button>
+<header>
+    <div class="logo">ADMIN PANEL · 3D-PRINT STUDIO</div>
+    <nav>
+        <a href="index.html">На сайт</a>
+        <button id="logoutBtn" style="background:none; color:red; border:1px solid red; cursor:pointer; padding:5px 10px;">Вихід</button>
+    </nav>
 </header>
 
-<div class="admin-nav">
-    <button onclick="showSect('orders')" id="btn-orders" class="active">Замовлення</button>
-    <button onclick="showSect('catalog')" id="btn-catalog">Фігурки</button>
-</div>
+<section class="admin-section">
+    <h1>Керування замовленнями</h1>
 
-<section id="orders" class="admin-section active">
-    <h2 style="text-align:center; margin-bottom: 30px;">Нові запити на друк</h2>
-    <div id="ordersList"></div>
-</section>
+    <h2>Нові замовлення (Очікують)</h2>
+    <div id="newOrders">Завантаження...</div>
 
-<section id="catalog" class="admin-section">
-    <h2 style="text-align:center;">Керування каталогом</h2>
+    <h2>В роботі</h2>
+    <div id="activeOrders">Завантаження...</div>
 </section>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
@@ -72,57 +78,81 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    window.showSect = (id) => {
-        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.getElementById('btn-' + id).classList.add('active');
-    };
-
-    onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snapshot) => {
-        const list = document.getElementById('ordersList');
-        list.innerHTML = "";
-        
-        snapshot.forEach(res => {
-            const data = res.data();
-            const id = res.id;
-
-            const downloadBtn = data.fileUrl ? `<a href="${data.fileUrl}" target="_blank" class="download-btn">⬇ ЗАВАНТАЖИТИ STL</a>` : "";
-            
-            // Кнопка підтвердження або статус
-            const statusAction = data.status === "В роботі" ? 
-                `<div class="status-badge">✅ В РОБОТІ</div>` : 
-                `<button onclick="confirmOrder('${id}')" class="confirm-btn">Взяти в роботу</button>`;
-
-            list.innerHTML += `
-                <div class="order-card" style="border-left: 5px solid ${data.status === 'В роботі' ? '#27ae60' : '#f39c12'}">
-                    <p style="font-size:12px; color:#555;">${data.timestamp?.toDate().toLocaleString() || ''}</p>
-                    <h3 style="margin:10px 0;">Замовник: ${data.name || 'Гість'}</h3>
-                    <p><strong>Контакт:</strong> ${data.contact}</p>
-                    <p><strong>Матеріал:</strong> ${data.material}</p>
-                    <div style="background:#1a1a1a; padding:10px; border-radius:8px; margin:10px 0;">${data.description || 'Опис відсутній'}</div>
-                    ${downloadBtn}
-                    <div>${statusAction}</div>
-                    <button onclick="deleteOrder('${id}')" class="delete-btn">Видалити замовлення</button>
-                </div>
-            `;
-        });
+    // Перевірка прав (тільки твоя пошта)
+    onAuthStateChanged(auth, (user) => {
+        if (!user || user.email !== "join.the.game.notik.fols@gmail.com") {
+            alert("Доступ заборонено!");
+            window.location.href = "login.html";
+        }
     });
 
-    window.confirmOrder = async (id) => {
-        if(confirm("Підтвердити замовлення? Клієнт побачить статус 'В роботі'.")) {
-            await updateDoc(doc(db, "orders", id), { status: "В роботі" });
+    // Завантаження замовлень
+    const q = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+        const newContainer = document.getElementById('newOrders');
+        const activeContainer = document.getElementById('activeOrders');
+        
+        newContainer.innerHTML = "";
+        activeContainer.innerHTML = "";
+
+        let hasNew = false;
+        let hasActive = false;
+
+        snapshot.forEach((orderDoc) => {
+            const order = orderDoc.data();
+            const id = orderDoc.id;
+            const date = order.timestamp ? order.timestamp.toDate().toLocaleString('uk-UA') : "...";
+
+            const cardHTML = `
+                <div class="order-card">
+                    <div class="order-info">
+                        <h3>${order.name || 'Без назви'}</h3>
+                        <p><strong>Клієнт:</strong> ${order.userId || 'Анонім'}</p>
+                        <p><strong>Матеріал:</strong> ${order.material || '-'}</p>
+                        <p><strong>Опис:</strong> ${order.description || '-'}</p>
+                        <p style="color:#555; font-size:11px;">${date}</p>
+                    </div>
+                    <div class="order-actions">
+                        ${order.status === "В роботі" 
+                            ? '<span class="status-badge status-active">У роботі</span>' 
+                            : `<button class="btn-work" onclick="updateStatus('${id}')">Взяти в роботу</button>`
+                        }
+                    </div>
+                </div>
+            `;
+
+            if (order.status === "В роботі") {
+                activeContainer.innerHTML += cardHTML;
+                hasActive = true;
+            } else {
+                newContainer.innerHTML += cardHTML;
+                hasNew = true;
+            }
+        });
+
+        if (!hasNew) newContainer.innerHTML = "<p>Нових замовлень немає</p>";
+        if (!hasActive) activeContainer.innerHTML = "<p>Активних замовлень немає</p>";
+    });
+
+    // Функція оновлення статусу
+    window.updateStatus = async (id) => {
+        const orderRef = doc(db, "orders", id);
+        try {
+            await updateDoc(orderRef, {
+                status: "В роботі"
+            });
+        } catch (error) {
+            console.error("Помилка:", error);
+            alert("Помилка при оновленні статусу");
         }
     };
 
-    window.deleteOrder = async (id) => {
-        if(confirm("Видалити?")) await deleteDoc(doc(db, "orders", id));
-    };
-
-    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.href="login.html");
+    document.getElementById('logoutBtn').onclick = () => signOut(auth);
 </script>
+
 </body>
 </html>
