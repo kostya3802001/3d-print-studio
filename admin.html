@@ -6,29 +6,75 @@
     <title>ADMIN PANEL — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .admin-nav { background: #111; padding: 10px 5%; display: flex; gap: 20px; border-bottom: 1px solid #333; position: sticky; top: 60px; z-index: 90; }
-        .admin-nav a { color: #f39c12; text-decoration: none; font-weight: bold; font-size: 14px; }
+        /* Стилі для вкладок */
+        .admin-nav { 
+            background: #111; 
+            padding: 15px 5%; 
+            display: flex; 
+            gap: 30px; 
+            border-bottom: 1px solid #333; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+        }
+        .admin-nav button {
+            background: none;
+            border: none;
+            color: #888;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .admin-nav button.active {
+            color: #f39c12;
+            border-bottom: 2px solid #f39c12;
+        }
+        
+        /* Сховати секції за замовчуванням */
+        .admin-section {
+            display: none;
+            padding: 40px 6%;
+        }
+        .admin-section.active {
+            display: block;
+        }
+
         .edit-btn { background: #3498db; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; flex: 1; margin-top: 10px;}
         .delete-btn { background: #e74c3c; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; flex: 1; margin-top: 10px;}
-        .form-container { max-width: 600px; margin: 0 auto 50px; border: 1px solid #f39c12; padding: 20px; border-radius: 15px; background: #0a0a0a; }
+        .form-container { max-width: 600px; margin: 0 auto 50px; border: 1px solid #f39c12; padding: 25px; border-radius: 15px; background: #0a0a0a; }
+        
+        .order-card {
+            background: #111;
+            border: 1px solid #222;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-<header>
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 5%;">
     <div class="logo">ADMIN PANEL</div>
-    <nav>
-        <a href="index.html">На сайт</a>
-        <button id="logoutBtn" class="btn" style="padding: 5px 15px; background: #333; color: #fff;">Вихід</button>
-    </nav>
+    <button id="logoutBtn" class="btn" style="padding: 8px 20px; background: #e74c3c; color: #fff;">Вихід</button>
 </header>
 
 <div class="admin-nav">
-    <a href="#orders-section">Замовлення</a>
-    <a href="#products-section">Керування фігурками</a>
+    <button onclick="showSection('orders')" id="btn-orders">Замовлення</button>
+    <button onclick="showSection('catalog')" id="btn-catalog" class="active">Керування фігурками</button>
 </div>
 
-<section class="section" id="products-section">
+<section id="orders" class="admin-section">
+    <h2 class="section-title">Нові замовлення</h2>
+    <div id="ordersList">
+        <p style="text-align: center; color: #666;">Завантаження замовлень...</p>
+    </div>
+</section>
+
+<section id="catalog" class="admin-section active">
     <h2 class="section-title">Товари в каталозі</h2>
     
     <div class="form-container">
@@ -66,8 +112,21 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Додавання або оновлення
-    document.getElementById('productForm').onsubmit = async (e) => {
+    // Функція перемикання вкладок
+    window.showSection = (sectionId) => {
+        // Ховаємо всі секції
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        // Деактивуємо всі кнопки
+        document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
+        
+        // Показуємо потрібну
+        document.getElementById(sectionId).classList.add('active');
+        document.getElementById('btn-' + sectionId).classList.add('active');
+    };
+
+    // --- РОБОТА З ТОВАРАМИ ---
+    const productForm = document.getElementById('productForm');
+    productForm.onsubmit = async (e) => {
         e.preventDefault();
         const id = document.getElementById('editingId').value;
         const data = {
@@ -80,15 +139,14 @@
 
         if (id) {
             await updateDoc(doc(db, "products", id), data);
-            alert("Оновлено!");
+            alert("Товар оновлено!");
         } else {
             await addDoc(collection(db, "products"), data);
-            alert("Додано!");
+            alert("Товар додано в базу!");
         }
         resetForm();
     };
 
-    // Завантаження списку для адміна
     onSnapshot(query(collection(db, "products"), orderBy("timestamp", "desc")), (snapshot) => {
         const list = document.getElementById('adminProductsList');
         list.innerHTML = "";
@@ -97,40 +155,62 @@
             const id = productDoc.id;
             list.innerHTML += `
                 <div class="card">
-                    <img src="${p.img}" style="height:150px; object-fit:cover; background:#fff;">
+                    <img src="${p.img}" style="height:150px; object-fit:contain; background:#fff; padding:10px;">
                     <div class="card-body">
                         <h4>${p.name}</h4>
-                        <p>${p.price}</p>
-                        <button class="edit-btn" onclick="window.startEdit('${id}', '${p.name}', '${p.price}', '${p.img}', '${p.desc}')">Редагувати</button>
-                        <button class="delete-btn" onclick="window.deleteItem('${id}')">Видалити</button>
+                        <p style="color:#f39c12">${p.price}</p>
+                        <div style="display:flex; gap:10px;">
+                            <button class="edit-btn" onclick="window.startEdit('${id}', '${p.name}', '${p.price}', '${p.img}', '${p.desc}')">Ред.</button>
+                            <button class="delete-btn" onclick="window.deleteItem('${id}')">Видалити</button>
+                        </div>
                     </div>
                 </div>`;
         });
     });
 
+    // --- РОБОТА З ЗАМОВЛЕННЯМИ ---
+    onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snapshot) => {
+        const list = document.getElementById('ordersList');
+        list.innerHTML = "";
+        if(snapshot.empty) list.innerHTML = "<p style='text-align:center;'>Замовлень поки немає</p>";
+        
+        snapshot.forEach(orderDoc => {
+            const o = orderDoc.data();
+            list.innerHTML += `
+                <div class="order-card">
+                    <p style="color:#f39c12; font-size:12px;">${o.timestamp?.toDate().toLocaleString() || ''}</p>
+                    <h3 style="margin:5px 0;">${o.type} - ${o.material}</h3>
+                    <p><strong>Опис:</strong> ${o.description}</p>
+                    <p><strong>Користувач ID:</strong> ${o.userId}</p>
+                </div>`;
+        });
+    });
+
+    // Глобальні функції для кнопок у рядках
     window.startEdit = (id, name, price, img, desc) => {
         document.getElementById('editingId').value = id;
         document.getElementById('prodName').value = name;
         document.getElementById('prodPrice').value = price;
         document.getElementById('prodImg').value = img;
         document.getElementById('prodDesc').value = desc;
-        document.getElementById('formTitle').innerText = "Редагування товару";
+        document.getElementById('formTitle').innerText = "Редагування фігурки";
         document.getElementById('submitBtn').innerText = "Зберегти зміни";
         document.getElementById('cancelEdit').style.display = "block";
         window.scrollTo(0, 0);
     };
 
     window.deleteItem = async (id) => {
-        if(confirm("Видалити?")) await deleteDoc(doc(db, "products", id));
+        if(confirm("Видалити цей товар з сайту?")) await deleteDoc(doc(db, "products", id));
     };
 
     function resetForm() {
-        document.getElementById('productForm').reset();
+        productForm.reset();
         document.getElementById('editingId').value = "";
         document.getElementById('formTitle').innerText = "Додати нову фігурку";
         document.getElementById('submitBtn').innerText = "Опублікувати";
         document.getElementById('cancelEdit').style.display = "none";
     }
+
     document.getElementById('cancelEdit').onclick = resetForm;
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.href="login.html");
 </script>
