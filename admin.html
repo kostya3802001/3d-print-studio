@@ -8,11 +8,9 @@
     <style>
         .admin-nav { background: #111; padding: 10px 5%; display: flex; gap: 20px; border-bottom: 1px solid #333; position: sticky; top: 60px; z-index: 90; }
         .admin-nav a { color: #f39c12; text-decoration: none; font-weight: bold; font-size: 14px; }
-        .status-badge { padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 900; background: #f39c12; color: #000; }
-        .action-btns { display: flex; gap: 10px; margin-top: 15px; }
-        .edit-btn { background: #3498db; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; flex: 1; }
-        .delete-btn { background: #e74c3c; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; flex: 1; }
-        #formTitle { color: #f39c12; margin-bottom: 15px; }
+        .edit-btn { background: #3498db; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; flex: 1; margin-top: 10px;}
+        .delete-btn { background: #e74c3c; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; flex: 1; margin-top: 10px;}
+        .form-container { max-width: 600px; margin: 0 auto 50px; border: 1px solid #f39c12; padding: 20px; border-radius: 15px; background: #0a0a0a; }
     </style>
 </head>
 <body>
@@ -27,40 +25,23 @@
 
 <div class="admin-nav">
     <a href="#orders-section">Замовлення</a>
-    <a href="#products-section">Керування товарами</a>
+    <a href="#products-section">Керування фігурками</a>
 </div>
 
-<section class="section" id="orders-section">
-    <h2 class="section-title">Вхідні замовлення</h2>
-    <div class="grid" id="ordersList">
-        <p>Завантаження замовлень...</p>
-    </div>
-</section>
-
-<hr style="border: 0; border-top: 1px solid #222; margin: 0 6%;">
-
 <section class="section" id="products-section">
-    <h2 class="section-title">Товари в наявності</h2>
+    <h2 class="section-title">Товари в каталозі</h2>
     
-    <div class="card" style="max-width: 600px; margin: 0 auto 50px; border: 1px solid #f39c12;">
-        <div class="card-body">
-            <h3 id="formTitle">Додати новий товар</h3>
-            <form id="productForm">
-                <input type="hidden" id="editingId"> <label>Код товару</label>
-                <input type="text" id="prodCode" placeholder="FIG-001" required>
-                <label>Назва</label>
-                <input type="text" id="prodName" placeholder="Назва моделі" required>
-                <label>Ціна</label>
-                <input type="text" id="prodPrice" placeholder="450 грн" required>
-                <label>Фото (URL)</label>
-                <input type="text" id="prodImg" placeholder="https://example.com/photo.jpg" required>
-                <label>Опис</label>
-                <textarea id="prodDesc" placeholder="Опис товару" rows="3"></textarea>
-                
-                <button type="submit" id="submitBtn" class="btn" style="width: 100%; margin-top: 10px;">Опублікувати</button>
-                <button type="button" id="cancelEdit" class="btn" style="width: 100%; margin-top: 10px; background:#444; display:none;">Скасувати редагування</button>
-            </form>
-        </div>
+    <div class="form-container">
+        <h3 id="formTitle" style="color: #f39c12; margin-bottom: 15px;">Додати нову фігурку</h3>
+        <form id="productForm">
+            <input type="hidden" id="editingId">
+            <input type="text" id="prodName" placeholder="Назва фігурки" required>
+            <input type="text" id="prodPrice" placeholder="Ціна (напр. від 220 грн)" required>
+            <input type="text" id="prodImg" placeholder="URL картинки (посилання)" required>
+            <textarea id="prodDesc" placeholder="Опис (характеристики)" rows="3"></textarea>
+            <button type="submit" id="submitBtn" class="btn" style="width: 100%; margin-top: 10px;">Опублікувати</button>
+            <button type="button" id="cancelEdit" class="btn" style="width: 100%; margin-top: 10px; background:#444; display:none;">Скасувати</button>
+        </form>
     </div>
 
     <div class="grid" id="adminProductsList">
@@ -85,25 +66,11 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Перевірка входу
-    onAuthStateChanged(auth, (user) => {
-        if (!user || user.email !== "join.the.game.notik.fols@gmail.com") {
-            window.location.href = "login.html";
-        }
-    });
-
-    // --- ЛОГІКА ТОВАРІВ ---
-    const productForm = document.getElementById('productForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const formTitle = document.getElementById('formTitle');
-    const cancelBtn = document.getElementById('cancelEdit');
-
-    // Додавання або Оновлення
-    productForm.onsubmit = async (e) => {
+    // Додавання або оновлення
+    document.getElementById('productForm').onsubmit = async (e) => {
         e.preventDefault();
         const id = document.getElementById('editingId').value;
-        const productData = {
-            code: document.getElementById('prodCode').value,
+        const data = {
             name: document.getElementById('prodName').value,
             price: document.getElementById('prodPrice').value,
             img: document.getElementById('prodImg').value,
@@ -111,21 +78,17 @@
             timestamp: new Date()
         };
 
-        try {
-            if (id) {
-                // Режим редагування
-                await updateDoc(doc(db, "products", id), productData);
-                alert("Товар оновлено!");
-            } else {
-                // Режим додавання
-                await addDoc(collection(db, "products"), productData);
-                alert("Товар додано!");
-            }
-            resetForm();
-        } catch (err) { alert("Помилка: " + err.message); }
+        if (id) {
+            await updateDoc(doc(db, "products", id), data);
+            alert("Оновлено!");
+        } else {
+            await addDoc(collection(db, "products"), data);
+            alert("Додано!");
+        }
+        resetForm();
     };
 
-    // Відображення списку товарів
+    // Завантаження списку для адміна
     onSnapshot(query(collection(db, "products"), orderBy("timestamp", "desc")), (snapshot) => {
         const list = document.getElementById('adminProductsList');
         list.innerHTML = "";
@@ -134,75 +97,42 @@
             const id = productDoc.id;
             list.innerHTML += `
                 <div class="card">
-                    <img src="${p.img}" style="height:180px; object-fit:contain; background:#fff; padding:10px;">
+                    <img src="${p.img}" style="height:150px; object-fit:cover; background:#fff;">
                     <div class="card-body">
                         <h4>${p.name}</h4>
-                        <p><strong>Ціна:</strong> ${p.price}</p>
-                        <p><strong>Код:</strong> ${p.code}</p>
-                        <div class="action-btns">
-                            <button class="edit-btn" onclick="window.setupEdit('${id}', '${p.code}', '${p.name}', '${p.price}', '${p.img}', '${p.desc.replace(/'/g, "\\'")}')">Редагувати</button>
-                            <button class="delete-btn" onclick="window.removeProduct('${id}')">Видалити</button>
-                        </div>
+                        <p>${p.price}</p>
+                        <button class="edit-btn" onclick="window.startEdit('${id}', '${p.name}', '${p.price}', '${p.img}', '${p.desc}')">Редагувати</button>
+                        <button class="delete-btn" onclick="window.deleteItem('${id}')">Видалити</button>
                     </div>
-                </div>
-            `;
+                </div>`;
         });
     });
 
-    // Функція підготовки до редагування
-    window.setupEdit = (id, code, name, price, img, desc) => {
+    window.startEdit = (id, name, price, img, desc) => {
         document.getElementById('editingId').value = id;
-        document.getElementById('prodCode').value = code;
         document.getElementById('prodName').value = name;
         document.getElementById('prodPrice').value = price;
         document.getElementById('prodImg').value = img;
         document.getElementById('prodDesc').value = desc;
+        document.getElementById('formTitle').innerText = "Редагування товару";
+        document.getElementById('submitBtn').innerText = "Зберегти зміни";
+        document.getElementById('cancelEdit').style.display = "block";
+        window.scrollTo(0, 0);
+    };
 
-        formTitle.innerText = "Редагувати товар";
-        submitBtn.innerText = "Зберегти зміни";
-        cancelBtn.style.display = "block";
-        window.scrollTo({top: document.getElementById('products-section').offsetTop, behavior: 'smooth'});
+    window.deleteItem = async (id) => {
+        if(confirm("Видалити?")) await deleteDoc(doc(db, "products", id));
     };
 
     function resetForm() {
-        productForm.reset();
+        document.getElementById('productForm').reset();
         document.getElementById('editingId').value = "";
-        formTitle.innerText = "Додати новий товар";
-        submitBtn.innerText = "Опублікувати";
-        cancelBtn.style.display = "none";
+        document.getElementById('formTitle').innerText = "Додати нову фігурку";
+        document.getElementById('submitBtn').innerText = "Опублікувати";
+        document.getElementById('cancelEdit').style.display = "none";
     }
-
-    cancelBtn.onclick = resetForm;
-
-    window.removeProduct = async (id) => {
-        if(confirm("Видалити цей товар безповоротно?")) {
-            await deleteDoc(doc(db, "products", id));
-        }
-    };
-
-    // Вихід
-    document.getElementById('logoutBtn').onclick = () => signOut(auth);
-
-    // Відображення замовлень (без змін)
-    onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snapshot) => {
-        const list = document.getElementById('ordersList');
-        list.innerHTML = "";
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            list.innerHTML += `
-                <div class="card">
-                    <div class="card-body">
-                        <span class="status-badge">${data.status || 'Нове'}</span>
-                        <h3 style="margin:10px 0;">${data.name}</h3>
-                        <p><strong>Контакт:</strong> ${data.contact}</p>
-                        <p><strong>Деталі:</strong> ${data.type} | ${data.material}</p>
-                        <p style="font-size:12px; color:#777; margin-top:10px;">${data.description}</p>
-                    </div>
-                </div>
-            `;
-        });
-    });
+    document.getElementById('cancelEdit').onclick = resetForm;
+    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.href="login.html");
 </script>
-
 </body>
 </html>
