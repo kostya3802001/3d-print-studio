@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-ua="Замовити друк — 3D-PRINT STUDIO" data-pl="Zamów druk — 3D-PRINT STUDIO">Замовити друк — 3D-PRINT STUDIO</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="log img/Логотип.jpg" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+        3D-PRINT STUDIO
+    </div>
+    <nav>
+        <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
+        <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
+        <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
+        <a href="order.html" data-ua="Замовити" data-pl="Zamów">Замовити</a>
+        <a href="login.html" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
+        <span class="lang" style="cursor:pointer">UA | PL</span>
+    </nav>
+</header>
+
+<section class="section">
+    <h2 class="section-title" data-ua="Оформлення замовлення" data-pl="Składanie zamówienia">Оформлення замовлення</h2>
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-body">
+            <form id="orderForm">
+                <label data-ua="Ваше ім'я" data-pl="Twoje imię">Ваше ім'я</label>
+                <input type="text" id="name" placeholder="Введіть ім'я" required>
+
+                <label data-ua="Телефон / Telegram" data-pl="Telefon / Telegram">Телефон / Telegram</label>
+                <input type="text" id="contact" placeholder="+380... або @username" required>
+
+                <label data-ua="Завантажити STL файл" data-pl="Prześlij plik STL">Завантажити STL файл</label>
+                <input type="file" id="stlFile" accept=".stl,.obj,.zip" required>
+                
+                <div id="uploadStatus" style="display:none; margin: 10px 0; font-size: 0.9em; color: #f39c12;">
+                    Завантаження: <span id="percent">0</span>%
+                </div>
+
+                <label data-ua="Коментар (колір, матеріал)" data-pl="Komentarz">Коментар</label>
+                <textarea id="details" rows="4" placeholder="Наприклад: колір чорний, заповнення 20%"></textarea>
+
+                <button type="submit" id="submitBtn" class="btn" style="width: 100%; margin-top: 20px;" data-ua="Надіслати замовлення" data-pl="Wyślij zamówienie">Надіслати замовлення</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <span data-ua="© 2026 3D-PRINT STUDIO" data-pl="© 2026 3D-PRINT STUDIO">© 2026 3D-PRINT STUDIO</span>
+</footer>
+
+<script src="lang.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+    authDomain: "d-print-studio-25787.firebaseapp.com",
+    projectId: "d-print-studio-25787",
+    storageBucket: "d-print-studio-25787.firebasestorage.app",
+    messagingSenderId: "671010955757",
+    appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const auth = getAuth(app);
+
+  const orderForm = document.getElementById('orderForm');
+  
+  orderForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const file = document.getElementById('stlFile').files[0];
+    const btn = document.getElementById('submitBtn');
+    const statusDiv = document.getElementById('uploadStatus');
+    const percentText = document.getElementById('percent');
+
+    if (!file) return;
+
+    btn.disabled = true;
+    statusDiv.style.display = 'block';
+
+    // 1. Створюємо посилання у Storage
+    const storageRef = ref(storage, 'orders/' + Date.now() + '_' + file.name);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        percentText.innerText = Math.round(progress);
+      }, 
+      (error) => { alert("Помилка завантаження: " + error.message); }, 
+      async () => {
+        // 2. Отримуємо посилання після завершення
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        
+        // 3. Зберігаємо замовлення в базу
+        await addDoc(collection(db, "orders"), {
+          uid: auth.currentUser ? auth.currentUser.uid : "guest",
+          email: auth.currentUser ? auth.currentUser.email : "guest",
+          name: document.getElementById('name').value,
+          contact: document.getElementById('contact').value,
+          details: document.getElementById('details').value,
+          fileUrl: downloadURL,
+          fileName: file.name,
+          status: "Чекає підтвердження",
+          timestamp: new Date()
+        });
+
+        alert("Замовлення успішно відправлено!");
+        orderForm.reset();
+        statusDiv.style.display = 'none';
+        btn.disabled = false;
+      }
+    );
+  });
+</script>
+
+</body>
+</html>
