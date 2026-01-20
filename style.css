@@ -14,7 +14,7 @@ header {
     align-items: center;
     padding: 10px 5%;
     background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(12px); /* Ефект розмиття фону */
+    backdrop-filter: blur(12px); /* Ефект розмиття фону за шапкою */
     border-bottom: 1px solid rgba(243, 156, 18, 0.2);
     position: sticky;
     top: 0;
@@ -31,7 +31,7 @@ header {
 }
 
 .logo img {
-    height: 60px; /* Збільшений логотип */
+    height: 60px; /* Великий логотип */
     margin-right: 15px;
     border-radius: 8px;
     transition: 0.3s;
@@ -92,7 +92,8 @@ nav a:hover {
     margin: 0 auto;
 }
 
-.cta {
+/* Основна помаранчева кнопка */
+.cta, .main-btn {
     display: inline-block;
     margin-top: 35px;
     padding: 16px 45px;
@@ -101,17 +102,20 @@ nav a:hover {
     text-decoration: none;
     font-weight: bold;
     border-radius: 10px;
+    border: none;
     box-shadow: 0 10px 20px rgba(243, 156, 18, 0.2);
     transition: 0.3s;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-.cta:hover {
+.cta:hover, .main-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 15px 25px rgba(243, 156, 18, 0.3);
 }
 
-/* Скляні картки (Glassmorphism) */
-.card, .auth-container {
+/* Скляні картки та контейнери (Glassmorphism) */
+.card, .auth-card, .auth-container {
     background: rgba(20, 20, 20, 0.6);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -126,40 +130,75 @@ nav a:hover {
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-/* Кнопка Google */
-.google-btn {
+/* Поля вводу для форм */
+input {
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background: #fff;
-    color: #000;
-    border: none;
     padding: 12px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #333;
     border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 20px;
+    color: #fff;
+    box-sizing: border-box;
+    outline: none;
     transition: 0.3s;
 }
 
-.google-btn img {
-    height: 20px;
+input:focus {
+    border-color: #f39c12;
+    background: rgba(255, 255, 255, 0.1);
 }
 
-.google-btn:hover {
-    background: #f1f1f1;
+/* Перемикач входу/реєстрації */
+.switch-auth {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #888;
+}
+
+.switch-auth a {
+    color: #f39c12;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Секції */
+.section {
+    padding: 80px 10%;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+/* Футер */
+footer {
+    padding: 40px;
+    text-align: center;
+    background-color: #000;
+    border-top: 1px solid #222;
+    color: #555;
 }
 
 /* --- МОБІЛЬНА ВЕРСІЯ --- */
 @media (max-width: 768px) {
     header {
         padding: 15px 5%;
+        flex-direction: column; /* Для мобілок логотип і меню в стовпчик */
+        gap: 10px;
     }
 
     .logo img {
         height: 50px;
+    }
+
+    nav a {
+        margin-left: 10px;
+        font-size: 13px;
     }
 
     .hero h1 {
