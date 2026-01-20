@@ -6,31 +6,29 @@
     <title>Фігурки — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Стилі для повного центрування заголовка та контенту */
         .section-header {
             display: flex;
             flex-direction: column;
-            align-items: center; /* Центрує елементи горизонтально */
-            text-align: center;  /* Центрує текст всередині елементів */
-            margin-bottom: 60px;
+            align-items: center; 
+            text-align: center;  
+            margin-bottom: 40px;
             width: 100%;
+            padding: 0 15px;
         }
 
         .section-header h1 {
-            font-size: 42px;
+            font-size: clamp(28px, 8vw, 42px); /* Адаптивний розмір шрифту */
             font-weight: 900;
             margin-bottom: 15px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
-        .section-header h1 span {
-            color: #f39c12;
-        }
+        .section-header h1 span { color: #f39c12; }
 
         .section-header p {
             color: #9a9a9a;
-            font-size: 18px;
+            font-size: clamp(14px, 4vw, 18px);
             max-width: 700px;
             line-height: 1.6;
         }
@@ -38,23 +36,22 @@
         /* Контейнер для товарів */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            justify-items: center; /* Центрує картки в сітці */
-            align-items: start;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 0 5%;
         }
 
-        /* Центрування повідомлення про порожній каталог */
         .empty-catalog {
             grid-column: 1 / -1;
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
+            color: #666;
         }
-
-        .empty-catalog p {
-            color: #555;
-            font-size: 20px;
-            font-style: italic;
+        
+        /* Виправлення відступів для мобілок */
+        @media (max-width: 600px) {
+            .section { padding: 30px 10px; }
+            .grid { gap: 15px; }
         }
     </style>
 </head>
@@ -63,15 +60,14 @@
 <header>
     <div class="logo">
         <img src="log img/Логотип.jpg" alt="Logo">
-        3D-PRINT STUDIO
+        <span>3D-PRINT STUDIO</span>
     </div>
     <nav>
         <a href="index.html">Головна</a>
-        <a href="figures.html" class="active" style="color: #f39c12;">Фігурки</a>
+        <a href="figures.html" style="color: #f39c12;">Фігурки</a>
         <a href="parts.html">Деталі</a>
         <a href="order.html">Замовити</a>
         <a href="login.html" id="accountLink">Кабінет</a>
-        <span class="lang" id="langToggle" style="cursor:pointer; margin-left: 15px;">UA | PL</span>
     </nav>
 </header>
 
@@ -98,7 +94,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
@@ -113,14 +109,16 @@
     const db = getFirestore(app);
     const productsContainer = document.getElementById('publicProductsList');
 
-    // Отримання товарів в реальному часі
-    onSnapshot(query(collection(db, "products"), orderBy("timestamp", "desc")), (snapshot) => {
+    // Отримання товарів КАТЕГОРІЇ "figures"
+    const q = query(collection(db, "catalog"), where("category", "==", "figures"));
+
+    onSnapshot(q, (snapshot) => {
         productsContainer.innerHTML = "";
         
         if (snapshot.empty) {
             productsContainer.innerHTML = `
                 <div class="empty-catalog">
-                    <p data-ua="Наразі каталог порожній. Зайдіть пізніше!" data-pl="Katalog jest obecnie pusty. Zapraszamy пізніше!">Наразі каталог порожній. Зайдіть пізніше!</p>
+                    <p>Наразі фігурок немає в наявності. Зайдіть пізніше!</p>
                 </div>`;
             return;
         }
