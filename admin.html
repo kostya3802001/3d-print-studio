@@ -16,33 +16,38 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- ПЕРЕВІРКА ДОСТУПУ ---
     const ADMIN_EMAIL = "join.the.game.notik.fols@gmail.com";
     const adminContainer = document.querySelector('.admin-container');
 
-    // Спочатку приховаємо контент, поки не пройде перевірка
-    adminContainer.style.display = "none";
+    // Приховуємо все до перевірки
+    adminContainer.style.opacity = "0";
 
     onAuthStateChanged(auth, (user) => {
-        if (user && user.email === ADMIN_EMAIL) {
-            // Якщо це ви — показуємо панель
-            adminContainer.style.display = "flex";
-            initAdminPanel(); 
+        if (user) {
+            console.log("Увійшов користувач:", user.email);
+            if (user.email === ADMIN_EMAIL) {
+                console.log("Доступ дозволено!");
+                adminContainer.style.display = "flex";
+                adminContainer.style.opacity = "1";
+                initAdminPanel();
+            } else {
+                console.error("Доступ заборонено: не той email");
+                alert("У вас немає прав доступу до цієї сторінки.");
+                window.location.href = "index.html"; 
+            }
         } else {
-            // Якщо хтось інший — викидаємо на сторінку входу
-            alert("Доступ заборонено! Ви не є адміністратором.");
-            window.location.href = "login.html"; // Вкажіть шлях до вашої сторінки логіну
+            console.log("Користувач не авторизований");
+            window.location.href = "login.html"; 
         }
     });
 
-    // Обернемо всю вашу логіку у функцію, яка запускається тільки для адміна
     function initAdminPanel() {
-        // Логіка акордеона
+        // Логіка акордеона (виправлена)
         document.querySelectorAll(".collapsible").forEach(button => {
             button.onclick = function() {
                 this.classList.toggle("active-tab");
-                var content = this.nextElementSibling;
-                if (content.style.maxHeight) {
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight && content.style.maxHeight !== "0px") {
                     content.style.maxHeight = null;
                 } else {
                     content.style.maxHeight = content.scrollHeight + "px";
@@ -50,6 +55,7 @@
             };
         });
 
+        // Елементи форми
         const nameInp = document.getElementById('itemName');
         const priceInp = document.getElementById('itemPrice');
         const catInp = document.getElementById('itemCategory');
@@ -57,67 +63,73 @@
         const imgInp = document.getElementById('itemImg');
         const editIdInp = document.getElementById('editId');
 
-        // Відображення товарів
+        // Каталог
         onSnapshot(collection(db, "catalog"), (snap) => {
             const list = document.getElementById('catalogList');
             list.innerHTML = "";
             snap.forEach(d => {
                 const i = d.data();
-                list.innerHTML += `
-                    <div class="item-card">
-                        <div><b>${i.name}</b> (${i.price} грн)</div>
-                        <div class="btn-group">
-                            <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')">Ред.</button>
-                            <button class="btn-delete" onclick="deleteItem('${d.id}')">Вид.</button>
-                        </div>
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                div.innerHTML = `
+                    <div><b>${i.name}</b> (${i.price} грн)</div>
+                    <div class="btn-group">
+                        <button class="btn-edit" data-id="${d.id}">Ред.</button>
+                        <button class="btn-delete" data-id="${d.id}">Вид.</button>
                     </div>`;
+                
+                div.querySelector('.btn-edit').onclick = () => startEdit(d.id, i.name, i.price, i.category, i.desc, i.img);
+                div.querySelector('.btn-delete').onclick = () => deleteItem(d.id);
+                list.appendChild(div);
             });
         });
 
-        // Відображення замовлень
+        // Замовлення
         onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
             const boxNew = document.getElementById('listNew');
             const boxActive = document.getElementById('listActive');
             boxNew.innerHTML = ""; boxActive.innerHTML = "";
+
             snap.forEach(d => {
                 const o = d.data();
                 if (o.archivedByAdmin) return;
                 const isWorking = o.status === "В роботі";
                 const fileLink = o.fileUrl || o.fileURL || o.file;
-                const downloadBtn = fileLink ? `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : `<span style="color:#444; font-size:11px;">Немає файлу</span>`;
-                const tgClean = o.telegram ? o.telegram.replace('@', '').trim() : '';
-                const tgAction = `https://t.me/${tgClean}`;
-
-                const card = `
-                    <div class="order-card">
-                        <div>
-                            <b style="color:#f39c12;">${o.name || 'Замовлення'}</b><br>
-                            <a href="${tgAction}" target="_blank" class="tg-link">✈️ TG: ${o.telegram || 'Не вказано'}</a>
-                            <small>${o.material || ''} | ${o.userEmail || ''}</small>
-                        </div>
-                        <div class="btn-group">
-                            ${downloadBtn} 
-                            <button class="btn-chat" onclick="openChat('${o.userId}', '${o.name}')">ЧАТ</button>
-                            ${!isWorking ? `<button class="btn-action" onclick="updOrder('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '👌'}
-                            <button class="btn-delete" style="background:#555" onclick="archiveOrder('${d.id}')">АРХІВ</button>
-                        </div>
+                
+                const card = document.createElement('div');
+                card.className = 'order-card';
+                card.innerHTML = `
+                    <div>
+                        <b style="color:#f39c12;">${o.name || 'Замовлення'}</b><br>
+                        <a href="https://t.me/${o.telegram?.replace('@', '')}" target="_blank" class="tg-link">✈️ TG: ${o.telegram || 'Ні'}</a>
+                        <small>${o.material || ''}</small>
+                    </div>
+                    <div class="btn-group">
+                        ${fileLink ? `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : ''}
+                        <button class="btn-chat">ЧАТ</button>
+                        ${!isWorking ? `<button class="btn-accept btn-action">ПРИЙНЯТИ</button>` : '👌'}
+                        <button class="btn-archive btn-delete" style="background:#555">АРХІВ</button>
                     </div>`;
-                if (isWorking) boxActive.innerHTML += card;
-                else boxNew.innerHTML += card;
+
+                card.querySelector('.btn-chat').onclick = () => alert("Чат з: " + o.userId);
+                if (!isWorking) card.querySelector('.btn-accept').onclick = () => updateDoc(doc(db, "orders", d.id), { status: 'В роботі' });
+                card.querySelector('.btn-archive').onclick = () => updateDoc(doc(db, "orders", d.id), { archivedByAdmin: true });
+
+                if (isWorking) boxActive.appendChild(card);
+                else boxNew.appendChild(card);
             });
         });
 
-        // Глобальні функції
-        window.startEdit = (id, n, p, c, d, i) => {
+        function startEdit(id, n, p, c, d, i) {
             editIdInp.value = id; nameInp.value = n; priceInp.value = p; catInp.value = c; descInp.value = d; imgInp.value = i;
             document.getElementById('formTitle').innerText = "Редагування";
             document.getElementById('cancelEditBtn').style.display = "block";
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
+        }
 
-        window.updOrder = async (id, s) => { await updateDoc(doc(db, "orders", id), { status: s }); };
-        window.archiveOrder = async (id) => { await updateDoc(doc(db, "orders", id), { archivedByAdmin: true }); };
-        window.deleteItem = async (id) => { if(confirm("Видалити товар?")) await deleteDoc(doc(db, "catalog", id)); };
+        async function deleteItem(id) {
+            if(confirm("Видалити?")) await deleteDoc(doc(db, "catalog", id));
+        }
 
         document.getElementById('saveItemBtn').onclick = async () => {
             const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
@@ -133,5 +145,4 @@
         }
         document.getElementById('cancelEditBtn').onclick = resetForm;
     }
-                </script>
-                
+</script>
