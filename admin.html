@@ -9,18 +9,17 @@
         body { background-color: #000; margin: 0; padding: 0; }
         
         .admin-container { 
-            max-width: 800px; /* Обмежуємо ширину для зручності */
-            margin: 0 auto;  /* Центруємо весь контейнер */
+            max-width: 800px; 
+            margin: 0 auto;  
             padding: 40px 20px; 
             background: #000; 
             color: #fff; 
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Центруємо вміст всередині контейнера */
+            align-items: center; 
         }
         
-        /* Секція форми */
         .admin-section { 
             width: 100%;
             background: #0d0d0d; 
@@ -29,15 +28,15 @@
             border: 2px solid #f39c12; 
             margin-bottom: 30px;
             box-sizing: border-box;
-            text-align: center; /* Центруємо текст та інпути */
+            text-align: center; 
         }
 
         .admin-section input, .admin-section textarea, .admin-section select {
             width: 100%; 
-            max-width: 500px; /* Інпути не занадто широкі */
+            max-width: 500px; 
             padding: 12px; 
             margin: 10px auto; 
-            display: block; /* Щоб спрацював margin: auto */
+            display: block; 
             background: #151515; 
             border: 1px solid #333; 
             color: white; 
@@ -45,16 +44,15 @@
             box-sizing: border-box;
         }
 
-        /* Стилі Акордеона */
         .collapsible {
             background-color: #1a1a1a;
             color: #f39c12;
             cursor: pointer;
             padding: 18px;
             width: 100%;
-            max-width: 600px; /* Кнопки акордеона однакової зручної ширини */
+            max-width: 600px; 
             border: 1px solid #333;
-            text-align: center; /* Текст заголовка по центру */
+            text-align: center; 
             outline: none;
             font-size: 18px;
             font-weight: bold;
@@ -62,7 +60,7 @@
             border-radius: 8px;
             margin-top: 15px;
             display: flex;
-            justify-content: center; /* Центруємо текст всередині */
+            justify-content: center; 
             align-items: center;
             transition: 0.3s;
             position: relative;
@@ -70,7 +68,6 @@
 
         .active-tab, .collapsible:hover { background-color: #222; border-color: #f39c12; }
 
-        /* Іконка + / - зміщена вправо, щоб не заважати тексту в центрі */
         .collapsible:after {
             content: '\002B';
             color: #f39c12;
@@ -90,7 +87,6 @@
             background-color: #000;
         }
 
-        /* Картки всередині контенту */
         .order-card, .item-card {
             background: #0d0d0d; 
             border: 1px solid #222; 
@@ -101,16 +97,19 @@
             justify-content: space-between; 
             align-items: center; 
             gap: 15px;
-            text-align: left; /* Текст в картках краще читається зліва */
+            text-align: left; 
         }
 
-        .btn-group { display: flex; gap: 8px; justify-content: center; }
-        .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-group { display: flex; gap: 8px; justify-content: center; align-items: center; }
+        .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; }
         .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        
+        .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
 
         @media (max-width: 600px) {
             .order-card, .item-card { flex-direction: column; text-align: center; }
+            .btn-group { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -154,7 +153,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -170,7 +169,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Логіка розгортання
+    // Логіка акордеона
     document.querySelectorAll(".collapsible").forEach(button => {
         button.addEventListener("click", function() {
             this.classList.toggle("active-tab");
@@ -204,7 +203,7 @@
             const i = d.data();
             list.innerHTML += `
                 <div class="item-card">
-                    <div><b>${i.name}</b> (${i.price})</div>
+                    <div><b>${i.name}</b> (${i.price} грн)</div>
                     <div class="btn-group">
                         <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')">Ред.</button>
                         <button class="btn-delete" onclick="deleteItem('${d.id}')">Вид.</button>
@@ -213,7 +212,7 @@
         });
     });
 
-    // Відображення замовлень
+    // Відображення замовлень з КНОПКОЮ СКАЧУВАННЯ
     onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
         const boxNew = document.getElementById('listNew');
         const boxActive = document.getElementById('listActive');
@@ -223,10 +222,20 @@
             const o = d.data();
             if (o.archivedByAdmin) return;
             const isWorking = o.status === "В роботі";
+            
+            // ПЕРЕВІРКА ФАЙЛУ: Якщо в базі є fileURL, показуємо кнопку
+            const downloadBtn = o.fileURL ? 
+                `<a href="${o.fileURL}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : 
+                `<span style="color:#444; font-size:11px;">Немає файлу</span>`;
+
             const card = `
                 <div class="order-card">
-                    <div><b>${o.name || 'Без назви'}</b><br><small>${o.material || ''}</small></div>
+                    <div>
+                        <b>${o.name || 'Замовлення'}</b><br>
+                        <small>${o.material || ''} | ${o.email || ''}</small>
+                    </div>
                     <div class="btn-group">
+                        ${downloadBtn} 
                         ${!isWorking ? `<button class="btn-action" onclick="updOrder('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '👌'}
                         <button class="btn-delete" style="background:#555" onclick="archiveOrder('${d.id}')">АРХІВ</button>
                     </div>
@@ -260,9 +269,7 @@
         document.getElementById('formTitle').innerText = "Додати новий товар";
         document.getElementById('cancelEditBtn').style.display = "none";
     }
-    window.cancelEdit = resetForm;
     document.getElementById('cancelEditBtn').onclick = resetForm;
 </script>
 </body>
 </html>
-
