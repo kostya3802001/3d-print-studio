@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-ua="3D-PRINT STUDIO — Студія 3D-друку" data-pl="3D-PRINT STUDIO — Studio druku 3D">3D-PRINT STUDIO — Студія 3D-друку</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
 <header>
     <div class="logo">
         <img src="log img/Логотип.jpg" alt="Logo">
-        <span>3D-PRINT STUDIO</span>
-    </div>
-
-    <nav class="desktop-nav">
+        <span>3D-PRINT STUDIO</span> </div>
+    <nav>
         <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
         <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
         <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
@@ -23,22 +20,7 @@
         <a href="login.html" id="accountLink" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
         <span class="lang" id="langToggle">UA | PL</span>
     </nav>
-
-    <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <i class="fas fa-bars"></i>
-    </button>
 </header>
-
-<div class="mobile-menu" id="mobileMenu">
-    <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
-    <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
-    <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
-    <a href="order.html" data-ua="Замовити" data-pl="Zamów">Замовити</a>
-    <a href="login.html" id="accountLinkMobile" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
-    <div style="padding: 15px; text-align: center;">
-        <span class="lang" id="langToggleMobile" style="cursor: pointer; color: #f39c12;">UA | PL</span>
-    </div>
-</div>
 
 <section class="hero">
     <div class="hero-inner">
@@ -104,28 +86,6 @@
 </footer>
 
 <script src="lang.js"></script>
-<script>
-    // Логіка відкриття/закриття мобільного меню
-    const menuBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    
-    menuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('active');
-        const icon = menuBtn.querySelector('i');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-times');
-    });
-
-    // Закриття меню при кліку на посилання
-    document.querySelectorAll('.mobile-menu a').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            menuBtn.querySelector('i').classList.add('fa-bars');
-            menuBtn.querySelector('i').classList.remove('fa-times');
-        });
-    });
-</script>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -144,16 +104,12 @@
 
   onAuthStateChanged(auth, (user) => {
     const link = document.getElementById('accountLink');
-    const linkMobile = document.getElementById('accountLinkMobile');
     if (user) {
-      const text = user.email === "join.the.game.notik.fols@gmail.com" ? "Адмін Панель" : "Мій Профіль";
-      const href = user.email === "join.the.game.notik.fols@gmail.com" ? "admin.html" : "account.html";
-      
-      link.href = href; link.innerText = text;
-      linkMobile.href = href; linkMobile.innerText = text;
+      link.href = "account.html";
+      const currentLang = document.getElementById('langToggle').innerText.includes('UA') ? 'PL' : 'UA'; 
+      link.innerText = (currentLang === 'UA') ? "Gabinet" : "Мій Профіль";
     }
   });
 </script>
 </body>
 </html>
-
