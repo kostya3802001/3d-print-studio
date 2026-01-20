@@ -4,225 +4,170 @@ body {
     padding: 0;
     background-color: #050505;
     color: #fff;
-    font-family: Arial, sans-serif;
-    overflow-x: hidden; /* Запобігає горизонтальній прокрутці на мобілці */
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 50px;
-    background-color: #000;
-    border-bottom: 1px solid #222;
+    padding: 10px 5%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px); /* Ефект розмиття фону */
+    border-bottom: 1px solid rgba(243, 156, 18, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
     color: #f39c12;
+    text-decoration: none;
 }
 
 .logo img {
-    height: 40px;
+    height: 60px; /* Збільшений логотип */
     margin-right: 15px;
+    border-radius: 8px;
+    transition: 0.3s;
 }
 
 nav a {
     color: #fff;
     text-decoration: none;
-    margin-left: 20px;
-    font-size: 16px;
+    margin-left: 25px;
+    font-size: 15px;
+    font-weight: 500;
     transition: 0.3s;
+    opacity: 0.8;
 }
 
 nav a:hover {
     color: #f39c12;
+    opacity: 1;
 }
 
 .lang {
-    margin-left: 20px;
+    margin-left: 25px;
     cursor: pointer;
     color: #f39c12;
     font-weight: bold;
+    border: 1px solid #f39c12;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
 }
 
 /* Hero Section */
 .hero {
-    height: 60vh;
+    height: 75vh;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: radial-gradient(circle, #1a1a1a 0%, #050505 100%);
+    background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
     padding: 0 20px;
 }
 
 .hero h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
+    font-size: 56px;
+    margin-bottom: 20px;
+    line-height: 1.1;
 }
 
 .hero h1 span {
     color: #f39c12;
+    text-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
 }
 
 .hero p {
-    font-size: 18px;
-    color: #ccc;
+    font-size: 20px;
+    color: #aaa;
+    max-width: 700px;
+    margin: 0 auto;
 }
 
 .cta {
     display: inline-block;
-    margin-top: 20px;
-    padding: 12px 30px;
-    background-color: #f39c12;
+    margin-top: 35px;
+    padding: 16px 45px;
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
     color: #000;
     text-decoration: none;
     font-weight: bold;
-    border-radius: 5px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(243, 156, 18, 0.2);
     transition: 0.3s;
 }
 
 .cta:hover {
-    background-color: #e67e22;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(243, 156, 18, 0.3);
 }
 
-/* Секції та Картки */
-.section {
-    padding: 50px 10%;
-    text-align: center;
-}
-
-.section-title {
-    font-size: 32px;
-    margin-bottom: 40px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-}
-
-.card {
-    background-color: #111;
-    border: 1px solid #222;
-    border-radius: 10px;
+/* Скляні картки (Glassmorphism) */
+.card, .auth-container {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
     overflow: hidden;
-    transition: 0.3s;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .card:hover {
-    border-color: #f39c12;
+    border-color: rgba(243, 156, 18, 0.5);
     transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-.card img {
+/* Кнопка Google */
+.google-btn {
     width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-
-.card-body {
-    padding: 20px;
-}
-
-.card-body h3 {
-    margin: 0 0 10px;
-    color: #f39c12;
-}
-
-.price {
-    font-size: 20px;
-    font-weight: bold;
-    margin: 15px 0;
-}
-
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #222;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
     transition: 0.3s;
 }
 
-.btn:hover {
-    background-color: #f39c12;
-    color: #000;
+.google-btn img {
+    height: 20px;
 }
 
-/* Футер */
-footer {
-    padding: 30px;
-    text-align: center;
-    background-color: #000;
-    border-top: 1px solid #222;
-    color: #777;
-    font-size: 14px;
+.google-btn:hover {
+    background: #f1f1f1;
 }
 
-/* --- ОПТИМІЗАЦІЯ ДЛЯ ТЕЛЕФОНІВ (Мобільна версія) --- */
-
+/* --- МОБІЛЬНА ВЕРСІЯ --- */
 @media (max-width: 768px) {
     header {
-        flex-direction: column; /* Логотип зверху, меню знизу */
-        padding: 20px;
+        padding: 15px 5%;
     }
 
-    .logo {
-        margin-bottom: 15px;
-        font-size: 20px;
-    }
-
-    nav {
-        display: flex;
-        flex-wrap: wrap; /* Дозволяє посиланням переноситись на новий рядок */
-        justify-content: center;
-        gap: 10px;
-    }
-
-    nav a {
-        margin-left: 0;
-        font-size: 14px;
-        padding: 5px 10px;
-        background: #111; /* Робимо посилання схожими на кнопки */
-        border-radius: 4px;
-    }
-
-    .lang {
-        margin-left: 0;
-        width: 100%;
-        text-align: center;
-        margin-top: 10px;
+    .logo img {
+        height: 50px;
     }
 
     .hero h1 {
-        font-size: 28px; /* Менший заголовок */
-    }
-
-    .hero p {
-        font-size: 16px;
+        font-size: 34px;
     }
 
     .grid {
-        grid-template-columns: 1fr; /* Картки стають одна під одною (в 1 колонку) */
-        gap: 20px;
-    }
-
-    .section {
-        padding: 30px 5%; /* Менші відступи по боках */
-    }
-
-    .section-title {
-        font-size: 24px;
-    }
-
-    .card img {
-        height: 180px; /* Трохи менша висота картинок */
+        grid-template-columns: 1fr;
+        padding: 0 20px;
     }
 }
