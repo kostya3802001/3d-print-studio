@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <style>
         /* Базові стилі секції */
-        body { background-color: #000; color: #fff; }
+        body { background-color: #000; color: #fff; margin: 0; font-family: sans-serif; }
         .section { padding: 60px 5%; }
 
         .section-header {
@@ -22,13 +22,16 @@
 
         .section-header h1 span { color: #f39c12; }
 
-        /* Стилі КАРТОК (те, чого не вистачало) */
+        .section-header p { color: #888; max-width: 600px; }
+
+        /* Сітка товарів */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
         }
 
+        /* Картка товару */
         .card {
             background: #111;
             border: 1px solid #222;
@@ -44,7 +47,7 @@
         .card img {
             width: 100%;
             height: 250px;
-            object-fit: cover; /* Щоб картинка не розтягувалася */
+            object-fit: cover;
             background: #222;
         }
 
@@ -70,6 +73,7 @@
             font-weight: bold;
             text-transform: uppercase;
             transition: 0.3s;
+            display: block;
         }
 
         .btn:hover { background: #e67e22; }
@@ -127,8 +131,11 @@
     const db = getFirestore(app);
     const productsContainer = document.getElementById('publicProductsList');
 
-    // Отримання товарів КАТЕГОРІЇ "figures"
-    // Важливо: переконайся, що в адмінці value="figures" (малими літерами)
+    // --- НАЛАШТУВАННЯ GITHUB ---
+    // ЗАМІНИ ТЕКСТ НИЖЧЕ НА СВІЙ: "ТВІЙ_НІК/НАЗВА_ПРОЕКТУ"
+    const githubUserRepo = "ТВІЙ_НІК/НАЗВА_РЕПОЗИТОРІЯ"; 
+    const githubURL = `https://raw.githubusercontent.com/${githubUserRepo}/main/`;
+
     const q = query(collection(db, "catalog"), where("category", "==", "figures"));
 
     onSnapshot(q, (snapshot) => {
@@ -144,10 +151,21 @@
 
         snapshot.forEach((doc) => {
             const product = doc.data();
-            // Створюємо картку
+
+            // Логіка обробки посилання на фото
+            let finalImg = product.img || '';
+            // Якщо в адмінці вказано просто "папка/фото.jpg" (не починається з http), додаємо префікс GitHub
+            if (finalImg && !finalImg.startsWith('http')) {
+                finalImg = githubURL + finalImg;
+            }
+            // Якщо поля немає взагалі, ставимо логотип за замовчуванням
+            if (!finalImg) {
+                finalImg = 'log img/Логотип.jpg';
+            }
+
             productsContainer.innerHTML += `
                 <div class="card">
-                    <img src="${product.img || 'log img/Логотип.jpg'}" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
+                    <img src="${finalImg}" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
                     <div class="card-body">
                         <h3>${product.name}</h3>
                         <p>${product.desc || ''}</p>
