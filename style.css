@@ -14,7 +14,7 @@ header {
     align-items: center;
     padding: 10px 5%;
     background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(12px); /* Ефект розмиття фону */
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(243, 156, 18, 0.2);
     position: sticky;
     top: 0;
@@ -31,7 +31,7 @@ header {
 }
 
 .logo img {
-    height: 60px; /* Збільшений логотип */
+    height: 60px;
     margin-right: 15px;
     border-radius: 8px;
     transition: 0.3s;
@@ -85,79 +85,73 @@ nav a:hover {
     text-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
 }
 
-.hero p {
-    font-size: 20px;
-    color: #aaa;
-    max-width: 700px;
-    margin: 0 auto;
-}
-
-.cta {
+/* СТИЛЬ КНОПОК ЯК НА СКРІНШОТІ */
+.cta, .card-btn {
     display: inline-block;
-    margin-top: 35px;
-    padding: 16px 45px;
+    padding: 14px 30px;
     background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
     color: #000;
     text-decoration: none;
     font-weight: bold;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(243, 156, 18, 0.2);
+    border-radius: 12px; /* Більш закруглені кути як на скріншоті */
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.2);
     transition: 0.3s;
     border: none;
     cursor: pointer;
+    text-align: center;
+    margin-top: 15px;
 }
 
-.cta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 25px rgba(243, 156, 18, 0.3);
+.cta:hover, .card-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+    filter: brightness(1.1);
 }
 
-/* Скляні картки (Glassmorphism) */
+/* Скляні картки */
 .card, .auth-container {
     background: rgba(20, 20, 20, 0.6);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 15px;
     overflow: hidden;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрування контенту та кнопки всередині */
     transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
 }
 
 .card:hover {
     border-color: rgba(243, 156, 18, 0.5);
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-/* ГОРИЗОНТАЛЬНА СІТКА ДЛЯ КАРТОК (ПОВЕРНУВ 3 КОЛОНКИ) */
+/* ГОРИЗОНТАЛЬНА СІТКА */
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
     gap: 30px;
-    padding: 40px 0;
+    padding: 40px 5%;
 }
 
 /* --- МОБІЛЬНА ВЕРСІЯ --- */
 @media (max-width: 1024px) {
     .grid {
-        grid-template-columns: repeat(2, 1fr); /* Для планшетів по 2 */
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    header {
-        padding: 15px 5%;
-    }
-
-    .logo img {
-        height: 50px;
-    }
-
-    .hero h1 {
-        font-size: 34px;
-    }
-
+    .hero h1 { font-size: 34px; }
     .grid {
-        grid-template-columns: 1fr; /* Тільки на телефоні в стовпчик */
+        grid-template-columns: 1fr;
         padding: 0 20px;
     }
 }
