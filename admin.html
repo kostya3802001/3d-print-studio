@@ -116,7 +116,6 @@
 <body>
 
 <div class="admin-container">
-    
     <div class="admin-section">
         <h2 id="formTitle" style="margin-top:0; color:#f39c12;">Додати новий товар</h2>
         <input type="hidden" id="editId">
@@ -148,7 +147,6 @@
     <div class="content">
         <div id="listActive"></div>
     </div>
-
 </div>
 
 <script type="module">
@@ -212,7 +210,7 @@
         });
     });
 
-    // Відображення замовлень з КНОПКОЮ СКАЧУВАННЯ
+    // Відображення замовлень
     onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
         const boxNew = document.getElementById('listNew');
         const boxActive = document.getElementById('listActive');
@@ -223,16 +221,18 @@
             if (o.archivedByAdmin) return;
             const isWorking = o.status === "В роботі";
             
-            // ПЕРЕВІРКА ФАЙЛУ: Якщо в базі є fileURL, показуємо кнопку
-            const downloadBtn = o.fileURL ? 
-                `<a href="${o.fileURL}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : 
+            // ВИПРАВЛЕНО: Перевіряємо і fileUrl (маленька l), і fileURL (велика L)
+            const fileLink = o.fileUrl || o.fileURL || o.file;
+            
+            const downloadBtn = fileLink ? 
+                `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : 
                 `<span style="color:#444; font-size:11px;">Немає файлу</span>`;
 
             const card = `
                 <div class="order-card">
                     <div>
                         <b>${o.name || 'Замовлення'}</b><br>
-                        <small>${o.material || ''} | ${o.email || ''}</small>
+                        <small>${o.material || ''} | ${o.userEmail || ''}</small>
                     </div>
                     <div class="btn-group">
                         ${downloadBtn} 
@@ -269,6 +269,7 @@
         document.getElementById('formTitle').innerText = "Додати новий товар";
         document.getElementById('cancelEditBtn').style.display = "none";
     }
+    window.resetForm = resetForm;
     document.getElementById('cancelEditBtn').onclick = resetForm;
 </script>
 </body>
