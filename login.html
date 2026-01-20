@@ -35,17 +35,6 @@
             <button type="submit" id="mainBtn" class="cta" style="width: 100%; border:none; cursor:pointer;" data-ua="Увійти" data-pl="Zaloguj sie">Увійти</button>
         </form>
 
-        <div style="display: flex; align-items: center; margin: 25px 0; color: #555;">
-            <div style="flex: 1; height: 1px; background: #333;"></div>
-            <div style="padding: 0 10px; font-size: 12px; text-transform: uppercase;" data-ua="або" data-pl="lub">або</div>
-            <div style="flex: 1; height: 1px; background: #333;"></div>
-        </div>
-
-        <button id="googleBtn" class="google-btn">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_Logo.svg" alt="G">
-            <span data-ua="Увійти через Google" data-pl="Zaloguj przez Google">Увійти через Google</span>
-        </button>
-
         <div style="margin-top: 25px; text-align: center; font-size: 0.9em;">
             <span id="switchText" data-ua="Немає акаунту?" data-pl="Nie masz konta?">Немає акаунту?</span> 
             <a href="#" id="toggleAuth" data-ua="Зареєструватися" data-pl="Zarejestruj sie" style="color: #f39c12; text-decoration: none; font-weight: bold;">Зареєструватися</a>
@@ -64,9 +53,7 @@
   import { 
     getAuth, 
     signInWithEmailAndPassword, 
-    createUserWithEmailAndPassword, 
-    GoogleAuthProvider, 
-    signInWithPopup 
+    createUserWithEmailAndPassword 
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const firebaseConfig = {
@@ -80,7 +67,6 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
 
   let isLoginMode = true;
   const authForm = document.getElementById('authForm');
@@ -88,16 +74,6 @@
   const formTitle = document.getElementById('formTitle');
   const mainBtn = document.getElementById('mainBtn');
   const switchText = document.getElementById('switchText');
-
-  // Вхід через Google
-  document.getElementById('googleBtn').addEventListener('click', async () => {
-    try {
-      await signInWithPopup(auth, provider);
-      window.location.href = 'account.html';
-    } catch (error) {
-      alert("Помилка Google: " + error.message);
-    }
-  });
 
   // Перемикач режимів
   toggleAuth.addEventListener('click', (e) => {
@@ -131,4 +107,3 @@
 
 </body>
 </html>
-
