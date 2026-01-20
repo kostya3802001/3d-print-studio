@@ -6,112 +6,86 @@
     <title>Адмін-панель — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background-color: #000; margin: 0; padding: 0; }
+        body { background-color: #000; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         
         .admin-container { 
-            max-width: 800px; /* Обмежуємо ширину для зручності */
-            margin: 0 auto;  /* Центруємо весь контейнер */
-            padding: 40px 20px; 
-            background: #000; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 20px; 
             color: #fff; 
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Центруємо вміст всередині контейнера */
+            align-items: center;
         }
         
         /* Секція форми */
         .admin-section { 
             width: 100%;
+            max-width: 600px;
             background: #0d0d0d; 
-            padding: 25px; 
+            padding: 20px; 
             border-radius: 12px; 
-            border: 2px solid #f39c12; 
-            margin-bottom: 30px;
-            box-sizing: border-box;
-            text-align: center; /* Центруємо текст та інпути */
+            border: 1px solid #f39c12; 
+            margin-bottom: 40px;
+            text-align: center;
         }
 
         .admin-section input, .admin-section textarea, .admin-section select {
-            width: 100%; 
-            max-width: 500px; /* Інпути не занадто широкі */
-            padding: 12px; 
-            margin: 10px auto; 
-            display: block; /* Щоб спрацював margin: auto */
-            background: #151515; 
-            border: 1px solid #333; 
-            color: white; 
-            border-radius: 8px;
-            box-sizing: border-box;
+            width: 100%; padding: 10px; margin: 8px 0; background: #151515; border: 1px solid #333; color: white; border-radius: 6px; box-sizing: border-box;
         }
 
-        /* Стилі Акордеона */
+        /* Контейнер для кнопок у ряд */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 20px;
+            flex-wrap: wrap; /* Щоб на мобілках кнопки переносились */
+        }
+
         .collapsible {
             background-color: #1a1a1a;
             color: #f39c12;
             cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            max-width: 600px; /* Кнопки акордеона однакової зручної ширини */
+            padding: 12px 20px;
             border: 1px solid #333;
-            text-align: center; /* Текст заголовка по центру */
-            outline: none;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
             text-transform: uppercase;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: flex;
-            justify-content: center; /* Центруємо текст всередині */
-            align-items: center;
+            border-radius: 6px;
             transition: 0.3s;
-            position: relative;
+            flex: 1; /* Кнопки розтягуються порівну */
+            min-width: 150px;
+            max-width: 250px;
+            text-align: center;
         }
 
-        .active-tab, .collapsible:hover { background-color: #222; border-color: #f39c12; }
+        .active-tab, .collapsible:hover { background-color: #f39c12; color: #000; border-color: #f39c12; }
 
-        /* Іконка + / - зміщена вправо, щоб не заважати тексту в центрі */
-        .collapsible:after {
-            content: '\002B';
-            color: #f39c12;
-            font-size: 24px;
-            position: absolute;
-            right: 20px;
-        }
-
-        .active-tab:after { content: "\2212"; }
-
+        /* Контент під кнопками */
         .content {
             width: 100%;
-            max-width: 600px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background-color: #000;
+            display: none; /* За замовчуванням приховано */
+            background-color: #0d0d0d;
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #222;
         }
 
-        /* Картки всередині контенту */
-        .order-card, .item-card {
-            background: #0d0d0d; 
-            border: 1px solid #222; 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin: 15px 0;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            gap: 15px;
-            text-align: left; /* Текст в картках краще читається зліва */
+        .show-content { display: block !important; }
+
+        .card-item {
+            background: #151515; border: 1px solid #333; padding: 15px; border-radius: 8px; margin: 10px 0;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .btn-group { display: flex; gap: 8px; justify-content: center; }
-        .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-        .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        .btn-group { display: flex; gap: 5px; }
+        .btn-save { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        .btn-edit { background: #3498db; border: none; padding: 5px 10px; color: white; border-radius: 4px; cursor: pointer; }
+        .btn-del { background: #e74c3c; border: none; padding: 5px 10px; color: white; border-radius: 4px; cursor: pointer; }
 
-        @media (max-width: 600px) {
-            .order-card, .item-card { flex-direction: column; text-align: center; }
-        }
     </style>
 </head>
 <body>
@@ -119,7 +93,7 @@
 <div class="admin-container">
     
     <div class="admin-section">
-        <h2 id="formTitle" style="margin-top:0; color:#f39c12;">Додати новий товар</h2>
+        <h2 id="formTitle" style="color:#f39c12;">Додати товар</h2>
         <input type="hidden" id="editId">
         <input type="text" id="itemName" placeholder="Назва">
         <input type="text" id="itemPrice" placeholder="Ціна">
@@ -129,24 +103,25 @@
         </select>
         <textarea id="itemDesc" placeholder="Опис" rows="2"></textarea>
         <input type="text" id="itemImg" placeholder="URL картинки">
-        <div class="btn-group">
-            <button class="btn-action" id="saveItemBtn">ЗБЕРЕГТИ ТОВАР</button>
-            <button id="cancelEditBtn" style="display:none; background:#444; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">СКАСУВАТИ</button>
-        </div>
+        <button class="btn-save" id="saveBtn">ЗБЕРЕГТИ</button>
+        <button id="cancelBtn" style="display:none; background:#444; color:#fff; border:none; padding:10px; margin-top:5px; border-radius:6px; cursor:pointer;">СКАСУВАТИ</button>
     </div>
 
-    <button class="collapsible">Всі товари на сайті</button>
-    <div class="content">
+    <div class="tabs-nav">
+        <button class="collapsible" onclick="openTab(event, 'tab-catalog')">Всі товари</button>
+        <button class="collapsible" onclick="openTab(event, 'tab-new')">Нові замовлення</button>
+        <button class="collapsible" onclick="openTab(event, 'tab-active')">У роботі</button>
+    </div>
+
+    <div id="tab-catalog" class="content">
         <div id="catalogList"></div>
     </div>
 
-    <button class="collapsible">Нові замовлення</button>
-    <div class="content">
+    <div id="tab-new" class="content">
         <div id="listNew"></div>
     </div>
 
-    <button class="collapsible">Замовлення у роботі</button>
-    <div class="content">
+    <div id="tab-active" class="content">
         <div id="listActive"></div>
     </div>
 
@@ -154,7 +129,6 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -167,101 +141,90 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Логіка розгортання
-    document.querySelectorAll(".collapsible").forEach(button => {
-        button.addEventListener("click", function() {
-            this.classList.toggle("active-tab");
-            var content = this.nextElementSibling;
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-                const observer = new MutationObserver(() => {
-                    if (content.style.maxHeight !== "0px" && content.style.maxHeight !== "") {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                    }
-                });
-                observer.observe(content, { childList: true, subtree: true });
-            }
-        });
-    });
+    // Функція перемикання вкладок
+    window.openTab = function(evt, tabId) {
+        var content = document.getElementsByClassName("content");
+        for (var i = 0; i < content.length; i++) {
+            content[i].classList.remove("show-content");
+        }
+        var tabs = document.getElementsByClassName("collapsible");
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove("active-tab");
+        }
+        document.getElementById(tabId).classList.add("show-content");
+        evt.currentTarget.classList.add("active-tab");
+    }
 
-    const nameInp = document.getElementById('itemName');
-    const priceInp = document.getElementById('itemPrice');
-    const catInp = document.getElementById('itemCategory');
-    const descInp = document.getElementById('itemDesc');
-    const imgInp = document.getElementById('itemImg');
-    const editIdInp = document.getElementById('editId');
-
-    // Відображення товарів
+    // Рендер товарів
     onSnapshot(collection(db, "catalog"), (snap) => {
         const list = document.getElementById('catalogList');
         list.innerHTML = "";
         snap.forEach(d => {
             const i = d.data();
-            list.innerHTML += `
-                <div class="item-card">
-                    <div><b>${i.name}</b> (${i.price})</div>
-                    <div class="btn-group">
-                        <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')">Ред.</button>
-                        <button class="btn-delete" onclick="deleteItem('${d.id}')">Вид.</button>
-                    </div>
-                </div>`;
+            list.innerHTML += `<div class="card-item">
+                <span>${i.name} (${i.price})</span>
+                <div class="btn-group">
+                    <button class="btn-edit" onclick="startEdit('${d.id}','${i.name}','${i.price}','${i.category}','${i.desc}','${i.img}')">Ред.</button>
+                    <button class="btn-del" onclick="deleteItem('${d.id}')">Видалити</button>
+                </div>
+            </div>`;
         });
     });
 
-    // Відображення замовлень
+    // Рендер замовлень
     onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
         const boxNew = document.getElementById('listNew');
         const boxActive = document.getElementById('listActive');
         boxNew.innerHTML = ""; boxActive.innerHTML = "";
-
         snap.forEach(d => {
             const o = d.data();
             if (o.archivedByAdmin) return;
             const isWorking = o.status === "В роботі";
-            const card = `
-                <div class="order-card">
-                    <div><b>${o.name || 'Без назви'}</b><br><small>${o.material || ''}</small></div>
-                    <div class="btn-group">
-                        ${!isWorking ? `<button class="btn-action" onclick="updOrder('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '👌'}
-                        <button class="btn-delete" style="background:#555" onclick="archiveOrder('${d.id}')">АРХІВ</button>
-                    </div>
-                </div>`;
+            const card = `<div class="card-item">
+                <span>${o.name || 'Замовлення'} - ${o.material}</span>
+                <div class="btn-group">
+                    ${!isWorking ? `<button class="btn-save" style="padding:5px 10px" onclick="updOrder('${d.id}', 'В роботі')">Прийняти</button>` : '👌'}
+                    <button class="btn-del" style="background:#444" onclick="archiveOrder('${d.id}')">Архів</button>
+                </div>
+            </div>`;
             if (isWorking) boxActive.innerHTML += card;
             else boxNew.innerHTML += card;
         });
     });
 
-    // Функції
-    window.startEdit = (id, n, p, c, d, i) => {
-        editIdInp.value = id; nameInp.value = n; priceInp.value = p; catInp.value = c; descInp.value = d; imgInp.value = i;
-        document.getElementById('formTitle').innerText = "Редагування";
-        document.getElementById('cancelEditBtn').style.display = "block";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
+    // Firebase операції
     window.updOrder = async (id, s) => { await updateDoc(doc(db, "orders", id), { status: s }); };
     window.archiveOrder = async (id) => { await updateDoc(doc(db, "orders", id), { archivedByAdmin: true }); };
-    window.deleteItem = async (id) => { if(confirm("Видалити товар?")) await deleteDoc(doc(db, "catalog", id)); };
+    window.deleteItem = async (id) => { if(confirm("Видалити?")) await deleteDoc(doc(db, "catalog", id)); };
 
-    document.getElementById('saveItemBtn').onclick = async () => {
-        const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
-        if(editIdInp.value) await updateDoc(doc(db, "catalog", editIdInp.value), data);
-        else await addDoc(collection(db, "catalog"), data);
-        resetForm();
+    window.startEdit = (id, n, p, c, d, i) => {
+        document.getElementById('editId').value = id;
+        document.getElementById('itemName').value = n;
+        document.getElementById('itemPrice').value = p;
+        document.getElementById('itemCategory').value = c;
+        document.getElementById('itemDesc').value = d;
+        document.getElementById('itemImg').value = i;
+        document.getElementById('formTitle').innerText = "Редагування";
+        document.getElementById('cancelBtn').style.display = "block";
+        window.scrollTo({top:0, behavior:'smooth'});
     };
 
-    function resetForm() {
-        editIdInp.value = ""; nameInp.value = ""; priceInp.value = ""; descInp.value = ""; imgInp.value = "";
-        document.getElementById('formTitle').innerText = "Додати новий товар";
-        document.getElementById('cancelEditBtn').style.display = "none";
-    }
-    window.cancelEdit = resetForm;
-    document.getElementById('cancelEditBtn').onclick = resetForm;
+    document.getElementById('saveBtn').onclick = async () => {
+        const id = document.getElementById('editId').value;
+        const data = {
+            name: document.getElementById('itemName').value,
+            price: document.getElementById('itemPrice').value,
+            category: document.getElementById('itemCategory').value,
+            desc: document.getElementById('itemDesc').value,
+            img: document.getElementById('itemImg').value
+        };
+        if(id) await updateDoc(doc(db, "catalog", id), data);
+        else await addDoc(collection(db, "catalog"), data);
+        location.reload();
+    };
 </script>
+
 </body>
 </html>
