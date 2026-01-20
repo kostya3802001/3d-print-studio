@@ -46,10 +46,13 @@
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
         .card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            background: #222;
+    width: 100%;
+    height: 250px;
+    /* contain гарантує, що фото буде видно повністю */
+    object-fit: contain; 
+    /* Додаємо темний фон, щоб навколо вузьких фото не було білих дір */
+    background: #0a0a0a; 
+    padding: 10px; /* Трохи відступу, щоб фото не прилипало до країв */
         }
 
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
@@ -181,3 +184,4 @@
 
 </body>
 </html>
+
