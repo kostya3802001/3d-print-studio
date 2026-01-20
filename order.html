@@ -2,15 +2,52 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Замовити друк — 3D-PRINT STUDIO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Замовити друк — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .order-container { max-width: 600px; margin: 50px auto; padding: 30px; background: #0d0d0d; border-radius: 15px; border: 1px solid #222; }
+        .order-container { 
+            max-width: 600px; 
+            margin: 50px auto; 
+            padding: 30px; 
+            background: #0d0d0d; 
+            border-radius: 15px; 
+            border: 1px solid #222; 
+        }
         .form-group { margin-bottom: 20px; }
         label { display: block; color: #f39c12; margin-bottom: 8px; font-weight: bold; }
-        input, textarea, select { width: 100%; padding: 12px; background: #151515; border: 1px solid #333; color: #fff; border-radius: 8px; }
-        .btn-send { width: 100%; padding: 15px; background: #f39c12; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 12px; 
+            background: #151515; 
+            border: 1px solid #333; 
+            color: #fff; 
+            border-radius: 8px; 
+            font-size: 16px; /* Запобігає авто-зуму в iOS */
+        }
+        .btn-send { 
+            width: 100%; 
+            padding: 15px; 
+            background: #f39c12; 
+            color: #000; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 16px;
+        }
         .btn-send:disabled { background: #555; cursor: not-allowed; }
+
+        /* --- МОБІЛЬНА АДАПТАЦІЯ --- */
+        @media (max-width: 768px) {
+            .order-container {
+                margin: 20px 10px; /* Зменшуємо відступи зверху та додаємо по боках */
+                padding: 20px;
+                border-radius: 10px;
+            }
+            h1 { font-size: 22px; }
+            label { font-size: 14px; }
+            input, textarea, select { padding: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -20,7 +57,7 @@
     <form id="orderForm">
         <div class="form-group">
             <label>Назва деталі</label>
-            <input type="text" id="orderName" required>
+            <input type="text" id="orderName" placeholder="Наприклад: Шестерня" required>
         </div>
         <div class="form-group">
             <label>Прикріпити STL файл</label>
@@ -36,7 +73,7 @@
         </div>
         <div class="form-group">
             <label>Опис</label>
-            <textarea id="orderDesc" rows="3"></textarea>
+            <textarea id="orderDesc" rows="3" placeholder="Вкажіть колір, заповнення або кількість"></textarea>
         </div>
         <button type="submit" id="submitBtn" class="btn-send">ВІДПРАВИТИ ЗАМОВЛЕННЯ</button>
     </form>
