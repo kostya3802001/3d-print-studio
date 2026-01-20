@@ -7,27 +7,72 @@
     <link rel="stylesheet" href="style.css">
     <style>
         :root { --orange: #f39c12; --green: #27ae60; --dark-bg: #0d0d0d; }
-        body { background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; }
-        .profile-wrapper { max-width: 800px; margin: 40px auto; padding: 20px; }
-        .user-info-panel { background: rgba(243, 156, 18, 0.05); border: 1px solid rgba(243, 156, 18, 0.2); padding: 25px; border-radius: 15px; text-align: center; margin-bottom: 40px; }
-        .logout-btn { background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 15px; }
-
-        .order-card { background: #111; border: 1px solid #222; padding: 20px; border-radius: 12px; margin-bottom: 30px; }
-        .status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; border: 1px solid var(--orange); color: var(--orange); margin-bottom: 15px; }
-        .status-confirmed { border-color: var(--green); color: var(--green); background: rgba(39, 174, 96, 0.1); }
-
-        /* Стилі ЧАТУ */
-        .chat-section { margin-top: 20px; border-top: 1px solid #222; padding-top: 15px; }
-        .chat-messages { max-height: 200px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; padding-right: 5px; }
-        .msg { padding: 8px 12px; border-radius: 8px; font-size: 14px; max-width: 80%; }
-        .msg.admin { background: #333; align-self: flex-start; color: var(--orange); }
-        .msg.user { background: var(--orange); align-self: flex-end; color: #000; }
-        .chat-input-group { display: flex; gap: 10px; }
-        .chat-input-group input { flex: 1; background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; }
-        .btn-send-msg { background: var(--orange); border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
+        body { background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        .profile-wrapper { max-width: 800px; margin: 40px auto; padding: 20px; }
+
+        .user-info-panel {
+            background: rgba(243, 156, 18, 0.05);
+            border: 1px solid rgba(243, 156, 18, 0.2);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: #ff4d4d;
+            border: 1px solid #ff4d4d;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+        .logout-btn:hover { background: #ff4d4d; color: #000; }
+
+        .order-card {
+            background: #111;
+            border: 1px solid #222;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid var(--orange);
+            color: var(--orange);
+            margin-bottom: 15px;
+        }
+
+        .status-confirmed {
+            border-color: var(--green);
+            color: var(--green);
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .order-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+        .order-date { font-size: 12px; color: #555; }
         .order-title { color: var(--orange); font-size: 20px; margin: 10px 0; }
-        .order-desc { color: #aaa; font-size: 14px; background: #080808; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .order-desc { color: #aaa; font-size: 14px; line-height: 1.5; background: #080808; padding: 10px; border-radius: 8px; }
+        
+        /* Мобільна адаптація */
+        @media (max-width: 600px) {
+            .profile-wrapper { margin: 20px auto; padding: 10px; }
+            .user-info-panel { padding: 15px; }
+            .order-header { flex-direction: column; }
+            .order-title { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
@@ -48,13 +93,15 @@
     </div>
 
     <h2 style="margin-bottom: 25px; font-size: 22px; border-left: 4px solid var(--orange); padding-left: 15px;">Мої замовлення</h2>
-    <div id="ordersContainer"></div>
+    <div id="ordersContainer">
+        <p style="text-align: center; color: #666;">Шукаємо ваші замовлення...</p>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
@@ -78,75 +125,49 @@
         }
     });
 
-    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.href = "login.html");
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        signOut(auth).then(() => window.location.href = "login.html");
+    });
 
     function loadOrders(uid) {
-        const q = query(collection(db, "orders"), where("userId", "==", uid), orderBy("timestamp", "desc"));
+        // Тут ми НЕ фільтруємо за archivedByAdmin, тому користувач бачить ВСЕ
+        const q = query(
+            collection(db, "orders"),
+            where("userId", "==", uid),
+            orderBy("timestamp", "desc")
+        );
 
         onSnapshot(q, (snapshot) => {
             const container = document.getElementById('ordersContainer');
-            container.innerHTML = snapshot.empty ? `<p style="text-align:center; color:#555;">У вас ще немає замовлень.</p>` : "";
+            container.innerHTML = "";
 
-            snapshot.forEach((docSnap) => {
-                const order = docSnap.data();
-                const orderId = docSnap.id;
+            if (snapshot.empty) {
+                container.innerHTML = `<p style="text-align:center; color:#555;">У вас ще немає замовлень.</p>`;
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const order = doc.data();
                 const date = order.timestamp ? order.timestamp.toDate().toLocaleString('uk-UA') : "Щойно";
                 const isConfirmed = order.status === "В роботі";
-
-                const orderBox = document.createElement('div');
-                orderBox.className = 'order-card';
-                orderBox.innerHTML = `
-                    <div style="display:flex; justify-content:space-between;">
-                        <span class="status-badge ${isConfirmed ? 'status-confirmed' : ''}">${order.status}</span>
-                        <span style="font-size:12px; color:#555;">${date}</span>
-                    </div>
-                    <h3 class="order-title">${order.name}</h3>
-                    <div class="order-desc">${order.description || 'Без опису'}</div>
-                    
-                    <div class="chat-section">
-                        <div class="chat-messages" id="msgs-${orderId}"></div>
-                        <div class="chat-input-group">
-                            <input type="text" id="input-${orderId}" placeholder="Напишіть повідомлення...">
-                            <button class="btn-send-msg" onclick="window.sendMsg('${orderId}')">➤</button>
+                
+                container.innerHTML += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="status-badge ${isConfirmed ? 'status-confirmed' : ''}">
+                                ${isConfirmed ? 'Взято в роботу' : 'Очікує підтвердження'}
+                            </span>
+                            <span class="order-date">${date}</span>
                         </div>
+                        <h3 class="order-title">${order.name || 'Деталь'}</h3>
+                        <p style="font-size: 14px; margin-bottom: 8px;"><strong>Матеріал:</strong> ${order.material}</p>
+                        <div class="order-desc">${order.description}</div>
                     </div>
                 `;
-                container.appendChild(orderBox);
-                listenToMessages(orderId);
             });
         });
     }
-
-    // Функція прослуховування повідомлень чату
-    function listenToMessages(orderId) {
-        const q = query(collection(db, "chats"), where("orderId", "==", orderId), orderBy("timestamp", "asc"));
-        onSnapshot(q, (snap) => {
-            const msgBox = document.getElementById(`msgs-${orderId}`);
-            if (!msgBox) return;
-            msgBox.innerHTML = "";
-            snap.forEach(d => {
-                const m = d.data();
-                const type = m.sender === "admin" ? "admin" : "user";
-                msgBox.innerHTML += `<div class="msg ${type}">${m.text}</div>`;
-            });
-            msgBox.scrollTop = msgBox.scrollHeight;
-        });
-    }
-
-    // Функція відправки повідомлення
-    window.sendMsg = async (orderId) => {
-        const input = document.getElementById(`input-${orderId}`);
-        const text = input.value.trim();
-        if (!text) return;
-
-        await addDoc(collection(db, "chats"), {
-            orderId: orderId,
-            text: text,
-            sender: "user",
-            timestamp: serverTimestamp()
-        });
-        input.value = "";
-    };
 </script>
 </body>
 </html>
+
