@@ -1,158 +1,6 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Адмін-панель — 3D-PRINT STUDIO</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body { background-color: #000; margin: 0; padding: 0; font-family: sans-serif; }
-        
-        .admin-container { 
-            max-width: 800px; 
-            margin: 0 auto;  
-            padding: 40px 20px; 
-            background: #000; 
-            color: #fff; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
-        }
-        
-        .admin-section { 
-            width: 100%;
-            background: #0d0d0d; 
-            padding: 25px; 
-            border-radius: 12px; 
-            border: 2px solid #f39c12; 
-            margin-bottom: 30px;
-            box-sizing: border-box;
-            text-align: center; 
-        }
-
-        .admin-section input, .admin-section textarea, .admin-section select {
-            width: 100%; 
-            max-width: 500px; 
-            padding: 12px; 
-            margin: 10px auto; 
-            display: block; 
-            background: #151515; 
-            border: 1px solid #333; 
-            color: white; 
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-
-        .collapsible {
-            background-color: #1a1a1a;
-            color: #f39c12;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            max-width: 600px; 
-            border: 1px solid #333;
-            text-align: center; 
-            outline: none;
-            font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: flex;
-            justify-content: center; 
-            align-items: center;
-            transition: 0.3s;
-            position: relative;
-        }
-
-        .active-tab, .collapsible:hover { background-color: #222; border-color: #f39c12; }
-
-        .collapsible:after {
-            content: '\002B';
-            color: #f39c12;
-            font-size: 24px;
-            position: absolute;
-            right: 20px;
-        }
-
-        .active-tab:after { content: "\2212"; }
-
-        .content {
-            width: 100%;
-            max-width: 600px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background-color: #000;
-        }
-
-        .order-card, .item-card {
-            background: #0d0d0d; 
-            border: 1px solid #222; 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin: 15px 0;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            gap: 15px;
-            text-align: left; 
-        }
-
-        .btn-group { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
-        .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; }
-        .btn-chat { background: #3498db; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-        .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-        
-        .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
-        .tg-link { color: #3498db; text-decoration: none; font-weight: bold; font-size: 14px; display: block; margin-top: 5px; }
-
-        @media (max-width: 600px) {
-            .order-card, .item-card { flex-direction: column; text-align: center; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="admin-container">
-    <div class="admin-section">
-        <h2 id="formTitle" style="margin-top:0; color:#f39c12;">Додати новий товар</h2>
-        <input type="hidden" id="editId">
-        <input type="text" id="itemName" placeholder="Назва">
-        <input type="text" id="itemPrice" placeholder="Ціна">
-        <select id="itemCategory">
-            <option value="figures">Фігурка</option>
-            <option value="parts">Деталь</option>
-        </select>
-        <textarea id="itemDesc" placeholder="Опис" rows="2"></textarea>
-        <input type="text" id="itemImg" placeholder="URL картинки">
-        <div class="btn-group">
-            <button class="btn-action" id="saveItemBtn">ЗБЕРЕГТИ ТОВАР</button>
-            <button id="cancelEditBtn" style="display:none; background:#444; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">СКАСУВАТИ</button>
-        </div>
-    </div>
-
-    <button class="collapsible">Всі товари на сайті</button>
-    <div class="content">
-        <div id="catalogList"></div>
-    </div>
-
-    <button class="collapsible">Нові замовлення</button>
-    <div class="content">
-        <div id="listNew"></div>
-    </div>
-
-    <button class="collapsible">Замовлення у роботі</button>
-    <div class="content">
-        <div id="listActive"></div>
-    </div>
-</div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -168,121 +16,122 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Логіка акордеона
-    document.querySelectorAll(".collapsible").forEach(button => {
-        button.addEventListener("click", function() {
-            this.classList.toggle("active-tab");
-            var content = this.nextElementSibling;
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-                const observer = new MutationObserver(() => {
-                    if (content.style.maxHeight !== "0px" && content.style.maxHeight !== "") {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                    }
-                });
-                observer.observe(content, { childList: true, subtree: true });
-            }
-        });
+    // --- ПЕРЕВІРКА ДОСТУПУ ---
+    const ADMIN_EMAIL = "join.the.game.notik.fols@gmail.com";
+    const adminContainer = document.querySelector('.admin-container');
+
+    // Спочатку приховаємо контент, поки не пройде перевірка
+    adminContainer.style.display = "none";
+
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === ADMIN_EMAIL) {
+            // Якщо це ви — показуємо панель
+            adminContainer.style.display = "flex";
+            initAdminPanel(); 
+        } else {
+            // Якщо хтось інший — викидаємо на сторінку входу
+            alert("Доступ заборонено! Ви не є адміністратором.");
+            window.location.href = "login.html"; // Вкажіть шлях до вашої сторінки логіну
+        }
     });
 
-    const nameInp = document.getElementById('itemName');
-    const priceInp = document.getElementById('itemPrice');
-    const catInp = document.getElementById('itemCategory');
-    const descInp = document.getElementById('itemDesc');
-    const imgInp = document.getElementById('itemImg');
-    const editIdInp = document.getElementById('editId');
-
-    // Відображення товарів
-    onSnapshot(collection(db, "catalog"), (snap) => {
-        const list = document.getElementById('catalogList');
-        list.innerHTML = "";
-        snap.forEach(d => {
-            const i = d.data();
-            list.innerHTML += `
-                <div class="item-card">
-                    <div><b>${i.name}</b> (${i.price} грн)</div>
-                    <div class="btn-group">
-                        <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')">Ред.</button>
-                        <button class="btn-delete" onclick="deleteItem('${d.id}')">Вид.</button>
-                    </div>
-                </div>`;
+    // Обернемо всю вашу логіку у функцію, яка запускається тільки для адміна
+    function initAdminPanel() {
+        // Логіка акордеона
+        document.querySelectorAll(".collapsible").forEach(button => {
+            button.onclick = function() {
+                this.classList.toggle("active-tab");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            };
         });
-    });
 
-    // Відображення замовлень
-    onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
-        const boxNew = document.getElementById('listNew');
-        const boxActive = document.getElementById('listActive');
-        boxNew.innerHTML = ""; boxActive.innerHTML = "";
+        const nameInp = document.getElementById('itemName');
+        const priceInp = document.getElementById('itemPrice');
+        const catInp = document.getElementById('itemCategory');
+        const descInp = document.getElementById('itemDesc');
+        const imgInp = document.getElementById('itemImg');
+        const editIdInp = document.getElementById('editId');
 
-        snap.forEach(d => {
-            const o = d.data();
-            if (o.archivedByAdmin) return;
-            const isWorking = o.status === "В роботі";
-            
-            const fileLink = o.fileUrl || o.fileURL || o.file;
-            const downloadBtn = fileLink ? 
-                `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : 
-                `<span style="color:#444; font-size:11px;">Немає файлу</span>`;
-
-            // Формування посилання на Telegram
-            const tgClean = o.telegram ? o.telegram.replace('@', '').trim() : '';
-            const tgDisplay = o.telegram || 'Не вказано';
-            const tgAction = tgClean.startsWith('+') ? `https://t.me/${tgClean}` : `https://t.me/${tgClean}`;
-
-            const card = `
-                <div class="order-card">
-                    <div>
-                        <b style="color:#f39c12;">${o.name || 'Замовлення'}</b><br>
-                        <a href="${tgAction}" target="_blank" class="tg-link">✈️ TG: ${tgDisplay}</a>
-                        <small>${o.material || ''} | ${o.userEmail || ''}</small>
-                    </div>
-                    <div class="btn-group">
-                        ${downloadBtn} 
-                        <button class="btn-chat" onclick="openChat('${o.userId}', '${o.name}')">ЧАТ</button>
-                        ${!isWorking ? `<button class="btn-action" onclick="updOrder('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '👌'}
-                        <button class="btn-delete" style="background:#555" onclick="archiveOrder('${d.id}')">АРХІВ</button>
-                    </div>
-                </div>`;
-            if (isWorking) boxActive.innerHTML += card;
-            else boxNew.innerHTML += card;
+        // Відображення товарів
+        onSnapshot(collection(db, "catalog"), (snap) => {
+            const list = document.getElementById('catalogList');
+            list.innerHTML = "";
+            snap.forEach(d => {
+                const i = d.data();
+                list.innerHTML += `
+                    <div class="item-card">
+                        <div><b>${i.name}</b> (${i.price} грн)</div>
+                        <div class="btn-group">
+                            <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')">Ред.</button>
+                            <button class="btn-delete" onclick="deleteItem('${d.id}')">Вид.</button>
+                        </div>
+                    </div>`;
+            });
         });
-    });
 
-    // Функції
-    window.openChat = (uid, orderName) => {
-        // Тимчасова заглушка. Тут буде відкриватися вікно чату.
-        alert("Відкриваємо чат з користувачем по замовленню: " + orderName);
-        // window.location.href = `chat.html?uid=${uid}`; // На майбутнє
-    };
+        // Відображення замовлень
+        onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
+            const boxNew = document.getElementById('listNew');
+            const boxActive = document.getElementById('listActive');
+            boxNew.innerHTML = ""; boxActive.innerHTML = "";
+            snap.forEach(d => {
+                const o = d.data();
+                if (o.archivedByAdmin) return;
+                const isWorking = o.status === "В роботі";
+                const fileLink = o.fileUrl || o.fileURL || o.file;
+                const downloadBtn = fileLink ? `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : `<span style="color:#444; font-size:11px;">Немає файлу</span>`;
+                const tgClean = o.telegram ? o.telegram.replace('@', '').trim() : '';
+                const tgAction = `https://t.me/${tgClean}`;
 
-    window.startEdit = (id, n, p, c, d, i) => {
-        editIdInp.value = id; nameInp.value = n; priceInp.value = p; catInp.value = c; descInp.value = d; imgInp.value = i;
-        document.getElementById('formTitle').innerText = "Редагування";
-        document.getElementById('cancelEditBtn').style.display = "block";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+                const card = `
+                    <div class="order-card">
+                        <div>
+                            <b style="color:#f39c12;">${o.name || 'Замовлення'}</b><br>
+                            <a href="${tgAction}" target="_blank" class="tg-link">✈️ TG: ${o.telegram || 'Не вказано'}</a>
+                            <small>${o.material || ''} | ${o.userEmail || ''}</small>
+                        </div>
+                        <div class="btn-group">
+                            ${downloadBtn} 
+                            <button class="btn-chat" onclick="openChat('${o.userId}', '${o.name}')">ЧАТ</button>
+                            ${!isWorking ? `<button class="btn-action" onclick="updOrder('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '👌'}
+                            <button class="btn-delete" style="background:#555" onclick="archiveOrder('${d.id}')">АРХІВ</button>
+                        </div>
+                    </div>`;
+                if (isWorking) boxActive.innerHTML += card;
+                else boxNew.innerHTML += card;
+            });
+        });
 
-    window.updOrder = async (id, s) => { await updateDoc(doc(db, "orders", id), { status: s }); };
-    window.archiveOrder = async (id) => { await updateDoc(doc(db, "orders", id), { archivedByAdmin: true }); };
-    window.deleteItem = async (id) => { if(confirm("Видалити товар?")) await deleteDoc(doc(db, "catalog", id)); };
+        // Глобальні функції
+        window.startEdit = (id, n, p, c, d, i) => {
+            editIdInp.value = id; nameInp.value = n; priceInp.value = p; catInp.value = c; descInp.value = d; imgInp.value = i;
+            document.getElementById('formTitle').innerText = "Редагування";
+            document.getElementById('cancelEditBtn').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
 
-    document.getElementById('saveItemBtn').onclick = async () => {
-        const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
-        if(editIdInp.value) await updateDoc(doc(db, "catalog", editIdInp.value), data);
-        else await addDoc(collection(db, "catalog"), data);
-        resetForm();
-    };
+        window.updOrder = async (id, s) => { await updateDoc(doc(db, "orders", id), { status: s }); };
+        window.archiveOrder = async (id) => { await updateDoc(doc(db, "orders", id), { archivedByAdmin: true }); };
+        window.deleteItem = async (id) => { if(confirm("Видалити товар?")) await deleteDoc(doc(db, "catalog", id)); };
 
-    function resetForm() {
-        editIdInp.value = ""; nameInp.value = ""; priceInp.value = ""; descInp.value = ""; imgInp.value = "";
-        document.getElementById('formTitle').innerText = "Додати новий товар";
-        document.getElementById('cancelEditBtn').style.display = "none";
+        document.getElementById('saveItemBtn').onclick = async () => {
+            const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
+            if(editIdInp.value) await updateDoc(doc(db, "catalog", editIdInp.value), data);
+            else await addDoc(collection(db, "catalog"), data);
+            resetForm();
+        };
+
+        function resetForm() {
+            editIdInp.value = ""; nameInp.value = ""; priceInp.value = ""; descInp.value = ""; imgInp.value = "";
+            document.getElementById('formTitle').innerText = "Додати новий товар";
+            document.getElementById('cancelEditBtn').style.display = "none";
+        }
+        document.getElementById('cancelEditBtn').onclick = resetForm;
     }
-    window.resetForm = resetForm;
-    document.getElementById('cancelEditBtn').onclick = resetForm;
-</script>
-</body>
-</html>
+                </script>
+                
