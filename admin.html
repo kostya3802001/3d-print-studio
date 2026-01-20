@@ -4,70 +4,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Адмін-панель — 3D-PRINT STUDIO</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
-        .admin-container { max-width: 900px; margin: 0 auto; }
+        body { background-color: #000; margin: 0; padding: 0; }
         
-        /* Секція додавання */
-        .add-section { background: #0d0d0d; padding: 20px; border-radius: 12px; border: 2px solid #f39c12; margin-bottom: 30px; }
-        .add-section input, .add-section textarea, .add-section select { 
-            width: 100%; padding: 10px; margin: 10px 0; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 6px; 
+        .admin-container { 
+            max-width: 800px; 
+            margin: 0 auto;  
+            padding: 40px 20px; 
+            background: #000; 
+            color: #fff; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+        
+        .admin-section { 
+            width: 100%;
+            background: #0d0d0d; 
+            padding: 25px; 
+            border-radius: 12px; 
+            border: 2px solid #f39c12; 
+            margin-bottom: 30px;
+            box-sizing: border-box;
+            text-align: center; 
         }
 
-        /* Акордеон */
-        .collapsible { 
-            background: #1a1a1a; color: #f39c12; cursor: pointer; padding: 15px; width: 100%; 
-            border: 1px solid #333; text-align: left; font-size: 18px; font-weight: bold; 
-            border-radius: 8px; margin-top: 10px; outline: none; transition: 0.3s;
+        .admin-section input, .admin-section textarea, .admin-section select {
+            width: 100%; 
+            max-width: 500px; 
+            padding: 12px; 
+            margin: 10px auto; 
+            display: block; 
+            background: #151515; 
+            border: 1px solid #333; 
+            color: white; 
+            border-radius: 8px;
+            box-sizing: border-box;
         }
-        .active, .collapsible:hover { background: #222; border-color: #f39c12; }
-        .content { max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background: #000; padding: 0 10px; }
 
-        /* Картки замовлень */
-        .card { 
-            background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; 
-            margin: 10px 0; display: flex; justify-content: space-between; align-items: center; 
+        .collapsible {
+            background-color: #1a1a1a;
+            color: #f39c12;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            max-width: 600px; 
+            border: 1px solid #333;
+            text-align: center; 
+            outline: none;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            transition: 0.3s;
+            position: relative;
         }
-        .btn-group { display: flex; gap: 10px; }
-        button { cursor: pointer; border: none; border-radius: 5px; padding: 8px 15px; font-weight: bold; }
-        .btn-save { background: #27ae60; color: #fff; width: 100%; padding: 12px; }
-        .btn-action { background: #2980b9; color: #fff; }
-        .btn-del { background: #c0392b; color: #fff; }
-        .btn-tg { background: #3498db; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 5px; font-size: 13px; }
-        .btn-file { background: #e67e22; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 5px; font-size: 13px; }
+
+        .active-tab, .collapsible:hover { background-color: #222; border-color: #f39c12; }
+
+        .collapsible:after {
+            content: '\002B';
+            color: #f39c12;
+            font-size: 24px;
+            position: absolute;
+            right: 20px;
+        }
+
+        .active-tab:after { content: "\2212"; }
+
+        .content {
+            width: 100%;
+            max-width: 600px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #000;
+        }
+
+        .order-card, .item-card {
+            background: #0d0d0d; 
+            border: 1px solid #222; 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin: 15px 0;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 15px;
+            text-align: left; 
+        }
+
+        .btn-group { display: flex; gap: 8px; justify-content: center; align-items: center; }
+        .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; }
+        .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        
+        .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
+
+        @media (max-width: 600px) {
+            .order-card, .item-card { flex-direction: column; text-align: center; }
+            .btn-group { flex-wrap: wrap; }
+        }
     </style>
 </head>
 <body>
 
 <div class="admin-container">
-    <h1 style="color: #f39c12; text-align: center;">ADMIN PANEL</h1>
-
-    <div class="add-section">
-        <h3 id="formTitle">Додати новий товар</h3>
+    <div class="admin-section">
+        <h2 id="formTitle" style="margin-top:0; color:#f39c12;">Додати новий товар</h2>
         <input type="hidden" id="editId">
-        <input type="text" id="itemName" placeholder="Назва товару">
-        <input type="text" id="itemPrice" placeholder="Ціна (грн)">
+        <input type="text" id="itemName" placeholder="Назва">
+        <input type="text" id="itemPrice" placeholder="Ціна">
         <select id="itemCategory">
-            <option value="figures">Фігурки</option>
-            <option value="parts">Деталі</option>
+            <option value="figures">Фігурка</option>
+            <option value="parts">Деталь</option>
         </select>
-        <textarea id="itemDesc" placeholder="Опис товару" rows="3"></textarea>
+        <textarea id="itemDesc" placeholder="Опис" rows="2"></textarea>
         <input type="text" id="itemImg" placeholder="URL картинки">
-        <button class="btn-save" id="saveBtn">ЗБЕРЕГТИ ТОВАР</button>
+        <div class="btn-group">
+            <button class="btn-action" id="saveItemBtn">ЗБЕРЕГТИ ТОВАР</button>
+            <button id="cancelEditBtn" style="display:none; background:#444; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">СКАСУВАТИ</button>
+        </div>
     </div>
 
-    <button class="collapsible">📦 Всі товари на сайті</button>
-    <div class="content"><div id="catalogList"></div></div>
+    <button class="collapsible">Всі товари на сайті</button>
+    <div class="content">
+        <div id="catalogList"></div>
+    </div>
 
-    <button class="collapsible">🔔 Нові замовлення</button>
-    <div class="content"><div id="listNew"></div></div>
+    <button class="collapsible">Нові замовлення</button>
+    <div class="content">
+        <div id="listNew"></div>
+    </div>
 
-    <button class="collapsible">🛠️ Замовлення в роботі</button>
-    <div class="content"><div id="listActive"></div></div>
+    <button class="collapsible">Замовлення у роботі</button>
+    <div class="content">
+        <div id="listActive"></div>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -80,29 +164,47 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
     // Логіка акордеона
-    document.querySelectorAll(".collapsible").forEach(btn => {
-        btn.onclick = function() {
-            this.classList.toggle("active");
-            let content = this.nextElementSibling;
-            content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
-        };
+    document.querySelectorAll(".collapsible").forEach(button => {
+        button.addEventListener("click", function() {
+            this.classList.toggle("active-tab");
+            var content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                const observer = new MutationObserver(() => {
+                    if (content.style.maxHeight !== "0px" && content.style.maxHeight !== "") {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+                observer.observe(content, { childList: true, subtree: true });
+            }
+        });
     });
+
+    const nameInp = document.getElementById('itemName');
+    const priceInp = document.getElementById('itemPrice');
+    const catInp = document.getElementById('itemCategory');
+    const descInp = document.getElementById('itemDesc');
+    const imgInp = document.getElementById('itemImg');
+    const editIdInp = document.getElementById('editId');
 
     // Відображення товарів
     onSnapshot(collection(db, "catalog"), (snap) => {
-        const box = document.getElementById('catalogList');
-        box.innerHTML = "";
+        const list = document.getElementById('catalogList');
+        list.innerHTML = "";
         snap.forEach(d => {
             const i = d.data();
-            box.innerHTML += `
-                <div class="card">
-                    <span><b>${i.name}</b> - ${i.price} грн</span>
+            list.innerHTML += `
+                <div class="item-card">
+                    <div><b>${i.name}</b> (${i.price} грн)</div>
                     <div class="btn-group">
-                        <button class="btn-action" onclick="editItem('${d.id}','${i.name}','${i.price}','${i.category}','${i.desc}','${i.img}')">Ред.</button>
-                        <button class="btn-del" onclick="deleteItem('${d.id}')">Видалити</button>
+                        <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')">Ред.</button>
+                        <button class="btn-delete" onclick="deleteItem('${d.id}')">Вид.</button>
                     </div>
                 </div>`;
         });
@@ -117,65 +219,59 @@
         snap.forEach(d => {
             const o = d.data();
             if (o.archivedByAdmin) return;
-
-            const fileUrl = o.fileUrl || o.fileURL || o.file;
-            const tgLink = o.telegram ? o.telegram.replace('@', '') : '';
+            const isWorking = o.status === "В роботі";
+            
+            // ВИПРАВЛЕНО: Перевіряємо і fileUrl (маленька l), і fileURL (велика L)
+            const fileLink = o.fileUrl || o.fileURL || o.file;
+            
+            const downloadBtn = fileLink ? 
+                `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : 
+                `<span style="color:#444; font-size:11px;">Немає файлу</span>`;
 
             const card = `
-                <div class="card">
+                <div class="order-card">
                     <div>
-                        <b style="color:#f39c12;">${o.name || 'Замовлення'}</b><br>
-                        <small>${o.material || 'Пластик'} | ${o.userEmail || ''}</small>
+                        <b>${o.name || 'Замовлення'}</b><br>
+                        <small>${o.material || ''} | ${o.userEmail || ''}</small>
                     </div>
                     <div class="btn-group">
-                        ${fileUrl ? `<a href="${fileUrl}" target="_blank" class="btn-file">📂 ФАЙЛ</a>` : ''}
-                        <a href="https://t.me/${tgLink}" target="_blank" class="btn-tg">✈️ TG</a>
-                        ${o.status !== 'В роботі' ? `<button class="btn-action" onclick="updateStatus('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '✅'}
-                        <button class="btn-del" style="background:#444" onclick="archiveOrder('${d.id}')">АРХІВ</button>
+                        ${downloadBtn} 
+                        ${!isWorking ? `<button class="btn-action" onclick="updOrder('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '👌'}
+                        <button class="btn-delete" style="background:#555" onclick="archiveOrder('${d.id}')">АРХІВ</button>
                     </div>
                 </div>`;
-            
-            if (o.status === 'В роботі') boxActive.innerHTML += card;
+            if (isWorking) boxActive.innerHTML += card;
             else boxNew.innerHTML += card;
         });
     });
 
-    // Функції керування
-    window.updateStatus = async (id, s) => { await updateDoc(doc(db, "orders", id), { status: s }); };
+    // Функції
+    window.startEdit = (id, n, p, c, d, i) => {
+        editIdInp.value = id; nameInp.value = n; priceInp.value = p; catInp.value = c; descInp.value = d; imgInp.value = i;
+        document.getElementById('formTitle').innerText = "Редагування";
+        document.getElementById('cancelEditBtn').style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.updOrder = async (id, s) => { await updateDoc(doc(db, "orders", id), { status: s }); };
     window.archiveOrder = async (id) => { await updateDoc(doc(db, "orders", id), { archivedByAdmin: true }); };
     window.deleteItem = async (id) => { if(confirm("Видалити товар?")) await deleteDoc(doc(db, "catalog", id)); };
 
-    window.editItem = (id, n, p, c, d, i) => {
-        document.getElementById('editId').value = id;
-        document.getElementById('itemName').value = n;
-        document.getElementById('itemPrice').value = p;
-        document.getElementById('itemCategory').value = c;
-        document.getElementById('itemDesc').value = d;
-        document.getElementById('itemImg').value = i;
-        document.getElementById('formTitle').innerText = "Редагування товару";
-        window.scrollTo(0,0);
+    document.getElementById('saveItemBtn').onclick = async () => {
+        const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
+        if(editIdInp.value) await updateDoc(doc(db, "catalog", editIdInp.value), data);
+        else await addDoc(collection(db, "catalog"), data);
+        resetForm();
     };
 
-    document.getElementById('saveBtn').onclick = async () => {
-        const id = document.getElementById('editId').value;
-        const data = {
-            name: document.getElementById('itemName').value,
-            price: document.getElementById('itemPrice').value,
-            category: document.getElementById('itemCategory').value,
-            desc: document.getElementById('itemDesc').value,
-            img: document.getElementById('itemImg').value,
-            timestamp: new Date()
-        };
-        if(id) await updateDoc(doc(db, "catalog", id), data);
-        else await addDoc(collection(db, "catalog"), data);
-        
-        document.getElementById('editId').value = "";
-        document.getElementById('itemName').value = "";
-        document.getElementById('itemPrice').value = "";
-        document.getElementById('itemDesc').value = "";
-        document.getElementById('itemImg').value = "";
+    function resetForm() {
+        editIdInp.value = ""; nameInp.value = ""; priceInp.value = ""; descInp.value = ""; imgInp.value = "";
         document.getElementById('formTitle').innerText = "Додати новий товар";
-    };
+        document.getElementById('cancelEditBtn').style.display = "none";
+    }
+    window.resetForm = resetForm;
+    document.getElementById('cancelEditBtn').onclick = resetForm;
 </script>
 </body>
 </html>
+
