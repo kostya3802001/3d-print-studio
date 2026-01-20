@@ -23,14 +23,15 @@
         }
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
-        .card img { .card img {
-    width: 100%;
-    height: 250px;
-    /* contain гарантує, що фото буде видно повністю */
-    object-fit: contain; 
-    /* Додаємо темний фон, щоб навколо вузьких фото не було білих дір */
-    background: #0a0a0a; 
-    padding: 10px; /* Трохи відступу, щоб фото не прилипало до країв */ }
+        /* ВИПРАВЛЕНО: Стилі для повного відображення фото */
+        .card img {
+            width: 100%;
+            height: 250px;
+            object-fit: contain; /* Фото тепер видно повністю */
+            background: #0a0a0a; /* Чорний фон для заповнення країв */
+            padding: 10px; 
+            display: block;
+        }
 
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
@@ -49,7 +50,7 @@
 
 <header>
     <div class="logo">
-        <img src="log img/Логотип.jpg" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+        <img src="log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
         3D-PRINT STUDIO
     </div>
     <nav>
@@ -86,11 +87,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // --- НАЛАШТУВАННЯ GITHUB ---
     const githubUserRepo = "kostya3802001/3d-print-studio"; 
     const githubURL = `https://raw.githubusercontent.com/${githubUserRepo}/main/`;
 
-    // Запит тільки для "parts"
     const q = query(collection(db, "catalog"), where("category", "==", "parts"));
 
     onSnapshot(q, (snapshot) => {
@@ -105,18 +104,17 @@
         snapshot.forEach(doc => {
             const item = doc.data();
             
-            // Обробка фото з GitHub
             let finalImg = item.img || '';
             if (finalImg && !finalImg.startsWith('http')) {
-                // Видаляємо початковий слеш, якщо він є
                 const cleanImgPath = finalImg.startsWith('/') ? finalImg.substring(1) : finalImg;
                 finalImg = githubURL + cleanImgPath;
             }
-            if (!finalImg) finalImg = 'log img/Логотип.jpg';
+            // Використовуємо %20 для пробілу в назві папки логотипу
+            if (!finalImg) finalImg = 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
 
             container.innerHTML += `
                 <div class="card">
-                    <img src="${finalImg}" alt="${item.name}" onerror="this.src='log img/Логотип.jpg'">
+                    <img src="${finalImg}" alt="${item.name}" onerror="this.src='log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg'">
                     <div class="card-body">
                         <h3>${item.name}</h3>
                         <p style="color: #888; font-size: 14px; margin-bottom: 15px;">${item.desc || ''}</p>
@@ -129,4 +127,3 @@
 </script>
 </body>
 </html>
-
