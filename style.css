@@ -5,6 +5,7 @@ body {
     background-color: #050505;
     color: #fff;
     font-family: Arial, sans-serif;
+    overflow-x: hidden; /* Запобігає горизонтальній прокрутці на мобілці */
 }
 
 header {
@@ -56,6 +57,7 @@ nav a:hover {
     align-items: center;
     text-align: center;
     background: radial-gradient(circle, #1a1a1a 0%, #050505 100%);
+    padding: 0 20px;
 }
 
 .hero h1 {
@@ -162,4 +164,65 @@ footer {
     border-top: 1px solid #222;
     color: #777;
     font-size: 14px;
+}
+
+/* --- ОПТИМІЗАЦІЯ ДЛЯ ТЕЛЕФОНІВ (Мобільна версія) --- */
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column; /* Логотип зверху, меню знизу */
+        padding: 20px;
+    }
+
+    .logo {
+        margin-bottom: 15px;
+        font-size: 20px;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap; /* Дозволяє посиланням переноситись на новий рядок */
+        justify-content: center;
+        gap: 10px;
+    }
+
+    nav a {
+        margin-left: 0;
+        font-size: 14px;
+        padding: 5px 10px;
+        background: #111; /* Робимо посилання схожими на кнопки */
+        border-radius: 4px;
+    }
+
+    .lang {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .hero h1 {
+        font-size: 28px; /* Менший заголовок */
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr; /* Картки стають одна під одною (в 1 колонку) */
+        gap: 20px;
+    }
+
+    .section {
+        padding: 30px 5%; /* Менші відступи по боках */
+    }
+
+    .section-title {
+        font-size: 24px;
+    }
+
+    .card img {
+        height: 180px; /* Трохи менша висота картинок */
+    }
 }
