@@ -2,7 +2,8 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Замовити друк — 3D-PRINT STUDIO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Замовити друк — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .order-container { 
@@ -22,7 +23,8 @@
             border: 1px solid #333; 
             color: #fff; 
             border-radius: 8px; 
-            font-size: 16px; /* Запобігає авто-зуму в iOS */
+            font-size: 16px;
+            box-sizing: border-box;
         }
         .btn-send { 
             width: 100%; 
@@ -37,16 +39,8 @@
         }
         .btn-send:disabled { background: #555; cursor: not-allowed; }
 
-        /* --- МОБІЛЬНА АДАПТАЦІЯ --- */
         @media (max-width: 768px) {
-            .order-container {
-                margin: 20px 10px; /* Зменшуємо відступи зверху та додаємо по боках */
-                padding: 20px;
-                border-radius: 10px;
-            }
-            h1 { font-size: 22px; }
-            label { font-size: 14px; }
-            input, textarea, select { padding: 10px; }
+            .order-container { margin: 20px 10px; padding: 20px; }
         }
     </style>
 </head>
@@ -100,39 +94,55 @@
     const storage = getStorage(app);
 
     let userUID = null;
-    onAuthStateChanged(auth, (user) => { userUID = user ? user.uid : null; });
+    let userEmail = null;
+    onAuthStateChanged(auth, (user) => { 
+        if (user) {
+            userUID = user.uid;
+            userEmail = user.email;
+        } else {
+            userUID = null;
+            userEmail = null;
+        }
+    });
 
     document.getElementById('orderForm').onsubmit = async (e) => {
         e.preventDefault();
-        if (!userUID) return alert("Увійдіть в акаунт!");
+        if (!userUID) return alert("Будь ласка, увійдіть в акаунт, щоб зробити замовлення!");
 
         const btn = document.getElementById('submitBtn');
         const file = document.getElementById('fileInput').files[0];
-        btn.innerText = "Завантаження..."; btn.disabled = true;
+        btn.innerText = "Завантаження файлу..."; btn.disabled = true;
 
         try {
-            let fileUrl = null;
+            let finalFileUrl = null;
+
             if (file) {
-                const storageRef = ref(storage, `orders/${Date.now()}_${file.name}`);
-                await uploadBytes(storageRef, file);
-                fileUrl = await getDownloadURL(storageRef);
+                // Завантаження у Storage
+                const storageRef = ref(storage, `orders/${userUID}/${Date.now()}_${file.name}`);
+                const uploadResult = await uploadBytes(storageRef, file);
+                finalFileUrl = await getDownloadURL(uploadResult.ref);
             }
 
+            // Додавання замовлення у Firestore
+            // ВАЖЛИВО: Використовуємо назву поля fileURL (велика URL), щоб адмінка її бачила
             await addDoc(collection(db, "orders"), {
                 userId: userUID,
+                userEmail: userEmail,
                 name: document.getElementById('orderName').value,
                 material: document.getElementById('orderMaterial').value,
                 description: document.getElementById('orderDesc').value,
-                fileUrl: fileUrl,
+                fileURL: finalFileUrl, 
                 status: "Новий",
                 timestamp: serverTimestamp()
             });
 
-            alert("Успішно!");
+            alert("Замовлення успішно відправлено!");
+            document.getElementById('orderForm').reset();
             window.location.href = "account.html";
+
         } catch (error) {
-            console.error(error);
-            alert("Помилка!");
+            console.error("Error:", error);
+            alert("Сталася помилка при відправці. Перевірте консоль.");
             btn.innerText = "ВІДПРАВИТИ ЗАМОВЛЕННЯ"; btn.disabled = false;
         }
     };
