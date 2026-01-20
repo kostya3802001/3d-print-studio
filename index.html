@@ -9,10 +9,20 @@
 <body>
 
 <header>
-    <div class="logo">
-        <img src="log img/Логотип.jpg" alt="Logo">
-        <span>3D-PRINT STUDIO</span> </div>
-    <nav>
+    <div class="logo-wrapper">
+        <a href="index.html" class="logo">
+            <img src="log img/Логотип.jpg" alt="Logo">
+            <span>3D-PRINT STUDIO</span>
+        </a>
+    </div>
+
+    <div class="mobile-menu-toggle" id="mobileMenuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <nav id="navMenu">
         <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
         <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
         <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
@@ -42,41 +52,12 @@
             <img src="log img/stl.png" alt="STL">
             <div class="card-body">
                 <h3 data-ua="Друк за вашим STL" data-pl="Druk z Twojego STL">Друк за вашим STL</h3>
-                <p data-ua="Точний прорахунок, контроль якості та стабільний промисловий результат." 
-                   data-pl="Dokładna kalkulacja, kontrola jakości i stabilny wynik przemysłowy.">
-                    Точний прорахунок, контроль якості та стабільний промисловий результат.
-                </p>
+                <p data-ua="Точний прорахунок, контроль якості та стабільний промисловий результат.">Точний прорахунок, контроль якості та стабільний промисловий результат.</p>
                 <div class="price" data-ua="від 5 грн / г" data-pl="od 0.5 PLN / g">від 5 грн / г</div>
                 <a href="order.html" class="btn" data-ua="Замовити" data-pl="Zamów">Замовити</a>
             </div>
         </div>
-
-        <div class="card">
-            <img src="log img/fig.png" alt="Figures">
-            <div class="card-body">
-                <h3 data-ua="Готові фігурки" data-pl="Gotowe figurki">Готові фігурки</h3>
-                <p data-ua="Колекційні моделі, герої ігор та фільмів. Висока деталізація." 
-                   data-pl="Modele kolekcjonerskie, bohaterowie gier i filmów. Wysoka szczegółowość.">
-                    Колекційні моделі, герої ігор та фільмів. Висока деталізація.
-                </p>
-                <div class="price" data-ua="від 75 грн" data-pl="od 8 PLN">від 75 грн</div>
-                <a href="figures.html" class="btn" data-ua="У каталог" data-pl="Do katalogu">У каталог</a>
-            </div>
         </div>
-
-        <div class="card">
-            <img src="log img/parts.png" alt="Parts">
-            <div class="card-body">
-                <h3 data-ua="Технічні деталі" data-pl="Części techniczne">Технічні деталі</h3>
-                <p data-ua="Шестерні, корпуси, кріплення, прототипи та дрібносерійне виробництво." 
-                   data-pl="Koła zębate, obudowy, mocowania, prototypy i produkcja niskoseryjna.">
-                    Шестерні, корпуси, кріплення, прототипи та дрібносерійне виробництво.
-                </p>
-                <div class="price" data-ua="індивідуально" data-pl="indywidualnie">індивідуально</div>
-                <a href="parts.html" class="btn" data-ua="Детальніше" data-pl="Szczєgóły">Детальніше</a>
-            </div>
-        </div>
-    </div>
 </section>
 
 <footer>
@@ -86,6 +67,17 @@
 </footer>
 
 <script src="lang.js"></script>
+
+<script>
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navMenu = document.getElementById('navMenu');
+
+    mobileMenuBtn.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        mobileMenuBtn.classList.toggle('open');
+    });
+</script>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -106,7 +98,6 @@
     const link = document.getElementById('accountLink');
     if (user) {
       link.href = "account.html";
-      // Враховуємо мову при зміні тексту (якщо мова UA)
       const currentLang = document.getElementById('langToggle').innerText.includes('UA') ? 'PL' : 'UA'; 
       link.innerText = (currentLang === 'UA') ? "Gabinet" : "Мій Профіль";
     }
