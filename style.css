@@ -85,52 +85,58 @@ nav a:hover {
     text-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
 }
 
-/* СТИЛЬ КНОПОК ЯК НА СКРІНШОТІ */
+/* КНОПКИ З ОБВОДКОЮ ТА КОНТРАСТОМ (ЯК НА СКРІНШОТІ) */
 .cta, .card-btn {
     display: inline-block;
-    padding: 14px 30px;
+    padding: 14px 40px;
     background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    color: #000;
+    color: #000 !important; /* ЧОРНИЙ ТЕКСТ ОБОВ'ЯЗКОВО */
     text-decoration: none;
     font-weight: bold;
-    border-radius: 12px; /* Більш закруглені кути як на скріншоті */
-    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.2);
+    border-radius: 12px;
+    border: 2px solid #f39c12; /* ЧІТКА ОБВОДКА */
+    box-shadow: 0 4px 20px rgba(243, 156, 18, 0.4); /* ЕФЕКТ СВІТІННЯ */
     transition: 0.3s;
     border: none;
     cursor: pointer;
     text-align: center;
-    margin-top: 15px;
+    margin-top: 20px;
+    width: auto;
 }
 
 .cta:hover, .card-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(243, 156, 18, 0.6);
     filter: brightness(1.1);
 }
 
 /* Скляні картки */
-.card, .auth-container {
-    background: rgba(20, 20, 20, 0.6);
+.card {
+    background: rgba(20, 20, 20, 0.8); /* Трохи темніше для контрасту */
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(243, 156, 18, 0.1);
     border-radius: 15px;
     overflow: hidden;
-    padding: 20px;
+    padding: 25px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Центрування контенту та кнопки всередині */
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    justify-content: space-between; /* Кнопка завжди буде знизу */
+    align-items: center;
+    transition: 0.4s ease;
 }
 
 .card img {
     width: 100%;
+    height: 200px;
+    object-fit: cover;
     border-radius: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .card:hover {
     border-color: rgba(243, 156, 18, 0.5);
     transform: translateY(-10px);
+    background: rgba(30, 30, 30, 0.9);
 }
 
 /* ГОРИЗОНТАЛЬНА СІТКА */
@@ -138,7 +144,7 @@ nav a:hover {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
     gap: 30px;
-    padding: 40px 5%;
+    padding: 60px 5%;
 }
 
 /* --- МОБІЛЬНА ВЕРСІЯ --- */
