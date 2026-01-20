@@ -34,7 +34,6 @@
         }
         .logout-btn:hover { background: #ff4d4d; color: #000; }
 
-        /* Картки замовлень */
         .order-card {
             background: #111;
             border: 1px solid #222;
@@ -43,7 +42,6 @@
             margin-bottom: 20px;
             transition: transform 0.2s;
         }
-        .order-card:hover { transform: translateY(-3px); border-color: #333; }
 
         .status-badge {
             display: inline-block;
@@ -57,41 +55,46 @@
             margin-bottom: 15px;
         }
 
-        /* Зміна стилю, коли статус "В роботі" */
         .status-confirmed {
             border-color: var(--green);
             color: var(--green);
             background: rgba(39, 174, 96, 0.1);
         }
 
-        .order-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .order-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
         .order-date { font-size: 12px; color: #555; }
         .order-title { color: var(--orange); font-size: 20px; margin: 10px 0; }
         .order-desc { color: #aaa; font-size: 14px; line-height: 1.5; background: #080808; padding: 10px; border-radius: 8px; }
         
-        .empty-msg { text-align: center; color: #666; margin-top: 50px; }
+        /* Мобільна адаптація */
+        @media (max-width: 600px) {
+            .profile-wrapper { margin: 20px auto; padding: 10px; }
+            .user-info-panel { padding: 15px; }
+            .order-header { flex-direction: column; }
+            .order-title { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
 
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: #000;">
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: #000; border-bottom: 1px solid #222;">
     <div class="logo" style="font-weight: bold; color: var(--orange);">3D-PRINT STUDIO</div>
     <nav>
-        <a href="index.html" style="color: white; text-decoration: none; margin-left: 20px;">Головна</a>
-        <a href="order.html" style="color: white; text-decoration: none; margin-left: 20px;">Замовити</a>
+        <a href="index.html" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Головна</a>
+        <a href="order.html" style="color: white; text-decoration: none; margin-left: 15px; font-size: 14px;">Замовити</a>
     </nav>
 </header>
 
 <div class="profile-wrapper">
     <div class="user-info-panel">
-        <h1 style="margin-bottom: 5px;">Вітаємо!</h1>
-        <p id="userEmail" style="font-size: 18px; color: #ccc;">Завантаження...</p>
-        <button id="logoutBtn" class="logout-btn">Змінити акаунт (Вийти)</button>
+        <h1 style="margin-bottom: 5px; font-size: 24px;">Вітаємо!</h1>
+        <p id="userEmail" style="font-size: 16px; color: #ccc;">Завантаження...</p>
+        <button id="logoutBtn" class="logout-btn">Вийти з акаунту</button>
     </div>
 
-    <h2 style="margin-bottom: 25px;">Мої замовлення</h2>
+    <h2 style="margin-bottom: 25px; font-size: 22px; border-left: 4px solid var(--orange); padding-left: 15px;">Мої замовлення</h2>
     <div id="ordersContainer">
-        <p class="empty-msg">Шукаємо ваші замовлення у базі...</p>
+        <p style="text-align: center; color: #666;">Шукаємо ваші замовлення...</p>
     </div>
 </div>
 
@@ -113,13 +116,11 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 1. ПЕРЕВІРКА ВХОДУ ТА ВИХІД
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('userEmail').innerText = user.email;
             loadOrders(user.uid);
         } else {
-            // Якщо не залогінений - відправляємо на вхід
             window.location.href = "login.html";
         }
     });
@@ -128,8 +129,8 @@
         signOut(auth).then(() => window.location.href = "login.html");
     });
 
-    // 2. ЗАВАНТАЖЕННЯ ЗАМОВЛЕНЬ (LIVE)
     function loadOrders(uid) {
+        // Тут ми НЕ фільтруємо за archivedByAdmin, тому користувач бачить ВСЕ
         const q = query(
             collection(db, "orders"),
             where("userId", "==", uid),
@@ -141,48 +142,31 @@
             container.innerHTML = "";
 
             if (snapshot.empty) {
-                container.innerHTML = `
-                    <div class="empty-msg">
-                        <p>Ви ще не створили жодного замовлення.</p>
-                        <a href="order.html" style="color: var(--orange);">Створити зараз?</a>
-                    </div>`;
+                container.innerHTML = `<p style="text-align:center; color:#555;">У вас ще немає замовлень.</p>`;
                 return;
             }
 
             snapshot.forEach((doc) => {
                 const order = doc.data();
                 const date = order.timestamp ? order.timestamp.toDate().toLocaleString('uk-UA') : "Щойно";
-                
-                // Перевірка статусу (В роботі / Очікується)
                 const isConfirmed = order.status === "В роботі";
-                const statusText = isConfirmed ? "Взято в роботу" : "Очікується підтвердження майстра";
-                const statusClass = isConfirmed ? "status-badge status-confirmed" : "status-badge";
-
+                
                 container.innerHTML += `
                     <div class="order-card">
                         <div class="order-header">
-                            <span class="${statusClass}">${statusText}</span>
+                            <span class="status-badge ${isConfirmed ? 'status-confirmed' : ''}">
+                                ${isConfirmed ? 'Взято в роботу' : 'Очікує підтвердження'}
+                            </span>
                             <span class="order-date">${date}</span>
                         </div>
-                        <h3 class="order-title">${order.name || 'Замовлення на 3D друк'}</h3>
-                        <p style="margin-bottom: 10px; font-size: 14px;">
-                            <strong>Матеріал:</strong> ${order.material || 'Не вказано'}
-                        </p>
-                        <div class="order-desc">${order.description || 'Опис відсутній'}</div>
+                        <h3 class="order-title">${order.name || 'Деталь'}</h3>
+                        <p style="font-size: 14px; margin-bottom: 8px;"><strong>Матеріал:</strong> ${order.material}</p>
+                        <div class="order-desc">${order.description}</div>
                     </div>
                 `;
             });
-        }, (error) => {
-            console.error("Помилка Firestore:", error);
-            // Якщо бачиш це повідомлення - перевір Індекси у вкладці Console браузера
-            document.getElementById('ordersContainer').innerHTML = `
-                <p style="color: #ff4d4d; text-align: center; border: 1px solid red; padding: 10px;">
-                    Помилка завантаження даних. <br>
-                    Ймовірно, потрібно створити індекс у консолі Firebase (див. F12 -> Console).
-                </p>`;
         });
     }
 </script>
-
 </body>
 </html>
