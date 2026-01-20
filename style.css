@@ -85,34 +85,32 @@ nav a:hover {
     text-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
 }
 
-/* КНОПКИ З ОБВОДКОЮ ТА КОНТРАСТОМ (ЯК НА СКРІНШОТІ) */
-.cta, .card-btn {
+/* КНОПКИ: СТИЛЬ ЯК НА СКРІНШОТІ (ДЛЯ CTA ТА ПОСИЛАНЬ У КАРТКАХ) */
+.cta, .card-btn, .card a {
     display: inline-block;
-    padding: 14px 40px;
+    padding: 12px 35px;
     background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    color: #000 !important; /* ЧОРНИЙ ТЕКСТ ОБОВ'ЯЗКОВО */
-    text-decoration: none;
+    color: #000 !important; /* Текст обов'язково чорний */
+    text-decoration: none !important;
     font-weight: bold;
-    border-radius: 12px;
-    border: 2px solid #f39c12; /* ЧІТКА ОБВОДКА */
-    box-shadow: 0 4px 20px rgba(243, 156, 18, 0.4); /* ЕФЕКТ СВІТІННЯ */
-    transition: 0.3s;
-    border: none;
+    border-radius: 10px;
+    border: 2px solid #f39c12;
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+    transition: 0.3s ease;
     cursor: pointer;
     text-align: center;
-    margin-top: 20px;
-    width: auto;
+    margin-top: auto; /* Вирівнювання кнопки по низу */
 }
 
-.cta:hover, .card-btn:hover {
+.cta:hover, .card-btn:hover, .card a:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(243, 156, 18, 0.6);
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.5);
     filter: brightness(1.1);
 }
 
 /* Скляні картки */
 .card {
-    background: rgba(20, 20, 20, 0.8); /* Трохи темніше для контрасту */
+    background: rgba(20, 20, 20, 0.8);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(243, 156, 18, 0.1);
     border-radius: 15px;
@@ -120,9 +118,10 @@ nav a:hover {
     padding: 25px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Кнопка завжди буде знизу */
+    justify-content: space-between; /* Розподіляє текст і кнопку */
     align-items: center;
     transition: 0.4s ease;
+    min-height: 480px; /* Всі картки будуть однакової висоти */
 }
 
 .card img {
@@ -131,6 +130,13 @@ nav a:hover {
     object-fit: cover;
     border-radius: 10px;
     margin-bottom: 20px;
+}
+
+/* Контейнер для тексту всередині картки, щоб кнопка не липла */
+.card p {
+    margin-bottom: 20px;
+    color: #ccc;
+    text-align: center;
 }
 
 .card:hover {
@@ -159,5 +165,8 @@ nav a:hover {
     .grid {
         grid-template-columns: 1fr;
         padding: 0 20px;
+    }
+    .card {
+        min-height: auto;
     }
 }
