@@ -6,7 +6,7 @@
     <title>Адмін-панель — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background-color: #000; margin: 0; padding: 0; }
+        body { background-color: #000; margin: 0; padding: 0; font-family: sans-serif; }
         
         .admin-container { 
             max-width: 800px; 
@@ -100,16 +100,17 @@
             text-align: left; 
         }
 
-        .btn-group { display: flex; gap: 8px; justify-content: center; align-items: center; }
+        .btn-group { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
         .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; }
+        .btn-chat { background: #3498db; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         
         .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
+        .tg-link { color: #3498db; text-decoration: none; font-weight: bold; font-size: 14px; display: block; margin-top: 5px; }
 
         @media (max-width: 600px) {
             .order-card, .item-card { flex-direction: column; text-align: center; }
-            .btn-group { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -221,21 +222,26 @@
             if (o.archivedByAdmin) return;
             const isWorking = o.status === "В роботі";
             
-            // ВИПРАВЛЕНО: Перевіряємо і fileUrl (маленька l), і fileURL (велика L)
             const fileLink = o.fileUrl || o.fileURL || o.file;
-            
             const downloadBtn = fileLink ? 
                 `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : 
                 `<span style="color:#444; font-size:11px;">Немає файлу</span>`;
 
+            // Формування посилання на Telegram
+            const tgClean = o.telegram ? o.telegram.replace('@', '').trim() : '';
+            const tgDisplay = o.telegram || 'Не вказано';
+            const tgAction = tgClean.startsWith('+') ? `https://t.me/${tgClean}` : `https://t.me/${tgClean}`;
+
             const card = `
                 <div class="order-card">
                     <div>
-                        <b>${o.name || 'Замовлення'}</b><br>
+                        <b style="color:#f39c12;">${o.name || 'Замовлення'}</b><br>
+                        <a href="${tgAction}" target="_blank" class="tg-link">✈️ TG: ${tgDisplay}</a>
                         <small>${o.material || ''} | ${o.userEmail || ''}</small>
                     </div>
                     <div class="btn-group">
                         ${downloadBtn} 
+                        <button class="btn-chat" onclick="openChat('${o.userId}', '${o.name}')">ЧАТ</button>
                         ${!isWorking ? `<button class="btn-action" onclick="updOrder('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '👌'}
                         <button class="btn-delete" style="background:#555" onclick="archiveOrder('${d.id}')">АРХІВ</button>
                     </div>
@@ -246,6 +252,12 @@
     });
 
     // Функції
+    window.openChat = (uid, orderName) => {
+        // Тимчасова заглушка. Тут буде відкриватися вікно чату.
+        alert("Відкриваємо чат з користувачем по замовленню: " + orderName);
+        // window.location.href = `chat.html?uid=${uid}`; // На майбутнє
+    };
+
     window.startEdit = (id, n, p, c, d, i) => {
         editIdInp.value = id; nameInp.value = n; priceInp.value = p; catInp.value = c; descInp.value = d; imgInp.value = i;
         document.getElementById('formTitle').innerText = "Редагування";
