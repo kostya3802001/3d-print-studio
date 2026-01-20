@@ -7,111 +7,28 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { background-color: #000; margin: 0; padding: 0; font-family: sans-serif; }
-        
-        .admin-container { 
-            max-width: 800px; 
-            margin: 0 auto;  
-            padding: 40px 20px; 
-            background: #000; 
-            color: #fff; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
-        }
-        
-        .admin-section { 
-            width: 100%;
-            background: #0d0d0d; 
-            padding: 25px; 
-            border-radius: 12px; 
-            border: 2px solid #f39c12; 
-            margin-bottom: 30px;
-            box-sizing: border-box;
-            text-align: center; 
-        }
-
-        .admin-section input, .admin-section textarea, .admin-section select {
-            width: 100%; 
-            max-width: 500px; 
-            padding: 12px; 
-            margin: 10px auto; 
-            display: block; 
-            background: #151515; 
-            border: 1px solid #333; 
-            color: white; 
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-
-        .collapsible {
-            background-color: #1a1a1a;
-            color: #f39c12;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            max-width: 600px; 
-            border: 1px solid #333;
-            text-align: center; 
-            outline: none;
-            font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: flex;
-            justify-content: center; 
-            align-items: center;
-            transition: 0.3s;
-            position: relative;
-        }
-
+        .admin-container { max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        .admin-section { width: 100%; background: #0d0d0d; padding: 25px; border-radius: 12px; border: 2px solid #f39c12; margin-bottom: 30px; box-sizing: border-box; text-align: center; }
+        .admin-section input, .admin-section textarea, .admin-section select { width: 100%; max-width: 500px; padding: 12px; margin: 10px auto; display: block; background: #151515; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        .collapsible { background-color: #1a1a1a; color: #f39c12; cursor: pointer; padding: 18px; width: 100%; max-width: 600px; border: 1px solid #333; text-align: center; font-size: 18px; font-weight: bold; text-transform: uppercase; border-radius: 8px; margin-top: 15px; display: flex; justify-content: center; transition: 0.3s; position: relative; }
         .active-tab, .collapsible:hover { background-color: #222; border-color: #f39c12; }
-
-        .collapsible:after {
-            content: '\002B';
-            color: #f39c12;
-            font-size: 24px;
-            position: absolute;
-            right: 20px;
-        }
-
-        .active-tab:after { content: "\2212"; }
-
-        .content {
-            width: 100%;
-            max-width: 600px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background-color: #000;
-        }
-
-        .order-card, .item-card {
-            background: #0d0d0d; 
-            border: 1px solid #222; 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin: 15px 0;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            gap: 15px;
-            text-align: left; 
-        }
-
-        .btn-group { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
-        .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; }
+        .content { width: 100%; max-width: 600px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: #000; }
+        .order-card, .item-card { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .btn-chat { background: #3498db; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-        
         .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
         .tg-link { color: #3498db; text-decoration: none; font-weight: bold; font-size: 14px; display: block; margin-top: 5px; }
 
-        @media (max-width: 600px) {
-            .order-card, .item-card { flex-direction: column; text-align: center; }
-        }
+        /* MODAL CHAT */
+        #chatModal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        .modal-content { background: #111; margin: 10% auto; padding: 20px; width: 90%; max-width: 500px; border-radius: 15px; border: 1px solid #f39c12; position: relative; }
+        .chat-history { height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; padding: 10px; background: #000; border-radius: 10px; }
+        .msg { padding: 8px 12px; border-radius: 8px; font-size: 14px; max-width: 80%; }
+        .msg.user { background: #333; align-self: flex-start; color: #f39c12; }
+        .msg.admin { background: #f39c12; align-self: flex-end; color: #000; }
+        .close-modal { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 24px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -134,26 +51,31 @@
         </div>
     </div>
 
-    <button class="collapsible">Всі товари на сайті</button>
-    <div class="content">
-        <div id="catalogList"></div>
-    </div>
+    <button class="collapsible">Всі товари</button>
+    <div class="content"><div id="catalogList"></div></div>
 
     <button class="collapsible">Нові замовлення</button>
-    <div class="content">
-        <div id="listNew"></div>
-    </div>
+    <div class="content"><div id="listNew"></div></div>
 
-    <button class="collapsible">Замовлення у роботі</button>
-    <div class="content">
-        <div id="listActive"></div>
+    <button class="collapsible">В роботі</button>
+    <div class="content"><div id="listActive"></div></div>
+</div>
+
+<div id="chatModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeChat()">&times;</span>
+        <h3 id="chatTitle" style="color:#f39c12; margin-top:0;">Чат</h3>
+        <div class="chat-history" id="chatHistory"></div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="chatInput" placeholder="Ваша відповідь..." style="flex:1; padding:10px; border-radius:5px; border:none; background:#222; color:#fff;">
+            <button onclick="sendAdminMsg()" style="background:#f39c12; border:none; padding:10px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">➤</button>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
@@ -165,36 +87,18 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Логіка акордеона
+    // --- ЛОГІКА АКОРДЕОНА ---
     document.querySelectorAll(".collapsible").forEach(button => {
-        button.addEventListener("click", function() {
+        button.onclick = function() {
             this.classList.toggle("active-tab");
-            var content = this.nextElementSibling;
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-                const observer = new MutationObserver(() => {
-                    if (content.style.maxHeight !== "0px" && content.style.maxHeight !== "") {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                    }
-                });
-                observer.observe(content, { childList: true, subtree: true });
-            }
-        });
+            let content = this.nextElementSibling;
+            content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
+        };
     });
 
-    const nameInp = document.getElementById('itemName');
-    const priceInp = document.getElementById('itemPrice');
-    const catInp = document.getElementById('itemCategory');
-    const descInp = document.getElementById('itemDesc');
-    const imgInp = document.getElementById('itemImg');
-    const editIdInp = document.getElementById('editId');
-
-    // Відображення товарів
+    // --- КЕРУВАННЯ ТОВАРАМИ ---
     onSnapshot(collection(db, "catalog"), (snap) => {
         const list = document.getElementById('catalogList');
         list.innerHTML = "";
@@ -204,14 +108,14 @@
                 <div class="item-card">
                     <div><b>${i.name}</b> (${i.price} грн)</div>
                     <div class="btn-group">
-                        <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')">Ред.</button>
+                        <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')" style="background:#3498db; border:none; padding:8px; border-radius:5px; color:#fff; cursor:pointer;">Ред.</button>
                         <button class="btn-delete" onclick="deleteItem('${d.id}')">Вид.</button>
                     </div>
                 </div>`;
         });
     });
 
-    // Відображення замовлень
+    // --- ВІДОБРАЖЕННЯ ЗАМОВЛЕНЬ ---
     onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
         const boxNew = document.getElementById('listNew');
         const boxActive = document.getElementById('listActive');
@@ -221,27 +125,21 @@
             const o = d.data();
             if (o.archivedByAdmin) return;
             const isWorking = o.status === "В роботі";
-            
             const fileLink = o.fileUrl || o.fileURL || o.file;
-            const downloadBtn = fileLink ? 
-                `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : 
-                `<span style="color:#444; font-size:11px;">Немає файлу</span>`;
-
-            // Формування посилання на Telegram
+            const downloadBtn = fileLink ? `<a href="${fileLink}" target="_blank" class="btn-download">📂 МОДЕЛЬ</a>` : `<small style="color:#444;">Немає файлу</small>`;
             const tgClean = o.telegram ? o.telegram.replace('@', '').trim() : '';
             const tgDisplay = o.telegram || 'Не вказано';
-            const tgAction = tgClean.startsWith('+') ? `https://t.me/${tgClean}` : `https://t.me/${tgClean}`;
 
             const card = `
                 <div class="order-card">
                     <div>
                         <b style="color:#f39c12;">${o.name || 'Замовлення'}</b><br>
-                        <a href="${tgAction}" target="_blank" class="tg-link">✈️ TG: ${tgDisplay}</a>
+                        <a href="https://t.me/${tgClean}" target="_blank" class="tg-link">✈️ TG: ${tgDisplay}</a>
                         <small>${o.material || ''} | ${o.userEmail || ''}</small>
                     </div>
                     <div class="btn-group">
                         ${downloadBtn} 
-                        <button class="btn-chat" onclick="openChat('${o.userId}', '${o.name}')">ЧАТ</button>
+                        <button class="btn-chat" onclick="openChat('${d.id}', '${o.name}')">ЧАТ</button>
                         ${!isWorking ? `<button class="btn-action" onclick="updOrder('${d.id}', 'В роботі')">ПРИЙНЯТИ</button>` : '👌'}
                         <button class="btn-delete" style="background:#555" onclick="archiveOrder('${d.id}')">АРХІВ</button>
                     </div>
@@ -251,23 +149,59 @@
         });
     });
 
-    // Функції
-    window.openChat = (uid, orderName) => {
-        // Тимчасова заглушка. Тут буде відкриватися вікно чату.
-        alert("Відкриваємо чат з користувачем по замовленню: " + orderName);
-        // window.location.href = `chat.html?uid=${uid}`; // На майбутнє
+    // --- СИСТЕМА ЧАТУ ---
+    let currentOrderId = null;
+    let chatUnsubscribe = null;
+
+    window.openChat = (orderId, orderName) => {
+        currentOrderId = orderId;
+        document.getElementById('chatTitle').innerText = "Чат: " + orderName;
+        document.getElementById('chatModal').style.display = "block";
+        
+        if (chatUnsubscribe) chatUnsubscribe(); // Відписуємось від попереднього чату
+
+        const q = query(collection(db, "chats"), where("orderId", "==", orderId), orderBy("timestamp", "asc"));
+        chatUnsubscribe = onSnapshot(q, (snap) => {
+            const hist = document.getElementById('chatHistory');
+            hist.innerHTML = "";
+            snap.forEach(m => {
+                const data = m.data();
+                const type = data.sender === "admin" ? "admin" : "user";
+                hist.innerHTML += `<div class="msg ${type}">${data.text}</div>`;
+            });
+            hist.scrollTop = hist.scrollHeight;
+        });
     };
 
-    window.startEdit = (id, n, p, c, d, i) => {
-        editIdInp.value = id; nameInp.value = n; priceInp.value = p; catInp.value = c; descInp.value = d; imgInp.value = i;
-        document.getElementById('formTitle').innerText = "Редагування";
-        document.getElementById('cancelEditBtn').style.display = "block";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.closeChat = () => {
+        document.getElementById('chatModal').style.display = "none";
+        if (chatUnsubscribe) chatUnsubscribe();
     };
 
+    window.sendAdminMsg = async () => {
+        const inp = document.getElementById('chatInput');
+        if (!inp.value.trim() || !currentOrderId) return;
+        await addDoc(collection(db, "chats"), {
+            orderId: currentOrderId,
+            text: inp.value,
+            sender: "admin",
+            timestamp: serverTimestamp()
+        });
+        inp.value = "";
+    };
+
+    // --- ІНШІ ФУНКЦІЇ ---
     window.updOrder = async (id, s) => { await updateDoc(doc(db, "orders", id), { status: s }); };
     window.archiveOrder = async (id) => { await updateDoc(doc(db, "orders", id), { archivedByAdmin: true }); };
     window.deleteItem = async (id) => { if(confirm("Видалити товар?")) await deleteDoc(doc(db, "catalog", id)); };
+    
+    // Збереження товарів
+    const nameInp = document.getElementById('itemName');
+    const priceInp = document.getElementById('itemPrice');
+    const catInp = document.getElementById('itemCategory');
+    const descInp = document.getElementById('itemDesc');
+    const imgInp = document.getElementById('itemImg');
+    const editIdInp = document.getElementById('editId');
 
     document.getElementById('saveItemBtn').onclick = async () => {
         const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
@@ -276,13 +210,8 @@
         resetForm();
     };
 
-    function resetForm() {
-        editIdInp.value = ""; nameInp.value = ""; priceInp.value = ""; descInp.value = ""; imgInp.value = "";
-        document.getElementById('formTitle').innerText = "Додати новий товар";
-        document.getElementById('cancelEditBtn').style.display = "none";
-    }
-    window.resetForm = resetForm;
-    document.getElementById('cancelEditBtn').onclick = resetForm;
+    function resetForm() { editIdInp.value = ""; nameInp.value = ""; priceInp.value = ""; descInp.value = ""; imgInp.value = ""; }
+    window.startEdit = (id, n, p, c, d, i) => { editIdInp.value = id; nameInp.value = n; priceInp.value = p; catInp.value = c; descInp.value = d; imgInp.value = i; window.scrollTo(0,0); };
 </script>
 </body>
 </html>
