@@ -14,7 +14,7 @@ header {
     align-items: center;
     padding: 10px 5%;
     background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(12px); /* Ефект розмиття фону */
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(243, 156, 18, 0.2);
     position: sticky;
     top: 0;
@@ -31,10 +31,9 @@ header {
 }
 
 .logo img {
-    height: 60px; /* Збільшений логотип як на скріншоті */
+    height: 60px;
     margin-right: 15px;
     border-radius: 8px;
-    transition: 0.3s;
 }
 
 nav a {
@@ -43,8 +42,8 @@ nav a {
     margin-left: 25px;
     font-size: 15px;
     font-weight: 500;
-    transition: 0.3s;
     opacity: 0.8;
+    transition: 0.3s;
 }
 
 nav a:hover {
@@ -60,7 +59,6 @@ nav a:hover {
     border: 1px solid #f39c12;
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: 13px;
 }
 
 /* Hero Section */
@@ -71,28 +69,17 @@ nav a:hover {
     align-items: center;
     text-align: center;
     background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
-    padding: 0 20px;
 }
 
 .hero h1 {
     font-size: 56px;
-    margin-bottom: 20px;
     line-height: 1.1;
 }
 
 .hero h1 span {
     color: #f39c12;
-    text-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
 }
 
-.hero p {
-    font-size: 20px;
-    color: #aaa;
-    max-width: 700px;
-    margin: 0 auto;
-}
-
-/* Кнопка CTA (градієнтна) */
 .cta {
     display: inline-block;
     margin-top: 35px;
@@ -102,78 +89,34 @@ nav a:hover {
     text-decoration: none;
     font-weight: bold;
     border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(243, 156, 18, 0.2);
     transition: 0.3s;
-    border: none;
-    cursor: pointer;
 }
 
-.cta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 25px rgba(243, 156, 18, 0.3);
+/* СІТКА КАРТОК - ПОВЕРНУВ ЯК БУЛО (ГОРИЗОНТАЛЬНО) */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Тільки 3 колонки в ряд */
+    gap: 30px;
+    padding: 40px 5%;
 }
 
-/* Скляні картки (Glassmorphism) */
 .card, .auth-container {
     background: rgba(20, 20, 20, 0.6);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 15px;
-    overflow: hidden;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 20px;
+    transition: 0.4s;
 }
 
 .card:hover {
     border-color: rgba(243, 156, 18, 0.5);
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-/* Секція контенту */
-.section {
-    padding: 60px 10%;
-    text-align: center;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
-}
-
-/* Футер */
-footer {
-    padding: 30px;
-    text-align: center;
-    border-top: 1px solid #222;
-    color: #555;
-    font-size: 14px;
-}
-
-/* --- МОБІЛЬНА ВЕРСІЯ --- */
-@media (max-width: 768px) {
-    header {
-        padding: 15px 5%;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .logo img {
-        height: 50px;
-    }
-
-    nav {
-        margin-top: 10px;
-        width: 100%;
-        text-align: center;
-    }
-
-    nav a {
-        margin: 0 10px;
-    }
-
-    .hero h1 {
-        font-size: 34px;
+/* Мобільна версія - тільки тут вони стають в стовпчик */
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
     }
 }
