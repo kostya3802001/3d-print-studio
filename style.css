@@ -1,274 +1,248 @@
-/* ===== RESET ===== */
+/* Основні налаштування */
+:root {
+    --orange: #f39c12;
+    --orange-hover: #e67e22;
+    --dark-bg: #050505;
+    --card-bg: #111111;
+    --text-white: #ffffff;
+    --text-gray: #aaaaaa;
+    --green: #27ae60;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ===== BASE ===== */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #070707;
-    color: #eaeaea;
-    overflow-x: hidden;
+    background-color: var(--dark-bg);
+    color: var(--text-white);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
 }
 
-/* ===== INDUSTRIAL BACKGROUND (GEAR) ===== */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(243,156,18,.06), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,.03), transparent 45%),
-        url("log img/gear.png") center / 720px no-repeat;
-    opacity: .08;
-    z-index: -1;
-    animation: gearSpin 160s linear infinite;
-}
-
-@keyframes gearSpin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-
-/* ===== HEADER & LOGO FIX ===== */
+/* --- ШАПКА (HEADER) --- */
 header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: linear-gradient(to bottom, #000, #090909);
-    border-bottom: 1px solid #1f1f1f;
-    padding: 14px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 15px 5%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px); /* Ефект матового скла */
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #222;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    font-weight: 900;
-    letter-spacing: 2px;
-    color: #f39c12;
-    font-size: 18px;
+    gap: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: var(--orange);
 }
 
-/* Той самий фікс для картинки логотипа */
 .logo img {
-    height: 38px;
+    height: 40px;
     width: auto;
-    margin-right: 12px;
-    border-radius: 5px;
-    border: 1px solid rgba(243, 156, 18, 0.3);
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+/* Навігація для комп'ютерів */
+nav {
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
 
 nav a {
-    color: #ddd;
+    color: var(--text-white);
     text-decoration: none;
-    margin-left: 22px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: .85;
+    font-size: 14px;
+    font-weight: 500;
     transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 nav a:hover {
-    opacity: 1;
-    color: #f39c12;
+    color: var(--orange);
 }
 
-.lang {
-    border: 1px solid #333;
-    padding: 6px 10px;
-    border-radius: 6px;
-    margin-left: 20px;
-    font-size: 12px;
-    color: #f39c12;
+/* Кнопка мобільного меню */
+.mobile-nav-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--orange);
+    font-size: 28px;
     cursor: pointer;
 }
 
-/* ===== HERO ===== */
-.hero {
-    min-height: 92vh;
-    display: flex;
-    align-items: center;
-    padding: 0 6%;
+/* --- МОБІЛЬНЕ МЕНЮ --- */
+#mobileMenu {
+    display: none;
+    position: fixed;
+    top: 72px;
+    left: 0;
+    width: 100%;
+    background: #000;
+    padding: 20px;
+    border-bottom: 2px solid var(--orange);
+    z-index: 999;
 }
 
-.hero-inner {
-    max-width: 760px;
+#mobileMenu a {
+    display: block;
+    color: white;
+    padding: 15px;
+    text-decoration: none;
+    font-size: 18px;
+    border-bottom: 1px solid #111;
+}
+
+/* --- ГОЛОВНИЙ БЛОК (HERO) --- */
+.hero {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
 }
 
 .hero h1 {
-    font-size: 48px;
-    line-height: 1.1;
-    margin-bottom: 22px;
-    font-weight: 900;
+    font-size: 3rem;
+    margin-bottom: 20px;
 }
 
 .hero h1 span {
-    color: #f39c12;
+    color: var(--orange);
 }
 
-.hero p {
-    color: #9a9a9a;
-    font-size: 18px;
-    line-height: 1.7;
-}
-
-.hero .cta {
-    display: inline-block;
-    margin-top: 36px;
-    padding: 18px 38px;
-    background: linear-gradient(135deg, #f39c12, #e67e22);
+.btn-main {
+    background: var(--orange);
     color: #000;
-    font-weight: 900;
-    border-radius: 12px;
+    padding: 15px 40px;
+    border-radius: 50px;
     text-decoration: none;
-    letter-spacing: 1px;
-    transition: .3s;
-    box-shadow: 0 15px 40px rgba(243,156,18,.25);
-}
-
-.hero .cta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 55px rgba(243,156,18,.45);
-}
-
-/* ===== SECTION ===== */
-.section {
-    padding: 100px 6%;
-}
-
-.section-title {
-    font-size: 36px;
-    text-align: center;
-    margin-bottom: 60px;
-    letter-spacing: 1px;
-    color: #fff;
-}
-
-/* ===== GRID ===== */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 36px;
-}
-
-/* ===== CARD ===== */
-.card {
-    background: linear-gradient(180deg, #0e0e0e, #0a0a0a);
-    border-radius: 22px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,.04);
-    box-shadow: 0 25px 60px rgba(0,0,0,.8);
-    transition: .4s;
-}
-
-.card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 35px 80px rgba(0,0,0,.9);
-}
-
-.card img {
-    width: 100%;
-    height: 280px;
-    object-fit: contain;
-    background: #ffffff; /* Робимо фон картинки білим, щоб STL виглядали чітко */
-    padding: 22px;
-    border-bottom: 1px solid #1a1a1a;
-}
-
-/* ===== CARD BODY ===== */
-.card-body {
-    padding: 28px;
-}
-
-.card-body h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-    letter-spacing: .5px;
-    color: #fff;
-}
-
-.card-body p {
-    font-size: 14px;
-    color: #9b9b9b;
-    line-height: 1.6;
-}
-
-/* ===== PRICE & BUTTONS ===== */
-.price {
-    margin: 18px 0;
-    font-size: 19px;
-    font-weight: 900;
-    color: #f39c12;
-}
-
-.btn {
-    display: inline-block;
-    padding: 13px 26px;
-    background: #f39c12;
-    color: #000;
-    border-radius: 9px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: 0.3s;
+    margin-top: 20px;
     border: none;
     cursor: pointer;
+}
+
+.btn-main:hover {
+    background: var(--orange-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+}
+
+/* --- ОСОБИСТИЙ КАБІНЕТ ТА ЗАМОВЛЕННЯ --- */
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.order-card {
+    background: var(--card-bg);
+    border: 1px solid #222;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
     transition: 0.3s;
 }
 
-.btn:hover {
-    background: #e67e22;
+.order-card:hover {
+    border-color: #444;
 }
 
-/* ===== PROCESS & REVIEWS ===== */
-.step, .review {
-    background: #0d0d0d;
-    border-radius: 18px;
-    padding: 28px;
-    border: 1px solid rgba(255,255,255,.04);
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: bold;
+    border: 1px solid var(--orange);
+    color: var(--orange);
+    margin-bottom: 15px;
 }
 
-.step { border-left: 5px solid #f39c12; }
-
-.step span {
-    font-size: 24px;
-    font-weight: 900;
-    color: #f39c12;
+.status-confirmed {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(39, 174, 96, 0.1);
 }
 
-/* ===== FORM ===== */
-input, select, textarea {
-    width: 100%;
-    padding: 14px;
-    margin-top: 6px;
-    margin-bottom: 16px;
-    background: #0b0b0b;
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: #fff;
+.order-title {
+    font-size: 22px;
+    color: var(--orange);
+    margin: 10px 0;
+}
+
+.order-desc {
+    background: #080808;
+    padding: 15px;
+    border-radius: 10px;
+    color: var(--text-gray);
     font-size: 14px;
 }
 
-/* ===== FOOTER ===== */
-footer {
-    background: #000;
-    padding: 60px 6%;
-    text-align: center;
-    color: #666;
-    font-size: 13px;
-    border-top: 1px solid #1a1a1a;
+/* --- ФОРМИ (ЛОГІН / ЗАМОВЛЕННЯ) --- */
+.form-container {
+    max-width: 450px;
+    margin: 60px auto;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #222;
 }
 
-/* ===== MOBILE ===== */
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0 20px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 8px;
+}
+
+input:focus {
+    border-color: var(--orange);
+    outline: none;
+}
+
+/* --- АДАПТИВНІСТЬ ДЛЯ ТЕЛЕФОНІВ --- */
 @media (max-width: 768px) {
-    header { padding: 15px 5%; }
-    .hero h1 { font-size: 32px; }
-    .logo { font-size: 15px; }
-    .logo img { height: 30px; }
-    nav a { margin-left: 12px; font-size: 11px; }
+    header {
+        padding: 10px 20px;
+    }
+
+    nav {
+        display: none; /* Ховаємо десктопне меню */
+    }
+
+    .mobile-nav-btn {
+        display: block; /* Показуємо іконку бургер-меню */
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .logo span {
+        font-size: 1rem;
+    }
 }
