@@ -58,6 +58,10 @@
             <input type="file" id="fileInput" accept=".stl">
         </div>
         <div class="form-group">
+            <label>Ваш Telegram для зв'язку</label>
+            <input type="text" id="orderTelegram" placeholder="@Master3dmanager або номер" required>
+        </div>
+        <div class="form-group">
             <label>Матеріал</label>
             <select id="orderMaterial">
                 <option value="PLA">PLA</option>
@@ -117,18 +121,16 @@
             let finalFileUrl = null;
 
             if (file) {
-                // Завантаження у Storage
                 const storageRef = ref(storage, `orders/${userUID}/${Date.now()}_${file.name}`);
                 const uploadResult = await uploadBytes(storageRef, file);
                 finalFileUrl = await getDownloadURL(uploadResult.ref);
             }
 
-            // Додавання замовлення у Firestore
-            // ВАЖЛИВО: Використовуємо назву поля fileURL (велика URL), щоб адмінка її бачила
             await addDoc(collection(db, "orders"), {
                 userId: userUID,
                 userEmail: userEmail,
                 name: document.getElementById('orderName').value,
+                telegram: document.getElementById('orderTelegram').value, // НОВЕ ПОЛЕ
                 material: document.getElementById('orderMaterial').value,
                 description: document.getElementById('orderDesc').value,
                 fileURL: finalFileUrl, 
@@ -142,7 +144,7 @@
 
         } catch (error) {
             console.error("Error:", error);
-            alert("Сталася помилка при відправці. Перевірте консоль.");
+            alert("Сталася помилка при відправці.");
             btn.innerText = "ВІДПРАВИТИ ЗАМОВЛЕННЯ"; btn.disabled = false;
         }
     };
