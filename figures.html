@@ -6,53 +6,75 @@
     <title>Фігурки — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Базові стилі секції */
+        body { background-color: #000; color: #fff; }
+        .section { padding: 60px 5%; }
+
         .section-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
-            text-align: center;  
-            margin-bottom: 40px;
-            width: 100%;
-            padding: 0 15px;
+            display: flex; flex-direction: column; align-items: center; 
+            text-align: center; margin-bottom: 40px; width: 100%;
         }
 
         .section-header h1 {
-            font-size: clamp(28px, 8vw, 42px); /* Адаптивний розмір шрифту */
-            font-weight: 900;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: clamp(28px, 8vw, 42px); font-weight: 900;
+            margin-bottom: 15px; text-transform: uppercase;
         }
 
         .section-header h1 span { color: #f39c12; }
 
-        .section-header p {
-            color: #9a9a9a;
-            font-size: clamp(14px, 4vw, 18px);
-            max-width: 700px;
-            line-height: 1.6;
-        }
-
-        /* Контейнер для товарів */
+        /* Стилі КАРТОК (те, чого не вистачало) */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
-            padding: 0 5%;
         }
 
-        .empty-catalog {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
+        .card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
         }
+
+        .card:hover { border-color: #f39c12; transform: translateY(-5px); }
+
+        .card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover; /* Щоб картинка не розтягувалася */
+            background: #222;
+        }
+
+        .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
+
+        .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
         
-        /* Виправлення відступів для мобілок */
-        @media (max-width: 600px) {
-            .section { padding: 30px 10px; }
-            .grid { gap: 15px; }
+        .card-body p { color: #888; font-size: 14px; margin-bottom: 15px; flex-grow: 1; }
+
+        .price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #f39c12;
+            margin-bottom: 15px;
         }
+
+        .btn {
+            background: #f39c12;
+            color: #000;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .btn:hover { background: #e67e22; }
+
+        .empty-catalog { grid-column: 1 / -1; text-align: center; padding: 60px; color: #666; }
     </style>
 </head>
 <body>
@@ -73,12 +95,8 @@
 
 <section class="section">
     <div class="section-header">
-        <h1 data-ua="Колекційні <span>фігурки</span>" data-pl="Figurki <span>kolekcjonerskie</span>">
-            Колекційні <span>фігурки</span>
-        </h1>
-        <p data-ua="Висока деталізація, готові моделі та друк під замовлення." data-pl="Wysoka szczegółowość, gotowe modele i druk na zamówienie.">
-            Висока деталізація, готові моделі та друк під замовлення.
-        </p>
+        <h1>Колекційні <span>фігурки</span></h1>
+        <p>Висока деталізація, готові моделі та друк під замовлення.</p>
     </div>
 
     <div class="grid" id="publicProductsList">
@@ -110,6 +128,7 @@
     const productsContainer = document.getElementById('publicProductsList');
 
     // Отримання товарів КАТЕГОРІЇ "figures"
+    // Важливо: переконайся, що в адмінці value="figures" (малими літерами)
     const q = query(collection(db, "catalog"), where("category", "==", "figures"));
 
     onSnapshot(q, (snapshot) => {
@@ -125,13 +144,14 @@
 
         snapshot.forEach((doc) => {
             const product = doc.data();
+            // Створюємо картку
             productsContainer.innerHTML += `
                 <div class="card">
-                    <img src="${product.img}" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
+                    <img src="${product.img || 'log img/Логотип.jpg'}" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
                     <div class="card-body">
                         <h3>${product.name}</h3>
                         <p>${product.desc || ''}</p>
-                        <div class="price">${product.price}</div>
+                        <div class="price">${product.price} грн</div>
                         <a href="order.html?item=${encodeURIComponent(product.name)}" class="btn">Замовити</a>
                     </div>
                 </div>
@@ -139,8 +159,6 @@
         });
     });
 </script>
-
-<script src="lang.js"></script>
 
 </body>
 </html>
