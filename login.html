@@ -17,27 +17,38 @@
         <a href="index.html" data-ua="Головна" data-pl="Glowna">Головна</a>
         <a href="order.html" data-ua="Замовити" data-pl="Zamow">Замовити</a>
         <a href="login.html" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
-        <span class="lang" id="langToggle" style="cursor:pointer; color: #f39c12; font-weight: bold; margin-left: 20px;">UA | PL</span>
+        <span class="lang" style="cursor:pointer">UA | PL</span>
     </nav>
 </header>
 
 <section class="section">
-    <div class="auth-card">
-        <h2 id="formTitle" data-ua="Вхід у кабінет" data-pl="Logowanie do panelu">Вхід у кабінет</h2>
+    <div class="auth-container" style="max-width: 400px; margin: 40px auto; padding: 30px;">
+        <h2 id="formTitle" data-ua="Вхід у кабінет" data-pl="Logowanie do panelu" style="text-align: center; margin-bottom: 25px;">Вхід у кабінет</h2>
         
         <form id="authForm">
             <label style="display:block; margin-bottom: 8px;">Email</label>
-            <input type="email" id="email" placeholder="example@mail.com" required>
+            <input type="email" id="email" placeholder="example@mail.com" required style="width:100%; padding:12px; margin-bottom:20px; border-radius:8px; border:1px solid #333; background:#111; color:#fff;">
             
             <label data-ua="Пароль" data-pl="Haslo" style="display:block; margin-bottom: 8px;">Пароль</label>
-            <input type="password" id="password" required>
+            <input type="password" id="password" data-ua="Введіть пароль" data-pl="Wpisz haslo" required style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #333; background:#111; color:#fff;">
             
-            <button type="submit" id="mainBtn" class="main-btn" data-ua="Увійти" data-pl="Zaloguj sie">Увійти</button>
+            <button type="submit" id="mainBtn" class="cta" style="width: 100%; border:none; cursor:pointer;" data-ua="Увійти" data-pl="Zaloguj sie">Увійти</button>
         </form>
 
-        <div class="switch-auth">
+        <div style="display: flex; align-items: center; margin: 25px 0; color: #555;">
+            <div style="flex: 1; height: 1px; background: #333;"></div>
+            <div style="padding: 0 10px; font-size: 12px; text-transform: uppercase;" data-ua="або" data-pl="lub">або</div>
+            <div style="flex: 1; height: 1px; background: #333;"></div>
+        </div>
+
+        <button id="googleBtn" class="google-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_Logo.svg" alt="G">
+            <span data-ua="Увійти через Google" data-pl="Zaloguj przez Google">Увійти через Google</span>
+        </button>
+
+        <div style="margin-top: 25px; text-align: center; font-size: 0.9em;">
             <span id="switchText" data-ua="Немає акаунту?" data-pl="Nie masz konta?">Немає акаунту?</span> 
-            <a href="#" id="toggleAuth" data-ua="Зареєструватися" data-pl="Zarejestruj sie">Зареєструватися</a>
+            <a href="#" id="toggleAuth" data-ua="Зареєструватися" data-pl="Zarejestruj sie" style="color: #f39c12; text-decoration: none; font-weight: bold;">Зареєструватися</a>
         </div>
     </div>
 </section>
@@ -53,7 +64,9 @@
   import { 
     getAuth, 
     signInWithEmailAndPassword, 
-    createUserWithEmailAndPassword 
+    createUserWithEmailAndPassword, 
+    GoogleAuthProvider, 
+    signInWithPopup 
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   const firebaseConfig = {
@@ -67,6 +80,7 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
   let isLoginMode = true;
   const authForm = document.getElementById('authForm');
@@ -75,19 +89,27 @@
   const mainBtn = document.getElementById('mainBtn');
   const switchText = document.getElementById('switchText');
 
-  // Перемикач режимів Вхід / Реєстрація
+  // Вхід через Google
+  document.getElementById('googleBtn').addEventListener('click', async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = 'account.html';
+    } catch (error) {
+      alert("Помилка Google: " + error.message);
+    }
+  });
+
+  // Перемикач режимів
   toggleAuth.addEventListener('click', (e) => {
     e.preventDefault();
     isLoginMode = !isLoginMode;
-    
-    // Оновлення текстів при перемиканні
     formTitle.innerText = isLoginMode ? "Вхід у кабінет" : "Реєстрація";
     mainBtn.innerText = isLoginMode ? "Увійти" : "Створити акаунт";
     switchText.innerText = isLoginMode ? "Немає акаунту?" : "Вже є акаунт?";
     toggleAuth.innerText = isLoginMode ? "Зареєструватися" : "Увійти";
   });
 
-  // Логіка відправки форми
+  // Логіка Email/Password
   authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
@@ -95,17 +117,13 @@
 
     try {
       if (isLoginMode) {
-        // Вхід
         await signInWithEmailAndPassword(auth, email, password);
       } else {
-        // Реєстрація
         await createUserWithEmailAndPassword(auth, email, password);
-        alert("Акаунт успішно створено!");
+        alert("Акаунт створено!");
       }
-      // Перенаправлення в особистий кабінет
       window.location.href = 'account.html';
     } catch (error) {
-      // Обробка помилок (неправильний пароль, email вже існує тощо)
       alert("Помилка: " + error.message);
     }
   });
@@ -113,3 +131,4 @@
 
 </body>
 </html>
+
