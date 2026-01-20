@@ -19,6 +19,7 @@
         .card {
             background: #111; border: 1px solid #222; border-radius: 12px;
             overflow: hidden; transition: 0.3s; display: flex; flex-direction: column;
+            height: 100%;
         }
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
@@ -32,6 +33,7 @@
         .btn {
             background: #f39c12; color: #000; text-decoration: none; padding: 12px;
             border-radius: 8px; font-weight: bold; text-transform: uppercase; transition: 0.3s;
+            display: block;
         }
         .btn:hover { background: #e67e22; }
     </style>
@@ -77,8 +79,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // --- НАЛАШТУВАННЯ GITHUB (вкажи свій нік/репозиторій) ---
-    const githubUserRepo = "ТВІЙ_НІК/НАЗВА_РЕПОЗИТОРІЯ"; 
+    // --- НАЛАШТУВАННЯ GITHUB ---
+    const githubUserRepo = "kostya3802001/3d-print-studio"; 
     const githubURL = `https://raw.githubusercontent.com/${githubUserRepo}/main/`;
 
     // Запит тільки для "parts"
@@ -89,17 +91,19 @@
         container.innerHTML = "";
         
         if (snapshot.empty) {
-            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Наразі деталей немає.</p>`;
+            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Наразі технічних деталей немає в наявності.</p>`;
             return;
         }
 
         snapshot.forEach(doc => {
             const item = doc.data();
             
-            // Обробка фото
+            // Обробка фото з GitHub
             let finalImg = item.img || '';
             if (finalImg && !finalImg.startsWith('http')) {
-                finalImg = githubURL + finalImg;
+                // Видаляємо початковий слеш, якщо він є
+                const cleanImgPath = finalImg.startsWith('/') ? finalImg.substring(1) : finalImg;
+                finalImg = githubURL + cleanImgPath;
             }
             if (!finalImg) finalImg = 'log img/Логотип.jpg';
 
@@ -108,6 +112,7 @@
                     <img src="${finalImg}" alt="${item.name}" onerror="this.src='log img/Логотип.jpg'">
                     <div class="card-body">
                         <h3>${item.name}</h3>
+                        <p style="color: #888; font-size: 14px; margin-bottom: 15px;">${item.desc || ''}</p>
                         <div class="price">від ${item.price} грн</div>
                         <a href="order.html?item=${encodeURIComponent(item.name)}" class="btn">Замовити</a>
                     </div>
