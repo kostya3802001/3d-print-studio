@@ -8,36 +8,39 @@
     <style>
         .admin-container { padding: 20px 5%; background: #000; color: #fff; min-height: 100vh; }
         
-        /* Секція додавання товарів */
+        /* Секція форми */
         .admin-section { 
             background: #0d0d0d; 
-            padding: 20px; 
+            padding: 25px; 
             border-radius: 12px; 
-            border: 1px solid #222; 
+            border: 2px solid #f39c12; 
             margin-bottom: 40px;
         }
         .admin-section input, .admin-section textarea, .admin-section select {
-            width: 100%; padding: 10px; margin: 10px 0; background: #151515; border: 1px solid #333; color: white; border-radius: 6px;
+            width: 100%; padding: 12px; margin: 10px 0; background: #151515; border: 1px solid #333; color: white; border-radius: 8px; font-size: 16px;
         }
 
-        /* Картки товарів та замовлень */
+        /* Картки */
         .order-card, .item-card {
-            background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+            background: #0d0d0d; border: 1px solid #222; padding: 20px; border-radius: 12px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
         }
-        .info h3 { color: #f39c12; margin: 0; }
-        .info p { font-size: 13px; color: #aaa; margin: 5px 0; }
+        .info h3 { color: #f39c12; margin: 0 0 5px 0; }
+        .info p { font-size: 14px; color: #aaa; margin: 5px 0; }
 
         /* Кнопки */
-        .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-action { background: #27ae60; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-edit { background: #3498db; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
         .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
         .btn-archive { background: #555; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
+        .btn-cancel { background: #444; color: #eee; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; }
         
-        h2 { border-left: 4px solid #f39c12; padding-left: 15px; margin: 30px 0 15px; font-size: 20px; }
+        h2 { border-left: 5px solid #f39c12; padding-left: 15px; margin: 40px 0 20px; font-size: 24px; text-transform: uppercase; }
 
-        @media (max-width: 600px) {
-            .order-card { flex-direction: column; align-items: flex-start; }
-            .order-card div { width: 100%; display: flex; gap: 10px; }
+        @media (max-width: 768px) {
+            .order-card, .item-card { flex-direction: column; align-items: flex-start; }
+            .btn-group { width: 100%; justify-content: space-between; }
         }
     </style>
 </head>
@@ -51,16 +54,20 @@
 <div class="admin-container">
     
     <div class="admin-section">
-        <h2>Додати товар (Фігурку/Деталь)</h2>
-        <input type="text" id="itemName" placeholder="Назва товару">
+        <h2 id="formTitle">Додати товар</h2>
+        <input type="hidden" id="editId"> <input type="text" id="itemName" placeholder="Назва товару">
         <input type="text" id="itemPrice" placeholder="Ціна (напр. 500 грн)">
         <select id="itemCategory">
             <option value="figures">Фігурка</option>
             <option value="parts">Деталь</option>
         </select>
-        <textarea id="itemDesc" placeholder="Опис товару"></textarea>
-        <input type="text" id="itemImg" placeholder="URL картинки (або шлях)">
-        <button class="btn-action" id="addItemBtn">ОПУБЛІКУВАТИ НА САЙТІ</button>
+        <textarea id="itemDesc" placeholder="Опис товару" rows="3"></textarea>
+        <input type="text" id="itemImg" placeholder="URL картинки">
+        
+        <div class="btn-group">
+            <button class="btn-action" id="saveItemBtn">ОПУБЛІКУВАТИ / ОНОВИТИ</button>
+            <button class="btn-cancel" id="cancelEditBtn" style="display:none;">СКАСУВАТИ РЕДАГУВАННЯ</button>
+        </div>
     </div>
 
     <h2>Всі товари на сайті</h2>
@@ -76,7 +83,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
@@ -97,50 +104,95 @@
         }
     });
 
-    // --- ЛОГІКА ТОВАРІВ ---
-    document.getElementById('addItemBtn').onclick = async () => {
-        const name = document.getElementById('itemName').value;
-        const price = document.getElementById('itemPrice').value;
-        const category = document.getElementById('itemCategory').value;
-        const desc = document.getElementById('itemDesc').value;
-        const img = document.getElementById('itemImg').value;
+    const nameInp = document.getElementById('itemName');
+    const priceInp = document.getElementById('itemPrice');
+    const catInp = document.getElementById('itemCategory');
+    const descInp = document.getElementById('itemDesc');
+    const imgInp = document.getElementById('itemImg');
+    const editIdInp = document.getElementById('editId');
+    const saveBtn = document.getElementById('saveItemBtn');
+    const cancelBtn = document.getElementById('cancelEditBtn');
 
-        if(!name || !price) return alert("Заповніть назву та ціну!");
+    // --- ЗБЕРЕЖЕННЯ / ОНОВЛЕННЯ ТОВАРУ ---
+    saveBtn.onclick = async () => {
+        const data = {
+            name: nameInp.value,
+            price: priceInp.value,
+            category: catInp.value,
+            desc: descInp.value,
+            img: imgInp.value
+        };
 
-        await addDoc(collection(db, "catalog"), { name, price, category, desc, img });
-        alert("Товар додано!");
-        location.reload();
+        if(!data.name || !data.price) return alert("Заповніть назву та ціну!");
+
+        try {
+            if (editIdInp.value) {
+                // Редагування існуючого
+                await updateDoc(doc(db, "catalog", editIdInp.value), data);
+                alert("Товар оновлено!");
+            } else {
+                // Створення нового
+                await addDoc(collection(db, "catalog"), data);
+                alert("Товар додано!");
+            }
+            resetForm();
+        } catch (e) { console.error(e); alert("Помилка!"); }
     };
 
-    // Відображення товарів з кнопкою видалення
+    function resetForm() {
+        editIdInp.value = "";
+        nameInp.value = ""; priceInp.value = ""; descInp.value = ""; imgInp.value = "";
+        document.getElementById('formTitle').innerText = "Додати товар";
+        cancelBtn.style.display = "none";
+    }
+
+    cancelBtn.onclick = resetForm;
+
+    // --- РЕДАГУВАННЯ ТОВАРУ (Заповнення форми) ---
+    window.startEdit = (id, name, price, cat, desc, img) => {
+        editIdInp.value = id;
+        nameInp.value = name;
+        priceInp.value = price;
+        catInp.value = cat;
+        descInp.value = desc;
+        imgInp.value = img;
+        document.getElementById('formTitle').innerText = "Редагування товару";
+        cancelBtn.style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // --- ВІДОБРАЖЕННЯ ТОВАРІВ ---
     onSnapshot(collection(db, "catalog"), (snap) => {
         const list = document.getElementById('catalogList');
         list.innerHTML = "";
         snap.forEach(d => {
-            const item = d.data();
+            const i = d.data();
             list.innerHTML += `
                 <div class="item-card">
                     <div class="info">
-                        <h3>${item.name} (${item.category})</h3>
-                        <p>${item.price}</p>
+                        <h3>${i.name} <span>(${i.category})</span></h3>
+                        <p>Ціна: ${i.price}</p>
                     </div>
-                    <button class="btn-delete" onclick="deleteItem('${d.id}')">Видалити</button>
-                </div>
-            `;
+                    <div class="btn-group">
+                        <button class="btn-edit" onclick="startEdit('${d.id}', '${i.name}', '${i.price}', '${i.category}', '${i.desc}', '${i.img}')">Редагувати</button>
+                        <button class="btn-delete" onclick="deleteItem('${d.id}')">Видалити</button>
+                    </div>
+                </div>`;
         });
     });
 
     // --- ЛОГІКА ЗАМОВЛЕНЬ ---
-    // Фільтруємо замовлення, де archivedByAdmin НЕ дорівнює true
-    const q = query(collection(db, "orders"), where("archivedByAdmin", "!=", true));
+    const qOrders = query(collection(db, "orders"), orderBy("timestamp", "desc"));
 
-    onSnapshot(q, (snapshot) => {
+    onSnapshot(qOrders, (snapshot) => {
         const boxNew = document.getElementById('listNew');
         const boxActive = document.getElementById('listActive');
         boxNew.innerHTML = ""; boxActive.innerHTML = "";
 
         snapshot.forEach((orderDoc) => {
             const order = orderDoc.data();
+            if (order.archivedByAdmin) return; // Пропускаємо архівовані
+
             const id = orderDoc.id;
             const isConfirmed = order.status === "В роботі";
 
@@ -148,33 +200,32 @@
                 <div class="order-card">
                     <div class="info">
                         <h3>${order.name || 'Без назви'}</h3>
-                        <p><strong>Клієнт:</strong> ${order.userId}</p>
+                        <p><strong>Матеріал:</strong> ${order.material}</p>
                         <p><strong>Опис:</strong> ${order.description}</p>
                     </div>
-                    <div>
-                        ${!isConfirmed ? `<button class="btn-action" onclick="updateStatus('${id}', 'В роботі')">ПРИЙНЯТИ</button>` : ''}
-                        <button class="btn-archive" onclick="archiveOrder('${id}')">В АРХІВ (Очистити список)</button>
+                    <div class="btn-group">
+                        ${!isConfirmed ? `<button class="btn-action" onclick="updateOrderStatus('${id}', 'В роботі')">ПРИЙНЯТИ</button>` : '<span style="color:#27ae60; font-weight:bold;">У РОБОТІ</span>'}
+                        <button class="btn-archive" onclick="archiveOrder('${id}')">В АРХІВ</button>
                     </div>
-                </div>
-            `;
+                </div>`;
+            
             if (isConfirmed) boxActive.innerHTML += card;
             else boxNew.innerHTML += card;
         });
     });
 
-    // ФУНКЦІЇ ДЛЯ КНОПОК
-    window.updateStatus = async (id, status) => {
+    window.updateOrderStatus = async (id, status) => {
         await updateDoc(doc(db, "orders", id), { status });
     };
 
     window.archiveOrder = async (id) => {
-        if(confirm("Це замовлення зникне з вашого списку, але залишиться у клієнта. Продовжити?")) {
+        if(confirm("Приховати замовлення з адмінки?")) {
             await updateDoc(doc(db, "orders", id), { archivedByAdmin: true });
         }
     };
 
     window.deleteItem = async (id) => {
-        if(confirm("Видалити товар з сайту?")) {
+        if(confirm("Видалити товар назавжди?")) {
             await deleteDoc(doc(db, "catalog", id));
         }
     };
