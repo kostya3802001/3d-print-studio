@@ -11,8 +11,7 @@
 <header>
     <div class="logo">
         <img src="log img/Логотип.jpg" alt="Logo">
-        3D-PRINT STUDIO
-    </div>
+        <span>3D-PRINT STUDIO</span> </div>
     <nav>
         <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
         <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
@@ -74,7 +73,7 @@
                     Шестерні, корпуси, кріплення, прототипи та дрібносерійне виробництво.
                 </p>
                 <div class="price" data-ua="індивідуально" data-pl="indywidualnie">індивідуально</div>
-                <a href="parts.html" class="btn" data-ua="Детальніше" data-pl="Szczegóły">Детальніше</a>
+                <a href="parts.html" class="btn" data-ua="Детальніше" data-pl="Szczєgóły">Детальніше</a>
             </div>
         </div>
     </div>
@@ -107,7 +106,9 @@
     const link = document.getElementById('accountLink');
     if (user) {
       link.href = "account.html";
-      link.innerText = "Мій Профіль";
+      // Враховуємо мову при зміні тексту (якщо мова UA)
+      const currentLang = document.getElementById('langToggle').innerText.includes('UA') ? 'PL' : 'UA'; 
+      link.innerText = (currentLang === 'UA') ? "Gabinet" : "Мій Профіль";
     }
   });
 </script>
