@@ -8,7 +8,6 @@
     <style>
         body { background-color: #000; margin: 0; padding: 0; font-family: sans-serif; color: #fff; }
         
-        /* Ховаємо контейнер до моменту перевірки */
         .admin-container { 
             display: none; 
             max-width: 800px; 
@@ -18,7 +17,6 @@
             align-items: center; 
         }
 
-        /* Завантажувач (поки йде перевірка) */
         #loader {
             display: flex;
             justify-content: center;
@@ -165,20 +163,17 @@
 
     const ADMIN_EMAIL = "join.the.game.notik.fols@gmail.com";
 
-    // --- ПЕРЕВІРКА АВТОРИЗАЦІЇ ---
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === ADMIN_EMAIL) {
             document.getElementById('loader').style.display = "none";
             document.querySelector('.admin-container').style.display = "flex";
             initAdmin();
         } else {
-            // Якщо не той юзер або не залогінений - відправляємо на вхід
             window.location.href = "login.html";
         }
     });
 
     function initAdmin() {
-        // Акордеон
         document.querySelectorAll(".collapsible").forEach(button => {
             button.onclick = function() {
                 this.classList.toggle("active-tab");
@@ -187,15 +182,12 @@
             };
         });
 
-        // Вихід
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
 
-        // Форма
         const nameInp = document.getElementById('itemName'), priceInp = document.getElementById('itemPrice'),
               catInp = document.getElementById('itemCategory'), descInp = document.getElementById('itemDesc'),
               imgInp = document.getElementById('itemImg'), editIdInp = document.getElementById('editId');
 
-        // Рендер каталогу
         onSnapshot(collection(db, "catalog"), (snap) => {
             const list = document.getElementById('catalogList');
             list.innerHTML = "";
@@ -220,7 +212,7 @@
             });
         });
 
-        // Рендер замовлень
+        // --- ОНОВЛЕНИЙ РЕНДЕР ЗАМОВЛЕНЬ ---
         onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
             const boxNew = document.getElementById('listNew'), boxActive = document.getElementById('listActive');
             boxNew.innerHTML = ""; boxActive.innerHTML = "";
@@ -229,14 +221,21 @@
                 const isWorking = o.status === "В роботі";
                 const card = document.createElement('div');
                 card.className = "order-card";
+                
+                // Додаємо вивід опису (desc) та ціни (price) у картку замовлення
                 card.innerHTML = `
-                    <div><b style="color:#f39c12;">${o.name || 'Замовлення'}</b><br>
-                    <a href="https://t.me/${o.telegram?.replace('@','')}" target="_blank" class="tg-link">✈️ TG: ${o.telegram || 'Ні'}</a></div>
+                    <div style="flex-grow: 1;">
+                        <b style="color:#f39c12; font-size: 16px;">${o.name || 'Замовлення'}</b><br>
+                        <span style="color: #bbb; font-size: 13px; font-style: italic;">${o.desc || 'Немає опису'}</span><br>
+                        <a href="https://t.me/${o.telegram?.replace('@','')}" target="_blank" class="tg-link">✈️ TG: ${o.telegram || 'Ні'}</a>
+                    </div>
                     <div class="btn-group">
+                        <span style="color: #fff; font-weight: bold; margin-right: 10px;">${o.price || '0'} грн</span>
                         ${(o.fileUrl || o.file) ? `<a href="${o.fileUrl || o.file}" target="_blank" class="btn-download">📂 ФАЙЛ</a>` : ''}
                         ${!isWorking ? `<button class="btn-action btn-upd">ПРИЙНЯТИ</button>` : '👌'}
                         <button class="btn-delete btn-arch" style="background:#555">АРХІВ</button>
                     </div>`;
+
                 if(!isWorking) card.querySelector('.btn-upd').onclick = () => updateDoc(doc(db, "orders", d.id), {status: "В роботі"});
                 card.querySelector('.btn-arch').onclick = () => updateDoc(doc(db, "orders", d.id), {archivedByAdmin: true});
                 if (isWorking) boxActive.appendChild(card); else boxNew.appendChild(card);
@@ -244,7 +243,14 @@
         });
 
         document.getElementById('saveItemBtn').onclick = async () => {
-            const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
+            const data = { 
+                name: nameInp.value, 
+                price: priceInp.value, 
+                category: catInp.value, 
+                desc: descInp.value, 
+                img: imgInp.value, 
+                timestamp: new Date() 
+            };
             editIdInp.value ? await updateDoc(doc(db, "catalog", editIdInp.value), data) : await addDoc(collection(db, "catalog"), data);
             resetForm();
         };
