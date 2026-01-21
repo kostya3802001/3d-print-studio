@@ -6,7 +6,6 @@
     <title>Фігурки — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Базові стилі секції */
         body { background-color: #000; color: #fff; margin: 0; font-family: sans-serif; }
         .section { padding: 60px 5%; }
 
@@ -21,68 +20,51 @@
         }
 
         .section-header h1 span { color: #f39c12; }
-
         .section-header p { color: #888; max-width: 600px; }
 
-        /* Сітка товарів */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
         }
 
-        /* Картка товару */
         .card {
-            background: #111;
-            border: 1px solid #222;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+            background: #111; border: 1px solid #222; border-radius: 15px;
+            overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; height: 100%;
         }
-
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
         .card img {
-    width: 100%;
-    height: 250px;
-    /* contain гарантує, що фото буде видно повністю */
-    object-fit: contain; 
-    /* Додаємо темний фон, щоб навколо вузьких фото не було білих дір */
-    background: #0a0a0a; 
-    padding: 10px; /* Трохи відступу, щоб фото не прилипало до країв */
+            width: 100%; height: 250px; object-fit: contain; 
+            background: #0a0a0a; padding: 10px; 
         }
 
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
-
         .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
-        
         .card-body p { color: #888; font-size: 14px; margin-bottom: 15px; flex-grow: 1; }
-
-        .price {
-            font-size: 22px;
-            font-weight: bold;
-            color: #f39c12;
-            margin-bottom: 15px;
-        }
+        .price { font-size: 22px; font-weight: bold; color: #f39c12; margin-bottom: 15px; }
 
         .btn {
-            background: #f39c12;
-            color: #000;
-            text-decoration: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: 0.3s;
-            display: block;
+            background: #f39c12; color: #000; border: none; padding: 12px;
+            border-radius: 8px; font-weight: bold; text-transform: uppercase; 
+            transition: 0.3s; display: block; width: 100%; cursor: pointer;
         }
-
         .btn:hover { background: #e67e22; }
 
-        .empty-catalog { grid-column: 1 / -1; text-align: center; padding: 60px; color: #666; }
+        /* СТИЛІ МОДАЛКИ */
+        #orderModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #111; padding: 30px; border-radius: 15px; border: 2px solid #f39c12;
+            width: 90%; max-width: 400px; text-align: center;
+        }
+        .modal-content input {
+            width: 100%; padding: 12px; margin: 20px 0; background: #1a1a1a;
+            border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -97,7 +79,7 @@
         <a href="figures.html" style="color: #f39c12;">Фігурки</a>
         <a href="parts.html">Деталі</a>
         <a href="order.html">Замовити</a>
-        <a href="login.html" id="accountLink">Кабінет</a>
+        <a href="login.html">Кабінет</a>
     </nav>
 </header>
 
@@ -106,21 +88,28 @@
         <h1>Колекційні <span>фігурки</span></h1>
         <p>Висока деталізація, готові моделі та друк під замовлення.</p>
     </div>
-
     <div class="grid" id="publicProductsList">
-        <div class="empty-catalog">
-            <p>Завантаження каталогу...</p>
-        </div>
+        <div class="empty-catalog"><p>Завантаження каталогу...</p></div>
     </div>
 </section>
 
-<footer>
-    © 2026 3D-PRINT STUDIO · Професійний 3D-друк
-</footer>
+<div id="orderModal">
+    <div class="modal-content">
+        <h3 style="color:#f39c12; margin:0;">Замовлення фігурки</h3>
+        <p id="modalItemName" style="margin: 10px 0; font-weight: bold;"></p>
+        <input type="text" id="userTgInput" placeholder="@ваш_телеграм">
+        <div style="display:flex; gap:10px;">
+            <button id="closeModalBtn" style="flex:1; padding:10px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer;">Назад</button>
+            <button id="confirmOrderBtn" style="flex:2; padding:10px; background:#f39c12; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Підтвердити</button>
+        </div>
+    </div>
+</div>
+
+<footer>© 2026 3D-PRINT STUDIO · Професійний 3D-друк</footer>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, where, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
@@ -134,54 +123,71 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const productsContainer = document.getElementById('publicProductsList');
+    
+    let currentItem = null;
 
-    // Налаштування твого GitHub
-    const githubUserRepo = "kostya3802001/3d-print-studio"; 
-    const githubURL = `https://raw.githubusercontent.com/${githubUserRepo}/main/`;
-
-    // Запит тільки для "figures"
+    const githubURL = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/`;
     const q = query(collection(db, "catalog"), where("category", "==", "figures"));
 
     onSnapshot(q, (snapshot) => {
         productsContainer.innerHTML = "";
-        
         if (snapshot.empty) {
-            productsContainer.innerHTML = `
-                <div class="empty-catalog">
-                    <p>Наразі фігурок немає в наявності. Зайдіть пізніше!</p>
-                </div>`;
+            productsContainer.innerHTML = '<div class="empty-catalog"><p>Наразі фігурок немає.</p></div>';
             return;
         }
 
         snapshot.forEach((doc) => {
             const product = doc.data();
-
-            // Обробка фото
             let finalImg = product.img || '';
             if (finalImg && !finalImg.startsWith('http')) {
-                // Видаляємо зайвий слеш на початку, якщо він є в адмінці
-                const cleanImgPath = finalImg.startsWith('/') ? finalImg.substring(1) : finalImg;
-                finalImg = githubURL + cleanImgPath;
+                finalImg = githubURL + finalImg.replace(/^\//, '');
             }
-            if (!finalImg) {
-                finalImg = 'log img/Логотип.jpg';
-            }
+            if (!finalImg) finalImg = 'log img/Логотип.jpg';
 
-            productsContainer.innerHTML += `
-                <div class="card">
-                    <img src="${finalImg}" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
-                    <div class="card-body">
-                        <h3>${product.name}</h3>
-                        <p>${product.desc || ''}</p>
-                        <div class="price">${product.price} грн</div>
-                        <a href="order.html?item=${encodeURIComponent(product.name)}" class="btn">Замовити</a>
-                    </div>
-                </div>
-            `;
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${finalImg}" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
+                <div class="card-body">
+                    <h3>${product.name}</h3>
+                    <p>${product.desc || ''}</p>
+                    <div class="price">${product.price} грн</div>
+                    <button class="btn order-btn">Замовити</button>
+                </div>`;
+            
+            card.querySelector('.order-btn').onclick = () => {
+                currentItem = product;
+                document.getElementById('modalItemName').innerText = product.name;
+                document.getElementById('orderModal').style.display = "flex";
+            };
+            productsContainer.appendChild(card);
         });
     });
-</script>
 
+    document.getElementById('closeModalBtn').onclick = () => {
+        document.getElementById('orderModal').style.display = "none";
+    };
+
+    document.getElementById('confirmOrderBtn').onclick = async () => {
+        const contact = document.getElementById('userTgInput').value.trim();
+        if(!contact) return alert("Вкажіть ваш Telegram!");
+
+        try {
+            await addDoc(collection(db, "orders"), {
+                name: currentItem.name,
+                price: currentItem.price,
+                telegram: contact,
+                status: "Новий",
+                timestamp: new Date(),
+                material: "Готова фігурка"
+            });
+            alert("Дякуємо! Замовлення вже в адмінці.");
+            document.getElementById('orderModal').style.display = "none";
+            document.getElementById('userTgInput').value = "";
+        } catch (e) {
+            alert("Помилка відправки.");
+        }
+    };
+</script>
 </body>
 </html>
-
