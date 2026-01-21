@@ -161,7 +161,7 @@
             await addDoc(collection(db, "orders"), {
                 name: currentItem.name,
                 price: currentItem.price,
-                desc: currentItem.desc || "Опис відсутній", // Додано передачу опису
+                desc: currentItem.desc || "Опис відсутній", // Передача опису додана тут
                 telegram: contact,
                 status: "Новий",
                 timestamp: new Date(),
@@ -171,7 +171,7 @@
             document.getElementById('orderModal').style.display = "none";
             document.getElementById('userTgInput').value = "";
         } catch (e) {
-            console.error(e);
+            console.error("Помилка:", e);
             alert("Помилка відправки.");
         }
     };
