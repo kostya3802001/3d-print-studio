@@ -162,6 +162,25 @@
     const db = getFirestore(app);
 
     const ADMIN_EMAIL = "join.the.game.notik.fols@gmail.com";
+    
+    // ДАНІ ТЕЛЕГРАМ
+    const botToken = "8252771598:AAGP_fn_voqMi9OZXMhd-Ch9H0mFRMqpPGw";
+    const chatId = "836468275";
+
+    async function sendTelegramNotify(order) {
+        const text = `🚀 НОВЕ ЗАМОВЛЕННЯ!\n\n` +
+                     `📦 Товар: ${order.name}\n` +
+                     `💰 Ціна: ${order.price} грн\n` +
+                     `📱 Контакт: ${order.telegram}\n` +
+                     `📝 Опис: ${order.desc || 'Відсутній'}`;
+        try {
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: text })
+            });
+        } catch (e) { console.error("TG Error:", e); }
+    }
 
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === ADMIN_EMAIL) {
@@ -212,9 +231,23 @@
             });
         });
 
-        // --- ОНОВЛЕНИЙ РЕНДЕР ЗАМОВЛЕНЬ ---
+        // --- МОНІТОРИНГ ТА РЕНДЕР ЗАМОВЛЕНЬ ---
         onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
             const boxNew = document.getElementById('listNew'), boxActive = document.getElementById('listActive');
+            
+            // Відстеження нових замовлень для Telegram
+            snap.docChanges().forEach(change => {
+                if (change.type === "added") {
+                    const o = change.doc.data();
+                    const orderTime = o.timestamp?.toMillis();
+                    const now = Date.now();
+                    // Якщо замовлення створено в останні 10 секунд - шлемо в ТГ
+                    if (orderTime && (now - orderTime) < 10000) {
+                        sendTelegramNotify(o);
+                    }
+                }
+            });
+
             boxNew.innerHTML = ""; boxActive.innerHTML = "";
             snap.forEach(d => {
                 const o = d.data(); if (o.archivedByAdmin) return;
@@ -222,7 +255,6 @@
                 const card = document.createElement('div');
                 card.className = "order-card";
                 
-                // Додаємо вивід опису (desc) та ціни (price) у картку замовлення
                 card.innerHTML = `
                     <div style="flex-grow: 1;">
                         <b style="color:#f39c12; font-size: 16px;">${o.name || 'Замовлення'}</b><br>
