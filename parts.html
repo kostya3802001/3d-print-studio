@@ -112,7 +112,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let currentItem = null; // Для збереження обраного товару
+    let currentItem = null;
 
     const q = query(collection(db, "catalog"), where("category", "==", "parts"));
 
@@ -125,7 +125,6 @@
             const card = document.createElement('div');
             card.className = 'card';
             
-            // Логіка картинки (як у тебе була)
             let finalImg = item.img || 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
             if (item.img && !item.img.startsWith('http')) {
                 finalImg = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/${item.img.replace(/^\//, '')}`;
@@ -140,7 +139,6 @@
                     <button class="btn order-trigger">Замовити</button>
                 </div>`;
             
-            // Натискання на кнопку "Замовити"
             card.querySelector('.order-trigger').onclick = () => {
                 currentItem = item;
                 document.getElementById('modalItemName').innerText = item.name;
@@ -151,7 +149,6 @@
         });
     });
 
-    // Логіка модалки
     document.getElementById('closeModalBtn').onclick = () => {
         document.getElementById('orderModal').style.display = "none";
     };
@@ -164,6 +161,7 @@
             await addDoc(collection(db, "orders"), {
                 name: currentItem.name,
                 price: currentItem.price,
+                desc: currentItem.desc || "Опис відсутній", // Додано передачу опису
                 telegram: contact,
                 status: "Новий",
                 timestamp: new Date(),
@@ -173,6 +171,7 @@
             document.getElementById('orderModal').style.display = "none";
             document.getElementById('userTgInput').value = "";
         } catch (e) {
+            console.error(e);
             alert("Помилка відправки.");
         }
     };
