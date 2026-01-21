@@ -23,27 +23,40 @@
         }
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
-        /* ВИПРАВЛЕНО: Стилі для повного відображення фото */
         .card img {
             width: 100%;
             height: 250px;
-            object-fit: contain; /* Фото тепер видно повністю */
-            background: #0a0a0a; /* Чорний фон для заповнення країв */
+            object-fit: contain;
+            background: #0a0a0a;
             padding: 10px; 
             display: block;
         }
 
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
-        
         .price { font-size: 20px; font-weight: bold; color: #f39c12; margin-bottom: 15px; }
 
         .btn {
             background: #f39c12; color: #000; text-decoration: none; padding: 12px;
             border-radius: 8px; font-weight: bold; text-transform: uppercase; transition: 0.3s;
-            display: block;
+            display: block; border: none; cursor: pointer; width: 100%;
         }
         .btn:hover { background: #e67e22; }
+
+        /* СТИЛІ МОДАЛЬНОГО ВІКНА */
+        #orderModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #111; padding: 30px; border-radius: 15px; border: 2px solid #f39c12;
+            width: 90%; max-width: 400px; text-align: center;
+        }
+        .modal-content input {
+            width: 100%; padding: 12px; margin: 20px 0; background: #1a1a1a;
+            border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -69,11 +82,23 @@
     </div>
 </section>
 
+<div id="orderModal">
+    <div class="modal-content">
+        <h3 style="color:#f39c12; margin:0;">Швидке замовлення</h3>
+        <p id="modalItemName" style="margin: 10px 0; font-weight: bold;"></p>
+        <input type="text" id="userTgInput" placeholder="Ваш Telegram або телефон">
+        <div style="display:flex; gap:10px;">
+            <button id="closeModalBtn" style="flex:1; padding:10px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer;">Назад</button>
+            <button id="confirmOrderBtn" style="flex:2; padding:10px; background:#f39c12; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Замовити</button>
+        </div>
+    </div>
+</div>
+
 <footer>© 2026 3D-PRINT STUDIO</footer>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
@@ -87,8 +112,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const githubUserRepo = "kostya3802001/3d-print-studio"; 
-    const githubURL = `https://raw.githubusercontent.com/${githubUserRepo}/main/`;
+    let currentItem = null; // Для збереження обраного товару
 
     const q = query(collection(db, "catalog"), where("category", "==", "parts"));
 
@@ -96,34 +120,62 @@
         const container = document.getElementById('partsContainer');
         container.innerHTML = "";
         
-        if (snapshot.empty) {
-            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Наразі технічних деталей немає в наявності.</p>`;
-            return;
-        }
-
         snapshot.forEach(doc => {
             const item = doc.data();
+            const card = document.createElement('div');
+            card.className = 'card';
             
-            let finalImg = item.img || '';
-            if (finalImg && !finalImg.startsWith('http')) {
-                const cleanImgPath = finalImg.startsWith('/') ? finalImg.substring(1) : finalImg;
-                finalImg = githubURL + cleanImgPath;
+            // Логіка картинки (як у тебе була)
+            let finalImg = item.img || 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
+            if (item.img && !item.img.startsWith('http')) {
+                finalImg = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/${item.img.replace(/^\//, '')}`;
             }
-            // Використовуємо %20 для пробілу в назві папки логотипу
-            if (!finalImg) finalImg = 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
 
-            container.innerHTML += `
-                <div class="card">
-                    <img src="${finalImg}" alt="${item.name}" onerror="this.src='log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg'">
-                    <div class="card-body">
-                        <h3>${item.name}</h3>
-                        <p style="color: #888; font-size: 14px; margin-bottom: 15px;">${item.desc || ''}</p>
-                        <div class="price">від ${item.price} грн</div>
-                        <a href="order.html?item=${encodeURIComponent(item.name)}" class="btn">Замовити</a>
-                    </div>
+            card.innerHTML = `
+                <img src="${finalImg}" alt="${item.name}">
+                <div class="card-body">
+                    <h3>${item.name}</h3>
+                    <p style="color: #888; font-size: 14px; margin-bottom: 15px;">${item.desc || ''}</p>
+                    <div class="price">від ${item.price} грн</div>
+                    <button class="btn order-trigger">Замовити</button>
                 </div>`;
+            
+            // Натискання на кнопку "Замовити"
+            card.querySelector('.order-trigger').onclick = () => {
+                currentItem = item;
+                document.getElementById('modalItemName').innerText = item.name;
+                document.getElementById('orderModal').style.display = "flex";
+            };
+
+            container.appendChild(card);
         });
     });
+
+    // Логіка модалки
+    document.getElementById('closeModalBtn').onclick = () => {
+        document.getElementById('orderModal').style.display = "none";
+    };
+
+    document.getElementById('confirmOrderBtn').onclick = async () => {
+        const contact = document.getElementById('userTgInput').value.trim();
+        if(!contact) return alert("Вкажіть контакт для зв'язку!");
+
+        try {
+            await addDoc(collection(db, "orders"), {
+                name: currentItem.name,
+                price: currentItem.price,
+                telegram: contact,
+                status: "Новий",
+                timestamp: new Date(),
+                material: "Готовий товар (Деталі)"
+            });
+            alert("Замовлення прийнято! Адмін зв'яжеться з вами.");
+            document.getElementById('orderModal').style.display = "none";
+            document.getElementById('userTgInput').value = "";
+        } catch (e) {
+            alert("Помилка відправки.");
+        }
+    };
 </script>
 </body>
 </html>
