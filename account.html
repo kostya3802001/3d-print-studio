@@ -8,7 +8,7 @@
     <style>
         :root { --orange: #f39c12; --green: #27ae60; --dark-bg: #0d0d0d; }
         
-        body { background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #050505; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
 
         .profile-wrapper { max-width: 800px; margin: 40px auto; padding: 20px; }
 
@@ -64,9 +64,8 @@
         .order-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
         .order-date { font-size: 12px; color: #555; }
         .order-title { color: var(--orange); font-size: 20px; margin: 10px 0; }
-        .order-desc { color: #aaa; font-size: 14px; line-height: 1.5; background: #080808; padding: 10px; border-radius: 8px; }
+        .order-desc { color: #aaa; font-size: 14px; line-height: 1.5; background: #080808; padding: 10px; border-radius: 8px; white-space: pre-wrap; }
         
-        /* Мобільна адаптація */
         @media (max-width: 600px) {
             .profile-wrapper { margin: 20px auto; padding: 10px; }
             .user-info-panel { padding: 15px; }
@@ -101,7 +100,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
@@ -130,27 +129,43 @@
     });
 
     function loadOrders(uid) {
-        // Тут ми НЕ фільтруємо за archivedByAdmin, тому користувач бачить ВСЕ
+        // Крок 1: Тільки фільтрація за UID (без orderBy, щоб уникнуть помилок з індексами)
         const q = query(
             collection(db, "orders"),
-            where("userId", "==", uid),
-            orderBy("timestamp", "desc")
+            where("userId", "==", uid)
         );
 
         onSnapshot(q, (snapshot) => {
             const container = document.getElementById('ordersContainer');
-            container.innerHTML = "";
-
+            
             if (snapshot.empty) {
                 container.innerHTML = `<p style="text-align:center; color:#555;">У вас ще немає замовлень.</p>`;
                 return;
             }
 
+            // Крок 2: Отримуємо дані та сортуємо їх вручную (нові зверху)
+            const orders = [];
             snapshot.forEach((doc) => {
-                const order = doc.data();
+                orders.push({ id: doc.id, ...doc.data() });
+            });
+
+            orders.sort((a, b) => {
+                const timeA = a.timestamp?.toMillis() || 0;
+                const timeB = b.timestamp?.toMillis() || 0;
+                return timeB - timeA;
+            });
+
+            // Крок 3: Вивід на сторінку
+            container.innerHTML = "";
+            orders.forEach((order) => {
                 const date = order.timestamp ? order.timestamp.toDate().toLocaleString('uk-UA') : "Щойно";
                 const isConfirmed = order.status === "В роботі";
                 
+                // Перевірка полів, щоб не було undefined
+                const material = order.material || "Не вказано";
+                const description = order.description || order.desc || "Опис відсутній";
+                const name = order.name || "Індивідуальне замовлення";
+
                 container.innerHTML += `
                     <div class="order-card">
                         <div class="order-header">
@@ -159,15 +174,17 @@
                             </span>
                             <span class="order-date">${date}</span>
                         </div>
-                        <h3 class="order-title">${order.name || 'Деталь'}</h3>
-                        <p style="font-size: 14px; margin-bottom: 8px;"><strong>Матеріал:</strong> ${order.material}</p>
-                        <div class="order-desc">${order.description}</div>
+                        <h3 class="order-title">${name}</h3>
+                        <p style="font-size: 14px; margin-bottom: 8px;"><strong>Матеріал:</strong> ${material}</p>
+                        <div class="order-desc">${description}</div>
                     </div>
                 `;
             });
+        }, (error) => {
+            console.error("Firestore Error:", error);
+            document.getElementById('ordersContainer').innerHTML = `<p style="text-align:center; color:red;">Помилка завантаження. Спробуйте оновити сторінку.</p>`;
         });
     }
 </script>
 </body>
 </html>
-
