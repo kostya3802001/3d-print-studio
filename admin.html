@@ -163,7 +163,6 @@
 
     const ADMIN_EMAIL = "join.the.game.notik.fols@gmail.com";
     
-    // ДАНІ ТЕЛЕГРАМ
     const botToken = "8252771598:AAGP_fn_voqMi9OZXMhd-Ch9H0mFRMqpPGw";
     const chatId = "836468275";
 
@@ -172,7 +171,7 @@
                      `📦 Товар: ${order.name}\n` +
                      `💰 Ціна: ${order.price} грн\n` +
                      `📱 Контакт: ${order.telegram}\n` +
-                     `📝 Опис: ${order.desc || 'Відсутній'}`;
+                     `📝 Опис: ${order.desc || order.description || 'Відсутній'}`;
         try {
             await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
@@ -231,17 +230,15 @@
             });
         });
 
-        // --- МОНІТОРИНГ ТА РЕНДЕР ЗАМОВЛЕНЬ ---
+        // --- МОНІТОРИНГ ТА РЕНДЕР ЗАМОВЛЕНЬ (ОНОВЛЕНО) ---
         onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
             const boxNew = document.getElementById('listNew'), boxActive = document.getElementById('listActive');
             
-            // Відстеження нових замовлень для Telegram
             snap.docChanges().forEach(change => {
                 if (change.type === "added") {
                     const o = change.doc.data();
                     const orderTime = o.timestamp?.toMillis();
                     const now = Date.now();
-                    // Якщо замовлення створено в останні 10 секунд - шлемо в ТГ
                     if (orderTime && (now - orderTime) < 10000) {
                         sendTelegramNotify(o);
                     }
@@ -255,17 +252,31 @@
                 const card = document.createElement('div');
                 card.className = "order-card";
                 
+                // Універсальний пошук опису та файлу
+                const finalDesc = o.desc || o.description || 'Опис відсутній';
+                const finalFile = o.fileUrl || o.file || o.stlUrl || null;
+                
                 card.innerHTML = `
-                    <div style="flex-grow: 1;">
-                        <b style="color:#f39c12; font-size: 16px;">${o.name || 'Замовлення'}</b><br>
-                        <span style="color: #bbb; font-size: 13px; font-style: italic;">${o.desc || 'Немає опису'}</span><br>
+                    <div style="flex-grow: 1; text-align: left;">
+                        <b style="color:#f39c12; font-size: 16px;">${o.name || 'Індивідуальне замовлення'}</b><br>
+                        
+                        <div style="background: #111; padding: 10px; border-radius: 5px; margin: 8px 0; border-left: 3px solid #f39c12; font-size: 13px; color: #ddd;">
+                            <strong>Коментар клієнта:</strong><br>
+                            ${finalDesc}
+                        </div>
+
                         <a href="https://t.me/${o.telegram?.replace('@','')}" target="_blank" class="tg-link">✈️ TG: ${o.telegram || 'Ні'}</a>
                     </div>
                     <div class="btn-group">
-                        <span style="color: #fff; font-weight: bold; margin-right: 10px;">${o.price || '0'} грн</span>
-                        ${(o.fileUrl || o.file) ? `<a href="${o.fileUrl || o.file}" target="_blank" class="btn-download">📂 ФАЙЛ</a>` : ''}
+                        <span style="color: #fff; font-weight: bold; margin-right: 10px;">${o.price || 'рахуємо'} грн</span>
+                        
+                        ${finalFile ? 
+                            `<a href="${finalFile}" target="_blank" class="btn-download" style="background: #27ae60;">⬇️ СКАЧАТИ STL</a>` : 
+                            `<span style="color: #555; font-size: 12px;">Файл відсутній</span>`
+                        }
+                        
                         ${!isWorking ? `<button class="btn-action btn-upd">ПРИЙНЯТИ</button>` : '👌'}
-                        <button class="btn-delete btn-arch" style="background:#555">АРХІВ</button>
+                        <button class="btn-delete btn-arch" style="background:#444">АРХІВ</button>
                     </div>`;
 
                 if(!isWorking) card.querySelector('.btn-upd').onclick = () => updateDoc(doc(db, "orders", d.id), {status: "В роботі"});
