@@ -7,104 +7,21 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { background-color: #000; margin: 0; padding: 0; font-family: sans-serif; color: #fff; }
-        
-        .admin-container { 
-            display: none; 
-            max-width: 800px; 
-            margin: 0 auto;  
-            padding: 40px 20px; 
-            flex-direction: column;
-            align-items: center; 
-        }
-
-        #loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-size: 20px;
-            color: #f39c12;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .admin-section { 
-            width: 100%;
-            background: #0d0d0d; 
-            padding: 25px; 
-            border-radius: 12px; 
-            border: 2px solid #f39c12; 
-            margin-bottom: 30px;
-            box-sizing: border-box;
-            text-align: center; 
-        }
-
-        .admin-section input, .admin-section textarea, .admin-section select {
-            width: 100%; 
-            max-width: 500px; 
-            padding: 12px; 
-            margin: 10px auto; 
-            display: block; 
-            background: #151515; 
-            border: 1px solid #333; 
-            color: white; 
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-
-        .collapsible {
-            background-color: #1a1a1a;
-            color: #f39c12;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            max-width: 600px; 
-            border: 1px solid #333;
-            text-align: center; 
-            outline: none;
-            font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: flex;
-            justify-content: center; 
-            align-items: center;
-            transition: 0.3s;
-            position: relative;
-        }
-
+        .admin-container { display: none; max-width: 800px; margin: 0 auto; padding: 40px 20px; flex-direction: column; align-items: center; }
+        #loader { display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 20px; color: #f39c12; font-weight: bold; text-transform: uppercase; }
+        .admin-section { width: 100%; background: #0d0d0d; padding: 25px; border-radius: 12px; border: 2px solid #f39c12; margin-bottom: 30px; box-sizing: border-box; text-align: center; }
+        .admin-section input, .admin-section textarea, .admin-section select { width: 100%; max-width: 500px; padding: 12px; margin: 10px auto; display: block; background: #151515; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        .collapsible { background-color: #1a1a1a; color: #f39c12; cursor: pointer; padding: 18px; width: 100%; max-width: 600px; border: 1px solid #333; text-align: center; outline: none; font-size: 18px; font-weight: bold; text-transform: uppercase; border-radius: 8px; margin-top: 15px; display: flex; justify-content: center; align-items: center; transition: 0.3s; position: relative; }
         .active-tab, .collapsible:hover { background-color: #222; border-color: #f39c12; }
         .collapsible:after { content: '\002B'; color: #f39c12; font-size: 24px; position: absolute; right: 20px; }
         .active-tab:after { content: "\2212"; }
-
-        .content {
-            width: 100%;
-            max-width: 600px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background-color: #000;
-        }
-
-        .order-card, .item-card {
-            background: #0d0d0d; 
-            border: 1px solid #222; 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin: 15px 0;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            gap: 15px;
-        }
-
+        .content { width: 100%; max-width: 600px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: #000; }
+        .order-card, .item-card { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
         .btn-group { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
         .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-        .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; text-transform: uppercase; }
+        .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid #fff; }
         .btn-logout { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-top: 20px; }
         .tg-link { color: #3498db; text-decoration: none; font-weight: bold; font-size: 14px; }
     </style>
@@ -205,6 +122,7 @@
               catInp = document.getElementById('itemCategory'), descInp = document.getElementById('itemDesc'),
               imgInp = document.getElementById('itemImg'), editIdInp = document.getElementById('editId');
 
+        // Каталог
         onSnapshot(collection(db, "catalog"), (snap) => {
             const list = document.getElementById('catalogList');
             list.innerHTML = "";
@@ -229,6 +147,7 @@
             });
         });
 
+        // ЗАМОВЛЕННЯ
         onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
             const boxNew = document.getElementById('listNew'), boxActive = document.getElementById('listActive');
             
@@ -248,8 +167,9 @@
                 const card = document.createElement('div');
                 card.className = "order-card";
                 
-                // ПОШУК ФАЙЛУ (ПЕРЕВІРКА ВСІХ МОЖЛИВИХ ПОЛІВ)
-                const fileLink = o.fileUrl || o.file || o.stlUrl || o.url || null;
+                // --- РОЗШИРЕНИЙ ПОШУК ФАЙЛУ ---
+                // Ми перевіряємо всі можливі варіанти, куди сайт міг записати посилання
+                const fileLink = o.downloadURL || o.fileUrl || o.fileURL || o.file || o.stlUrl || o.url || o.imageUrl || null;
                 const finalDesc = o.desc || o.description || 'Опис відсутній';
                 
                 card.innerHTML = `
@@ -257,7 +177,7 @@
                         <b style="color:#f39c12; font-size: 16px;">${o.name || 'Індивідуальне замовлення'}</b><br>
                         
                         <div style="background: #111; padding: 10px; border-radius: 5px; margin: 8px 0; border-left: 3px solid #f39c12; font-size: 13px; color: #ddd;">
-                            <strong>Коментар клієнта:</strong><br>
+                            <strong>Деталі замовлення:</strong><br>
                             ${finalDesc}
                         </div>
 
@@ -267,8 +187,8 @@
                         <span style="color: #fff; font-weight: bold; margin-right: 10px;">${o.price || 'рахуємо'} грн</span>
                         
                         ${fileLink ? 
-                            `<a href="${fileLink}" target="_blank" class="btn-download" style="background: #27ae60;">⬇️ ФАЙЛ</a>` : 
-                            `<span style="color: #555; font-size: 12px;">Без файлу</span>`
+                            `<a href="${fileLink}" target="_blank" class="btn-download">⬇️ ВІДКРИТИ ФАЙЛ</a>` : 
+                            `<span style="color: #555; font-size: 11px; border: 1px dashed #333; padding: 5px;">Файл не знайдено</span>`
                         }
                         
                         ${!isWorking ? `<button class="btn-action btn-upd">ПРИЙНЯТИ</button>` : '👌'}
@@ -282,14 +202,7 @@
         });
 
         document.getElementById('saveItemBtn').onclick = async () => {
-            const data = { 
-                name: nameInp.value, 
-                price: priceInp.value, 
-                category: catInp.value, 
-                desc: descInp.value, 
-                img: imgInp.value, 
-                timestamp: new Date() 
-            };
+            const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
             editIdInp.value ? await updateDoc(doc(db, "catalog", editIdInp.value), data) : await addDoc(collection(db, "catalog"), data);
             resetForm();
         };
