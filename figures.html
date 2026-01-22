@@ -8,63 +8,23 @@
     <style>
         body { background-color: #000; color: #fff; margin: 0; font-family: sans-serif; }
         .section { padding: 60px 5%; }
-
-        .section-header {
-            display: flex; flex-direction: column; align-items: center; 
-            text-align: center; margin-bottom: 40px; width: 100%;
-        }
-
-        .section-header h1 {
-            font-size: clamp(28px, 8vw, 42px); font-weight: 900;
-            margin-bottom: 15px; text-transform: uppercase;
-        }
-
+        .section-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 40px; width: 100%; }
+        .section-header h1 { font-size: clamp(28px, 8vw, 42px); font-weight: 900; margin-bottom: 15px; text-transform: uppercase; }
         .section-header h1 span { color: #f39c12; }
         .section-header p { color: #888; max-width: 600px; }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: #111; border: 1px solid #222; border-radius: 15px;
-            overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; height: 100%;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: #111; border: 1px solid #222; border-radius: 15px; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
-
-        .card img {
-            width: 100%; height: 250px; object-fit: contain; 
-            background: #0a0a0a; padding: 10px; 
-        }
-
+        .card img { width: 100%; height: 250px; object-fit: contain; background: #0a0a0a; padding: 10px; }
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
         .card-body p { color: #888; font-size: 14px; margin-bottom: 15px; flex-grow: 1; }
         .price { font-size: 22px; font-weight: bold; color: #f39c12; margin-bottom: 15px; }
-
-        .btn {
-            background: #f39c12; color: #000; border: none; padding: 12px;
-            border-radius: 8px; font-weight: bold; text-transform: uppercase; 
-            transition: 0.3s; display: block; width: 100%; cursor: pointer;
-        }
+        .btn { background: #f39c12; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; text-transform: uppercase; transition: 0.3s; display: block; width: 100%; cursor: pointer; }
         .btn:hover { background: #e67e22; }
-
-        /* СТИЛІ МОДАЛКИ */
-        #orderModal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;
-            backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: #111; padding: 30px; border-radius: 15px; border: 2px solid #f39c12;
-            width: 90%; max-width: 400px; text-align: center;
-        }
-        .modal-content input {
-            width: 100%; padding: 12px; margin: 20px 0; background: #1a1a1a;
-            border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; text-align: center;
-        }
+        #orderModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #111; padding: 30px; border-radius: 15px; border: 2px solid #f39c12; width: 90%; max-width: 400px; text-align: center; }
+        .modal-content input { width: 100%; padding: 12px; margin: 20px 0; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; text-align: center; }
     </style>
 </head>
 <body>
@@ -109,6 +69,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"; // ДОДАНО AUTH
     import { getFirestore, collection, onSnapshot, query, where, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -122,6 +83,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app); // Ініціалізація
     const productsContainer = document.getElementById('publicProductsList');
     
     let currentItem = null;
@@ -172,17 +134,27 @@
         const contact = document.getElementById('userTgInput').value.trim();
         if(!contact) return alert("Вкажіть ваш Telegram!");
 
+        // ПЕРЕВІРКА АВТОРИЗАЦІЇ
+        const user = auth.currentUser;
+        if (!user) {
+            alert("Будь ласка, увійдіть в акаунт, щоб зробити замовлення!");
+            window.location.href = "login.html";
+            return;
+        }
+
         try {
             await addDoc(collection(db, "orders"), {
                 name: currentItem.name,
                 price: currentItem.price,
-                desc: currentItem.desc || "Опис відсутній", // ДОДАНО: передаємо опис в замовлення
+                desc: currentItem.desc || "Опис відсутній",
                 telegram: contact,
+                userId: user.uid, // ТЕПЕР ПРИВ'ЯЗАНО ДО АККАУНТА
+                userEmail: user.email,
                 status: "Новий",
                 timestamp: new Date(),
                 material: "Готова фігурка"
             });
-            alert("Дякуємо! Замовлення вже в адмінці.");
+            alert("Дякуємо! Замовлення з'явиться у вашому кабінеті.");
             document.getElementById('orderModal').style.display = "none";
             document.getElementById('userTgInput').value = "";
         } catch (e) {
