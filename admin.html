@@ -104,7 +104,7 @@
         .btn-action { background: #27ae60; color: #fff; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
         .btn-delete { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-        .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
+        .btn-download { background: #e67e22; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; text-transform: uppercase; }
         .btn-logout { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-top: 20px; }
         .tg-link { color: #3498db; text-decoration: none; font-weight: bold; font-size: 14px; }
     </style>
@@ -162,14 +162,13 @@
     const db = getFirestore(app);
 
     const ADMIN_EMAIL = "join.the.game.notik.fols@gmail.com";
-    
     const botToken = "8252771598:AAGP_fn_voqMi9OZXMhd-Ch9H0mFRMqpPGw";
     const chatId = "836468275";
 
     async function sendTelegramNotify(order) {
         const text = `🚀 НОВЕ ЗАМОВЛЕННЯ!\n\n` +
-                     `📦 Товар: ${order.name}\n` +
-                     `💰 Ціна: ${order.price} грн\n` +
+                     `📦 Товар: ${order.name || 'Індивідуальне'}\n` +
+                     `💰 Ціна: ${order.price || 'Рахуємо'} грн\n` +
                      `📱 Контакт: ${order.telegram}\n` +
                      `📝 Опис: ${order.desc || order.description || 'Відсутній'}`;
         try {
@@ -230,7 +229,6 @@
             });
         });
 
-        // --- МОНІТОРИНГ ТА РЕНДЕР ЗАМОВЛЕНЬ (ОНОВЛЕНО) ---
         onSnapshot(query(collection(db, "orders"), orderBy("timestamp", "desc")), (snap) => {
             const boxNew = document.getElementById('listNew'), boxActive = document.getElementById('listActive');
             
@@ -239,9 +237,7 @@
                     const o = change.doc.data();
                     const orderTime = o.timestamp?.toMillis();
                     const now = Date.now();
-                    if (orderTime && (now - orderTime) < 10000) {
-                        sendTelegramNotify(o);
-                    }
+                    if (orderTime && (now - orderTime) < 10000) sendTelegramNotify(o);
                 }
             });
 
@@ -252,9 +248,9 @@
                 const card = document.createElement('div');
                 card.className = "order-card";
                 
-                // Універсальний пошук опису та файлу
+                // ПОШУК ФАЙЛУ (ПЕРЕВІРКА ВСІХ МОЖЛИВИХ ПОЛІВ)
+                const fileLink = o.fileUrl || o.file || o.stlUrl || o.url || null;
                 const finalDesc = o.desc || o.description || 'Опис відсутній';
-                const finalFile = o.fileUrl || o.file || o.stlUrl || null;
                 
                 card.innerHTML = `
                     <div style="flex-grow: 1; text-align: left;">
@@ -270,9 +266,9 @@
                     <div class="btn-group">
                         <span style="color: #fff; font-weight: bold; margin-right: 10px;">${o.price || 'рахуємо'} грн</span>
                         
-                        ${finalFile ? 
-                            `<a href="${finalFile}" target="_blank" class="btn-download" style="background: #27ae60;">⬇️ СКАЧАТИ STL</a>` : 
-                            `<span style="color: #555; font-size: 12px;">Файл відсутній</span>`
+                        ${fileLink ? 
+                            `<a href="${fileLink}" target="_blank" class="btn-download" style="background: #27ae60;">⬇️ ФАЙЛ</a>` : 
+                            `<span style="color: #555; font-size: 12px;">Без файлу</span>`
                         }
                         
                         ${!isWorking ? `<button class="btn-action btn-upd">ПРИЙНЯТИ</button>` : '👌'}
