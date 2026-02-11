@@ -6,68 +6,97 @@
     <title data-ua="3D-PRINT STUDIO — Студія 3D-друку" data-pl="3D-PRINT STUDIO — Studio druku 3D">3D-PRINT STUDIO — Студія 3D-друку</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ДОДАТКОВІ СТИЛІ ДЛЯ АДАПТИВНОСТІ (Можна перенести в style.css) */
-        
-        /* Кнопка бургера */
+        /* АДАПТИВНІ ПРАВКИ ДЛЯ ШАПКИ */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            position: sticky;
+            top: 0;
+            background: rgba(5, 5, 5, 0.95);
+            z-index: 10000;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            z-index: 11000;
+        }
+
+        /* Стилі меню для ПК */
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
+        nav a, .lang {
+            margin-left: 20px;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        /* Кнопка бургера (прихована на ПК) */
         .menu-toggle {
             display: none;
             flex-direction: column;
             cursor: pointer;
             gap: 6px;
-            z-index: 1100;
-        }
-        .menu-toggle span {
-            display: block;
-            width: 30px;
-            height: 3px;
-            background-color: #f39c12;
-            transition: 0.3s;
-            border-radius: 2px;
+            z-index: 11000;
         }
 
-        /* Адаптація для телефонів */
+        .menu-toggle span {
+            width: 30px;
+            height: 3px;
+            background: #f39c12;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        /* МОБІЛЬНА ВЕРСІЯ (Екрани менше 850px) */
         @media (max-width: 850px) {
             .menu-toggle {
-                display: flex; /* Показуємо бургер */
+                display: flex;
             }
 
             nav {
                 position: fixed;
                 top: 0;
-                right: -100%; /* Ховаємо меню за екран */
-                width: 70%;
+                right: -100%; /* Меню сховане справа */
+                width: 80%;
                 height: 100vh;
-                background: rgba(10, 10, 10, 0.98);
-                backdrop-filter: blur(15px);
+                background: #0a0a0a;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                transition: 0.4s ease-in-out;
-                z-index: 1000;
-                border-left: 1px solid rgba(243, 156, 18, 0.3);
+                transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+                z-index: 10500;
             }
 
             nav.active {
-                right: 0; /* Висуваємо меню */
+                right: 0; /* Виїжджає при кліку */
             }
 
             nav a {
                 margin: 15px 0 !important;
-                font-size: 20px !important;
-                width: 100%;
-                text-align: center;
-                padding: 10px 0;
+                font-size: 22px;
+                opacity: 1 !important;
             }
 
             .lang {
-                margin-top: 20px;
-                font-size: 18px;
-                padding: 10px 20px;
+                margin: 20px 0 0 0;
+                font-size: 20px;
+                color: #f39c12;
                 border: 1px solid #f39c12;
+                padding: 5px 15px;
                 border-radius: 5px;
             }
-            
-            /* Анімація бургера в хрестик */
+
+            /* Перетворення бургера на хрестик */
             .menu-toggle.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
             .menu-toggle.active span:nth-child(2) { opacity: 0; }
             .menu-toggle.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
@@ -78,8 +107,8 @@
 
 <header>
     <div class="logo">
-        <img src="log img/Логотип.jpg" alt="Logo">
-        <span>3D-PRINT STUDIO</span> 
+        <img src="log img/Логотип.jpg" alt="Logo" style="height: 55px; border-radius: 8px; margin-right: 12px;">
+        <span style="color: #f39c12; font-weight: bold; font-size: 20px;">3D-PRINT STUDIO</span>
     </div>
 
     <div class="menu-toggle" id="mobile-menu">
@@ -88,13 +117,13 @@
         <span></span>
     </div>
 
-    <nav id="nav-menu">
+    <nav id="nav-list">
         <a href="index.html" data-ua="Головна" data-pl="Główna">Головна</a>
         <a href="figures.html" data-ua="Фігурки" data-pl="Figurki">Фігурки</a>
         <a href="parts.html" data-ua="Деталі" data-pl="Części">Деталі</a>
         <a href="order.html" data-ua="Замовити" data-pl="Zamów">Замовити</a>
         <a href="login.html" id="accountLink" data-ua="Кабінет" data-pl="Gabinet">Кабінет</a>
-        <span class="lang" id="langToggle">UA</span>
+        <span class="lang" id="langToggle" style="cursor:pointer;">UA</span>
     </nav>
 </header>
 
@@ -111,28 +140,93 @@
     </div>
 </section>
 
+<section class="section">
+    <h2 class="section-title" data-ua="Наші послуги" data-pl="Nasze usługi" style="text-align: center; margin-bottom: 40px; font-size: 32px;">Наші послуги</h2>
+    <div class="grid">
+        <div class="card">
+            <img src="log img/stl.png" alt="STL">
+            <div class="card-body">
+                <h3 data-ua="Друк за вашим STL" data-pl="Druk z Twojego STL">Друк за вашим STL</h3>
+                <p data-ua="Точний прорахунок, контроль якості та стабільний промисловий результат.">
+                    Точний прорахунок, контроль якості та стабільний промисловий результат.
+                </p>
+                <div class="price">від 5 грн / г</div>
+                <a href="order.html" class="btn">Замовити</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="log img/fig.png" alt="Figures">
+            <div class="card-body">
+                <h3 data-ua="Готові фігурки" data-pl="Gotowe figurki">Готові фігурки</h3>
+                <p data-ua="Колекційні моделі, герої ігор та фільмів. Висока деталізація.">
+                    Колекційні моделі, герої ігор та фільмів. Висока деталізація.
+                </p>
+                <div class="price">від 75 грн</div>
+                <a href="figures.html" class="btn">У каталог</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="log img/parts.png" alt="Parts">
+            <div class="card-body">
+                <h3 data-ua="Технічні деталі" data-pl="Części techniczne">Технічні деталі</h3>
+                <p data-ua="Шестерні, корпуси, кріплення, прототипи та дрібносерійне виробництво.">
+                    Шестерні, корпуси, кріплення, прототипи та дрібносерійне виробництво.
+                </p>
+                <div class="price">індивідуально</div>
+                <a href="parts.html" class="btn">Детальніше</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <span>© 2026 3D-PRINT STUDIO · Професійний 3D-друк</span>
+</footer>
+
 <script>
-    // Скрипт для роботи мобільного меню
-    const menuBtn = document.getElementById('mobile-menu');
-    const navMenu = document.getElementById('nav-menu');
+    const menuToggle = document.getElementById('mobile-menu');
+    const navList = document.getElementById('nav-list');
 
-    menuBtn.addEventListener('click', () => {
-        menuBtn.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
+    menuToggle.onclick = () => {
+        menuToggle.classList.toggle('active');
+        navList.classList.toggle('active');
+    };
 
-    // Закривати меню при кліку на посилання
+    // Закриття при кліку на посилання
     document.querySelectorAll('nav a').forEach(link => {
-        link.addEventListener('click', () => {
-            menuBtn.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
+        link.onclick = () => {
+            menuToggle.classList.remove('active');
+            navList.classList.remove('active');
+        };
     });
 </script>
 
 <script src="lang.js"></script>
 <script type="module">
-  // ... (твій код Firebase без змін) ...
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBgAl6GL0DQOhE-JpPAABzb4yvOctfpXXI",
+    authDomain: "d-print-studio-25787.firebaseapp.com",
+    projectId: "d-print-studio-25787",
+    storageBucket: "d-print-studio-25787.firebasestorage.app",
+    messagingSenderId: "671010955757",
+    appId: "1:671010955757:web:633317a7073d5d6f6c07e4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    const link = document.getElementById('accountLink');
+    if (user) {
+      link.href = "account.html";
+      link.innerText = "Мій Профіль";
+    }
+  });
 </script>
 </body>
 </html>
