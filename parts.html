@@ -23,14 +23,21 @@
         }
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
-        .card img {
-            width: 100%;
-            height: 250px;
-            object-fit: contain;
-            background: #0a0a0a;
-            padding: 10px; 
-            display: block;
+        .card img.main-img {
+            width: 100%; height: 250px; object-fit: contain;
+            background: #0a0a0a; padding: 10px; display: block; cursor: pointer;
         }
+
+        /* Стилі для галереї мініатюр */
+        .card-gallery {
+            display: flex; gap: 8px; padding: 0 15px 10px; overflow-x: auto;
+            justify-content: center;
+        }
+        .thumb-img {
+            width: 40px; height: 40px; object-fit: cover; border-radius: 4px;
+            border: 1px solid #333; cursor: pointer; transition: 0.2s;
+        }
+        .thumb-img:hover { border-color: #f39c12; transform: scale(1.1); }
 
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
@@ -112,6 +119,7 @@
     const db = getFirestore(app);
 
     let currentItem = null;
+    const githubURL = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/`;
 
     const q = query(collection(db, "catalog"), where("category", "==", "parts"));
 
@@ -121,16 +129,43 @@
         
         snapshot.forEach(doc => {
             const item = doc.data();
+            
+            // Логіка декількох зображень
+            let images = [];
+            if (Array.isArray(item.img)) {
+                images = item.img;
+            } else if (typeof item.img === 'string' && item.img.includes(',')) {
+                images = item.img.split(',').map(s => s.trim());
+            } else if (item.img) {
+                images = [item.img];
+            }
+
+            // Форматування посилань
+            const formattedImages = images.map(url => {
+                if (url && !url.startsWith('http')) {
+                    return githubURL + url.replace(/^\//, '');
+                }
+                return url || 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
+            });
+
+            const mainImgSrc = formattedImages[0] || 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
+
             const card = document.createElement('div');
             card.className = 'card';
             
-            let finalImg = item.img || 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
-            if (item.img && !item.img.startsWith('http')) {
-                finalImg = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/${item.img.replace(/^\//, '')}`;
+            // Галерея мініатюр
+            let galleryHtml = '';
+            if (formattedImages.length > 1) {
+                galleryHtml = `<div class="card-gallery">`;
+                formattedImages.forEach(imgUrl => {
+                    galleryHtml += `<img src="${imgUrl}" class="thumb-img" onclick="this.closest('.card').querySelector('.main-img').src='${imgUrl}'">`;
+                });
+                galleryHtml += `</div>`;
             }
 
             card.innerHTML = `
-                <img src="${finalImg}" alt="${item.name}">
+                <img src="${mainImgSrc}" class="main-img" alt="${item.name}" onerror="this.src='log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg'">
+                ${galleryHtml}
                 <div class="card-body">
                     <h3>${item.name}</h3>
                     <p style="color: #888; font-size: 14px; margin-bottom: 15px;">${item.desc || 'Технічна деталь'}</p>
@@ -160,7 +195,6 @@
             await addDoc(collection(db, "orders"), {
                 name: currentItem.name,
                 price: currentItem.price,
-                // Передаємо опис товару, щоб він з'явився в адмінці
                 desc: currentItem.desc || "Замовлення деталі з каталогу", 
                 telegram: contact,
                 status: "Новий",
