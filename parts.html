@@ -28,14 +28,14 @@
             background: #0a0a0a; padding: 10px; display: block; cursor: pointer;
         }
 
-        /* Стилі для галереї мініатюр */
+        /* Галерея мініатюр */
         .card-gallery {
             display: flex; gap: 8px; padding: 0 15px 10px; overflow-x: auto;
             justify-content: center;
         }
         .thumb-img {
-            width: 40px; height: 40px; object-fit: cover; border-radius: 4px;
-            border: 1px solid #333; cursor: pointer; transition: 0.2s;
+            width: 45px; height: 45px; object-fit: cover; border-radius: 4px;
+            border: 1px solid #333; cursor: pointer; transition: 0.2s; flex-shrink: 0;
         }
         .thumb-img:hover { border-color: #f39c12; transform: scale(1.1); }
 
@@ -50,6 +50,23 @@
         }
         .btn:hover { background: #e67e22; }
 
+        /* СТИЛІ LIGHTBOX (ПЕРЕГЛЯД ФОТО) */
+        #lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 20000; justify-content: center; align-items: center;
+            flex-direction: column; backdrop-filter: blur(10px);
+        }
+        #lightbox img { max-width: 90%; max-height: 80%; object-fit: contain; border: 2px solid #f39c12; border-radius: 10px; }
+        
+        .lb-close { position: absolute; top: 20px; right: 30px; font-size: 40px; color: #fff; cursor: pointer; font-weight: bold; }
+        .lb-nav { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; box-sizing: border-box; pointer-events: none; }
+        .lb-btn { 
+            background: rgba(243, 156, 18, 0.4); color: #fff; border: none; padding: 15px 20px; 
+            cursor: pointer; font-size: 30px; border-radius: 10px; pointer-events: auto; transition: 0.3s;
+        }
+        .lb-btn:hover { background: #f39c12; color: #000; }
+
+        /* МОДАЛКА ЗАМОВЛЕННЯ */
         #orderModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;
@@ -61,7 +78,7 @@
         }
         .modal-content input {
             width: 100%; padding: 12px; margin: 20px 0; background: #1a1a1a;
-            border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box;
+            border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; text-align: center;
         }
     </style>
 </head>
@@ -87,6 +104,15 @@
         <p style="text-align: center; width: 100%;">Завантаження деталей...</p>
     </div>
 </section>
+
+<div id="lightbox">
+    <span class="lb-close">&times;</span>
+    <img id="lb-img" src="">
+    <div class="lb-nav">
+        <button class="lb-btn" id="lb-prev">&#10094;</button>
+        <button class="lb-btn" id="lb-next">&#10095;</button>
+    </div>
+</div>
 
 <div id="orderModal">
     <div class="modal-content">
@@ -118,9 +144,41 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let currentItem = null;
     const githubURL = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/`;
+    
+    // ЛОГІКА LIGHTBOX
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    let currentGallery = [];
+    let currentIndex = 0;
 
+    window.openLightbox = (index, images) => {
+        currentGallery = images;
+        currentIndex = index;
+        lbImg.src = currentGallery[currentIndex];
+        lb.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Заборонити прокрутку фону
+    };
+
+    document.getElementById('lb-next').onclick = (e) => {
+        e.stopPropagation();
+        currentIndex = (currentIndex + 1) % currentGallery.length;
+        lbImg.src = currentGallery[currentIndex];
+    };
+
+    document.getElementById('lb-prev').onclick = (e) => {
+        e.stopPropagation();
+        currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length;
+        lbImg.src = currentGallery[currentIndex];
+    };
+
+    lb.onclick = () => {
+        lb.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    };
+
+    // ЗАВАНТАЖЕННЯ ДАНИХ
+    let currentItem = null;
     const q = query(collection(db, "catalog"), where("category", "==", "parts"));
 
     onSnapshot(q, (snapshot) => {
@@ -130,41 +188,32 @@
         snapshot.forEach(doc => {
             const item = doc.data();
             
-            // Логіка декількох зображень
             let images = [];
-            if (Array.isArray(item.img)) {
-                images = item.img;
-            } else if (typeof item.img === 'string' && item.img.includes(',')) {
-                images = item.img.split(',').map(s => s.trim());
-            } else if (item.img) {
-                images = [item.img];
-            }
+            if (Array.isArray(item.img)) images = item.img;
+            else if (typeof item.img === 'string' && item.img.includes(',')) images = item.img.split(',').map(s => s.trim());
+            else if (item.img) images = [item.img];
 
-            // Форматування посилань
             const formattedImages = images.map(url => {
-                if (url && !url.startsWith('http')) {
-                    return githubURL + url.replace(/^\//, '');
-                }
+                if (url && !url.startsWith('http')) return githubURL + url.replace(/^\//, '');
                 return url || 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
             });
 
-            const mainImgSrc = formattedImages[0] || 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
+            if (formattedImages.length === 0) formattedImages.push('log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg');
 
             const card = document.createElement('div');
             card.className = 'card';
             
-            // Галерея мініатюр
             let galleryHtml = '';
             if (formattedImages.length > 1) {
                 galleryHtml = `<div class="card-gallery">`;
-                formattedImages.forEach(imgUrl => {
-                    galleryHtml += `<img src="${imgUrl}" class="thumb-img" onclick="this.closest('.card').querySelector('.main-img').src='${imgUrl}'">`;
+                formattedImages.forEach((imgUrl, idx) => {
+                    galleryHtml += `<img src="${imgUrl}" class="thumb-img" onclick="event.stopPropagation(); openLightbox(${idx}, ${JSON.stringify(formattedImages).replace(/"/g, '&quot;')})">`;
                 });
                 galleryHtml += `</div>`;
             }
 
             card.innerHTML = `
-                <img src="${mainImgSrc}" class="main-img" alt="${item.name}" onerror="this.src='log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg'">
+                <img src="${formattedImages[0]}" class="main-img" alt="${item.name}" onclick="openLightbox(0, ${JSON.stringify(formattedImages).replace(/"/g, '&quot;')})">
                 ${galleryHtml}
                 <div class="card-body">
                     <h3>${item.name}</h3>
@@ -183,6 +232,7 @@
         });
     });
 
+    // ЗАКРИТТЯ МОДАЛОК
     document.getElementById('closeModalBtn').onclick = () => {
         document.getElementById('orderModal').style.display = "none";
     };
@@ -205,7 +255,6 @@
             document.getElementById('orderModal').style.display = "none";
             document.getElementById('userTgInput').value = "";
         } catch (e) {
-            console.error("Помилка:", e);
             alert("Помилка відправки.");
         }
     };
