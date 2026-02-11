@@ -116,10 +116,11 @@ h2 {
     padding: 25px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start; /* Змінено для кращого вирівнювання */
     align-items: center;
     transition: 0.4s ease;
     min-height: 480px;
+    box-sizing: border-box;
 }
 
 .card img {
@@ -128,12 +129,19 @@ h2 {
     object-fit: cover;
     border-radius: 10px;
     margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+.card h3 { /* Додано для заголовків всередині карток */
+    text-align: center;
+    margin: 0 0 10px 0;
 }
 
 .card p {
     margin-bottom: 20px;
     color: #ccc;
     text-align: center;
+    flex-grow: 1; /* Заповнює простір, щоб кнопки були на одній лінії */
 }
 
 .card:hover {
@@ -201,8 +209,18 @@ h2 {
 
 @media (max-width: 768px) {
     .hero h1 { font-size: 34px; }
-    .grid { grid-template-columns: 1fr; padding: 0 20px 40px 20px; }
-    .card { min-height: auto; }
+    .grid { 
+        grid-template-columns: 1fr; 
+        padding: 0 20px 40px 20px; 
+        gap: 20px; 
+    }
+    .card { 
+        min-height: 400px; /* Обмежуємо висоту на ТЛ, щоб не тягнулися */
+        height: auto; 
+    }
+    .card img {
+        height: 180px; /* Трохи компактніше фото для телефону */
+    }
 }
 
 footer {
@@ -219,4 +237,3 @@ footer span {
     font-size: 14px;
     letter-spacing: 1px;
 }
-
