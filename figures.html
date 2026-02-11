@@ -34,10 +34,21 @@
         }
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
-        .card img {
+        .card img.main-img {
             width: 100%; height: 250px; object-fit: contain; 
-            background: #0a0a0a; padding: 10px; 
+            background: #0a0a0a; padding: 10px; cursor: pointer;
         }
+
+        /* Стилі для галереї мініатюр */
+        .card-gallery {
+            display: flex; gap: 8px; padding: 0 15px 10px; overflow-x: auto;
+            justify-content: center;
+        }
+        .thumb-img {
+            width: 40px; height: 40px; object-fit: cover; border-radius: 4px;
+            border: 1px solid #333; cursor: pointer; transition: 0.2s;
+        }
+        .thumb-img:hover { border-color: #f39c12; transform: scale(1.1); }
 
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
@@ -138,16 +149,43 @@
 
         snapshot.forEach((doc) => {
             const product = doc.data();
-            let finalImg = product.img || '';
-            if (finalImg && !finalImg.startsWith('http')) {
-                finalImg = githubURL + finalImg.replace(/^\//, '');
+            
+            // Логіка декількох зображень
+            let images = [];
+            if (Array.isArray(product.img)) {
+                images = product.img;
+            } else if (typeof product.img === 'string' && product.img.includes(',')) {
+                images = product.img.split(',').map(s => s.trim());
+            } else if (product.img) {
+                images = [product.img];
             }
-            if (!finalImg) finalImg = 'log img/Логотип.jpg';
+
+            // Форматування посилань (GitHub або прямі)
+            const formattedImages = images.map(url => {
+                if (url && !url.startsWith('http')) {
+                    return githubURL + url.replace(/^\//, '');
+                }
+                return url || 'log img/Логотип.jpg';
+            });
+
+            const mainImgSrc = formattedImages[0] || 'log img/Логотип.jpg';
 
             const card = document.createElement('div');
             card.className = 'card';
+            
+            // Генерація HTML мініатюр, якщо фото більше одного
+            let galleryHtml = '';
+            if (formattedImages.length > 1) {
+                galleryHtml = `<div class="card-gallery">`;
+                formattedImages.forEach(imgUrl => {
+                    galleryHtml += `<img src="${imgUrl}" class="thumb-img" onclick="this.closest('.card').querySelector('.main-img').src='${imgUrl}'">`;
+                });
+                galleryHtml += `</div>`;
+            }
+
             card.innerHTML = `
-                <img src="${finalImg}" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
+                <img src="${mainImgSrc}" class="main-img" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
+                ${galleryHtml}
                 <div class="card-body">
                     <h3>${product.name}</h3>
                     <p>${product.desc || 'Колекційна модель'}</p>
@@ -176,7 +214,6 @@
             await addDoc(collection(db, "orders"), {
                 name: currentItem.name,
                 price: currentItem.price,
-                // Тепер передаємо опис з каталогу, щоб в адмінці було видно, що саме замовили
                 desc: currentItem.desc || "Замовлення фігурки з каталогу", 
                 telegram: contact,
                 status: "Новий",
