@@ -1,11 +1,22 @@
+/* --- СИСТЕМНІ ЗМІННІ КОЛЬОРІВ --- */
+:root {
+    --main-orange: #f39c12;
+    --dark-orange: #e67e22;
+    --bg-black: #050505;
+    --card-gray: #111111;
+    --text-white: #ffffff;
+}
+
 /* Базові скидання */
-* { box-sizing: border-box; }
+* { 
+    box-sizing: border-box; 
+}
 
 body {
     margin: 0;
     padding: 0;
-    background-color: #050505;
-    color: #fff;
+    background-color: var(--bg-black) !important;
+    color: var(--text-white) !important;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     overflow-x: hidden;
 }
@@ -16,15 +27,15 @@ body.modal-open {
     height: 100vh;
 }
 
-/* ХЕДЕР — Виправлено накладання */
+/* --- ХЕДЕР ТА ЛОГО --- */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 5%;
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: rgba(0, 0, 0, 0.95) !important;
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(243, 156, 18, 0.2);
+    border-bottom: 1px solid rgba(243, 156, 18, 0.3);
     position: sticky;
     top: 0;
     z-index: 10000;
@@ -36,8 +47,8 @@ header {
     align-items: center;
     font-size: 20px;
     font-weight: bold;
-    color: #f39c12;
-    text-decoration: none;
+    color: var(--main-orange) !important;
+    text-decoration: none !important;
 }
 
 .logo img {
@@ -46,42 +57,49 @@ header {
     border-radius: 8px;
 }
 
-/* НАВІГАЦІЯ */
+/* --- НАВІГАЦІЯ (Виправлення фіолетових посилань) --- */
 nav {
     display: flex;
     align-items: center;
 }
 
 nav a {
-    color: #fff;
-    text-decoration: none;
+    color: var(--text-white) !important;
+    text-decoration: none !important;
     margin-left: 20px;
     font-size: 15px;
     font-weight: 500;
     transition: 0.3s;
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
-nav a:hover { color: #f39c12; opacity: 1; }
-
-/* БУРГЕР */
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    gap: 6px;
-    z-index: 11000;
+nav a:hover, nav a.active { 
+    color: var(--main-orange) !important; 
+    opacity: 1;
 }
 
-.menu-toggle span {
-    width: 28px;
-    height: 3px;
-    background: #f39c12;
-    border-radius: 2px;
-    transition: 0.3s;
+/* --- КНОПКИ (Повернення кольору) --- */
+.btn, .cta, .btn-catalog, button[type="submit"], .card a {
+    display: inline-block !important;
+    padding: 12px 25px !important;
+    background: linear-gradient(135deg, var(--main-orange) 0%, var(--dark-orange) 100%) !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+    text-decoration: none !important;
+    border-radius: 8px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+    text-align: center;
 }
 
-/* КАРТКИ — Адаптивна сітка */
+.btn:hover, .cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.5);
+}
+
+/* --- КАРТКИ ТА ГРИД --- */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -90,13 +108,17 @@ nav a:hover { color: #f39c12; opacity: 1; }
 }
 
 .card {
-    background: #111;
-    border: 1px solid rgba(243, 156, 18, 0.1);
+    background: var(--card-gray) !important;
+    border: 1px solid rgba(243, 156, 18, 0.15) !important;
     border-radius: 12px;
-    padding: 15px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     transition: 0.3s;
+}
+
+.card:hover {
+    border-color: var(--main-orange) !important;
 }
 
 .card img.main-img {
@@ -108,7 +130,7 @@ nav a:hover { color: #f39c12; opacity: 1; }
     cursor: pointer;
 }
 
-/* ГАЛЕРЕЯ МІНІАТЮР */
+/* --- ГАЛЕРЕЯ МІНІАТЮР --- */
 .card-gallery {
     display: flex;
     gap: 8px;
@@ -121,39 +143,43 @@ nav a:hover { color: #f39c12; opacity: 1; }
     width: 55px;
     height: 55px;
     object-fit: cover;
-    border: 1px solid #333;
+    border: 2px solid #333;
     border-radius: 4px;
     cursor: pointer;
     flex-shrink: 0;
 }
 
-/* --- LIGHTBOX (ЖОРСТКИЙ ФІКС) --- */
+.thumb-img:hover {
+    border-color: var(--main-orange);
+}
+
+/* --- LIGHTBOX (ВИПРАВЛЕНО) --- */
 #lightbox {
     display: none;
     position: fixed;
     top: 0; left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.98);
+    background: rgba(0, 0, 0, 0.98) !important;
     z-index: 999999;
     justify-content: center;
     align-items: center;
-    touch-action: none; /* Вимикає системні жести поверх фото */
+    touch-action: none;
 }
 
 #lb-img {
     max-width: 95%;
-    max-height: 80%;
+    max-height: 85%;
     object-fit: contain;
-    border: 1px solid #f39c12;
+    border: 2px solid var(--main-orange);
     border-radius: 5px;
 }
 
 .lb-close {
     position: absolute;
-    top: 15px; right: 20px;
-    font-size: 50px;
-    color: #f39c12;
+    top: 15px; right: 25px;
+    font-size: 55px;
+    color: var(--main-orange) !important;
     cursor: pointer;
     z-index: 1000001;
 }
@@ -161,16 +187,35 @@ nav a:hover { color: #f39c12; opacity: 1; }
 .lb-nav-btn {
     position: absolute;
     top: 50%; transform: translateY(-50%);
-    background: none; border: none;
-    color: #f39c12; font-size: 50px;
-    padding: 20px; cursor: pointer;
+    background: rgba(0,0,0,0.5); 
+    border: none;
+    color: var(--main-orange) !important; 
+    font-size: 50px;
+    padding: 15px; 
+    cursor: pointer;
     z-index: 1000001;
+    border-radius: 5px;
 }
 
-#lb-prev { left: 0; }
-#lb-next { right: 0; }
+#lb-prev { left: 10px; }
+#lb-next { right: 10px; }
 
-/* АДАПТАЦІЯ ДЛЯ ТЕЛЕФОНІВ */
+/* --- МЕРЕЖА (БУРГЕР) --- */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 6px;
+}
+
+.menu-toggle span {
+    width: 28px;
+    height: 3px;
+    background: var(--main-orange);
+    border-radius: 2px;
+}
+
+/* АДАПТАЦІЯ */
 @media (max-width: 850px) {
     .menu-toggle { display: flex; }
 
@@ -188,13 +233,13 @@ nav a:hover { color: #f39c12; opacity: 1; }
     nav.active { right: 0; }
     nav a { margin: 15px 0; font-size: 24px; margin-left: 0; }
 
-    /* Ховаємо стрілки на мобільних, там працюватимуть свайпи */
-    .lb-nav-btn { display: none; }
+    .lb-nav-btn { display: none; } /* На мобільних гортаємо свайпом */
 }
 
 footer {
     text-align: center;
     padding: 30px;
-    color: #555;
-    border-top: 1px solid #111;
+    color: #777 !important;
+    border-top: 1px solid #222;
+    font-size: 14px;
 }
