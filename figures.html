@@ -8,7 +8,6 @@
     <style>
         body { background-color: #050505; color: #fff; margin: 0; font-family: 'Segoe UI', sans-serif; }
         
-        /* HEADER ТА БУРГЕР (Синхронізовано з index та parts) */
         header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 5%; background: rgba(5, 5, 5, 0.95);
@@ -25,7 +24,6 @@
         .menu-toggle { display: none; flex-direction: column; cursor: pointer; gap: 6px; z-index: 11000; }
         .menu-toggle span { width: 30px; height: 3px; background: #f39c12; border-radius: 2px; transition: 0.3s; }
 
-        /* МОБІЛЬНЕ МЕНЮ */
         @media (max-width: 850px) {
             .menu-toggle { display: flex; }
             nav {
@@ -36,73 +34,49 @@
             }
             nav.active { right: 0; }
             nav a { margin: 15px 0 !important; font-size: 22px; }
-            .menu-toggle.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
-            .menu-toggle.active span:nth-child(2) { opacity: 0; }
-            .menu-toggle.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
         }
 
-        /* КАРТКИ ТОВАРІВ */
-        .section { padding: 40px 5%; }
-        .section-header { text-align: center; margin-bottom: 40px; }
-        .section-header h1 { font-size: clamp(28px, 8vw, 42px); text-transform: uppercase; margin-bottom: 10px; }
-        .section-header h1 span { color: #f39c12; }
-        .section-header p { color: #888; }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-
-        .card {
-            background: rgba(20,20,20,0.8); border: 1px solid rgba(243,156,18,0.1);
-            border-radius: 15px; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column;
-        }
-        .card:hover { border-color: #f39c12; transform: translateY(-5px); }
-
-        .card img.main-img { width: 100%; height: 250px; object-fit: contain; cursor: pointer; padding: 10px; box-sizing: border-box; }
-
-        .card-gallery { display: flex; gap: 8px; padding: 0 15px 10px; overflow-x: auto; justify-content: center; }
-        .thumb-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; cursor: pointer; }
-
-        .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
-        .price { font-size: 22px; font-weight: bold; color: #f39c12; margin-bottom: 15px; }
-
-        .btn {
-            background: linear-gradient(135deg, #f39c12, #e67e22); color: #000; text-decoration: none; 
-            padding: 12px; border-radius: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: none;
-        }
-
-        /* LIGHTBOX */
+        /* --- LIGHTBOX (ВИПРАВЛЕНО) --- */
         #lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 20000; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.98); z-index: 20000; justify-content: center; align-items: center;
+            touch-action: none;
         }
-        #lightbox img { max-width: 90%; max-height: 80%; border: 2px solid #f39c12; border-radius: 10px; }
+        #lightbox-img { 
+            max-width: 90%; max-height: 75vh; /* Обмеження масштабу */
+            border: 2px solid #f39c12; border-radius: 10px; object-fit: contain;
+        }
+        .lb-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(243, 156, 18, 0.2); color: white; border: none;
+            padding: 20px; font-size: 30px; cursor: pointer; border-radius: 10px;
+        }
+        #lb-prev { left: 10px; }
+        #lb-next { right: 10px; }
+        .lb-close { position: absolute; top: 20px; right: 25px; font-size: 50px; color: #f39c12; cursor: pointer; }
 
-        #orderModal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 15000; justify-content: center; align-items: center;
-            backdrop-filter: blur(8px);
-        }
-        .modal-content {
-            background: #111; padding: 30px; border-radius: 20px; border: 1px solid #f39c12;
-            width: 90%; max-width: 400px; text-align: center;
-        }
-        .modal-content input {
-            width: 100%; padding: 14px; margin: 20px 0; background: #1a1a1a;
-            border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box;
-        }
+        @media (max-width: 768px) { .lb-nav { display: none; } } /* На моб. тільки свайпи */
+
+        /* КАРТКИ */
+        .section { padding: 40px 5%; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: rgba(20,20,20,0.8); border: 1px solid rgba(243,156,18,0.1); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; }
+        .card img.main-img { width: 100%; height: 250px; object-fit: contain; cursor: pointer; padding: 10px; }
+        .card-gallery { display: flex; gap: 8px; padding: 0 15px 10px; overflow-x: auto; justify-content: center; }
+        .thumb-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; cursor: pointer; }
+        .card-body { padding: 20px; text-align: center; flex-grow: 1; }
+        .price { font-size: 22px; font-weight: bold; color: #f39c12; margin-bottom: 15px; }
+        .btn { background: linear-gradient(135deg, #f39c12, #e67e22); color: #000; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; width: 100%; }
+
+        #orderModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 15000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
+        .modal-content { background: #111; padding: 30px; border-radius: 20px; border: 1px solid #f39c12; width: 90%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">
-        <img src="log img/Логотип.jpg" alt="Logo">
-        3D-PRINT STUDIO
-    </div>
-    
-    <div class="menu-toggle" id="mobile-toggle">
-        <span></span><span></span><span></span>
-    </div>
-
+    <div class="logo"><img src="log img/Логотип.jpg" alt="Logo"> 3D-PRINT STUDIO</div>
+    <div class="menu-toggle" id="mobile-toggle"><span></span><span></span><span></span></div>
     <nav id="nav-list">
         <a href="index.html">Головна</a>
         <a href="figures.html" style="color: #f39c12;">Фігурки</a>
@@ -113,24 +87,27 @@
 </header>
 
 <section class="section">
-    <div class="section-header">
+    <div class="section-header" style="text-align: center; margin-bottom: 40px;">
         <h1>Колекційні <span>фігурки</span></h1>
-        <p>Висока деталізація, готові моделі та друк під замовлення.</p>
+        <p>Висока деталізація та якісний друк.</p>
     </div>
     <div class="grid" id="publicProductsList">
         <p style="text-align: center; width: 100%;">Завантаження каталогу...</p>
     </div>
 </section>
 
-<div id="lightbox" onclick="this.style.display='none'">
+<div id="lightbox">
+    <span class="lb-close" onclick="closeLB()">×</span>
+    <button class="lb-nav" id="lb-prev">❮</button>
     <img id="lightbox-img" src="">
+    <button class="lb-nav" id="lb-next">❯</button>
 </div>
 
 <div id="orderModal">
     <div class="modal-content">
-        <h3 style="color:#f39c12; margin:0;">Замовлення фігурки</h3>
+        <h3 style="color:#f39c12; margin:0;">Замовлення</h3>
         <p id="modalItemName" style="margin: 15px 0; font-weight: bold;"></p>
-        <input type="text" id="userTgInput" placeholder="@ваш_телеграм">
+        <input type="text" id="userTgInput" placeholder="@ваш_телеграм" style="width: 100%; padding: 12px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 10px;">
         <div style="display:flex; gap:10px;">
             <button id="closeModalBtn" style="flex:1; padding:12px; background:#333; color:#fff; border:none; border-radius:10px; cursor:pointer;">Назад</button>
             <button id="confirmOrderBtn" style="flex:2; padding:12px; background:#f39c12; color:#000; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">Підтвердити</button>
@@ -156,27 +133,54 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // МЕНЮ
-    const toggle = document.getElementById('mobile-toggle');
-    const nav = document.getElementById('nav-list');
-    toggle.onclick = () => {
-        toggle.classList.toggle('active');
-        nav.classList.toggle('active');
+    // ЛОГІКА ГАЛЕРЕЇ
+    let currentGallery = [];
+    let currentIndex = 0;
+    let startX = 0;
+
+    window.openLB = (index, images) => {
+        currentGallery = images;
+        currentIndex = index;
+        document.getElementById('lightbox-img').src = currentGallery[currentIndex];
+        document.getElementById('lightbox').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     };
 
-    let currentItem = null;
-    const githubURL = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/`;
+    window.closeLB = () => {
+        document.getElementById('lightbox').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    };
+
+    const nextImg = () => {
+        currentIndex = (currentIndex + 1) % currentGallery.length;
+        document.getElementById('lightbox-img').src = currentGallery[currentIndex];
+    };
+
+    const prevImg = () => {
+        currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length;
+        document.getElementById('lightbox-img').src = currentGallery[currentIndex];
+    };
+
+    document.getElementById('lb-next').onclick = (e) => { e.stopPropagation(); nextImg(); };
+    document.getElementById('lb-prev').onclick = (e) => { e.stopPropagation(); prevImg(); };
+    document.getElementById('lightbox').onclick = closeLB;
+    document.getElementById('lightbox-img').onclick = (e) => e.stopPropagation();
+
+    // СВАЙПИ
+    const lb = document.getElementById('lightbox');
+    lb.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+    lb.addEventListener('touchend', e => {
+        let endX = e.changedTouches[0].clientX;
+        if (startX - endX > 50) nextImg();
+        if (endX - startX > 50) prevImg();
+    });
+
+    // FIREBASE ЗАВАНТАЖЕННЯ
     const productsContainer = document.getElementById('publicProductsList');
+    const githubURL = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/`;
 
-    const q = query(collection(db, "catalog"), where("category", "==", "figures"));
-
-    onSnapshot(q, (snapshot) => {
+    onSnapshot(query(collection(db, "catalog"), where("category", "==", "figures")), (snapshot) => {
         productsContainer.innerHTML = "";
-        if (snapshot.empty) {
-            productsContainer.innerHTML = '<p style="text-align: center; width: 100%;">Наразі фігурок немає.</p>';
-            return;
-        }
-
         snapshot.forEach((doc) => {
             const product = doc.data();
             let images = Array.isArray(product.img) ? product.img : (product.img ? product.img.split(',').map(s => s.trim()) : []);
@@ -186,47 +190,51 @@
             const card = document.createElement('div');
             card.className = 'card';
             
-            let galleryHtml = formattedImages.length > 1 ? `<div class="card-gallery">` : '';
+            let galleryHtml = '';
             if (formattedImages.length > 1) {
-                formattedImages.forEach(imgUrl => {
-                    galleryHtml += `<img src="${imgUrl}" class="thumb-img" onclick="event.stopPropagation(); this.closest('.card').querySelector('.main-img').src='${imgUrl}'">`;
+                galleryHtml = `<div class="card-gallery">`;
+                formattedImages.forEach((url, i) => {
+                    galleryHtml += `<img src="${url}" class="thumb-img" onclick="event.stopPropagation(); openLB(${i}, ${JSON.stringify(formattedImages).replace(/"/g, '&quot;')})">`;
                 });
                 galleryHtml += `</div>`;
             }
 
             card.innerHTML = `
-                <img src="${mainImgSrc}" class="main-img" onclick="document.getElementById('lightbox-img').src=this.src; document.getElementById('lightbox').style.display='flex'">
+                <img src="${mainImgSrc}" class="main-img" onclick="openLB(0, ${JSON.stringify(formattedImages).replace(/"/g, '&quot;')})">
                 ${galleryHtml}
                 <div class="card-body">
                     <h3>${product.name}</h3>
-                    <p style="flex-grow:1;">${product.desc || 'Колекційна модель'}</p>
+                    <p>${product.desc || ''}</p>
                     <div class="price">${product.price} грн</div>
                     <button class="btn order-btn">Замовити</button>
                 </div>`;
             
             card.querySelector('.order-btn').onclick = () => {
-                currentItem = product;
                 document.getElementById('modalItemName').innerText = product.name;
                 document.getElementById('orderModal').style.display = "flex";
+                window.currentItem = product;
             };
             productsContainer.appendChild(card);
         });
     });
 
-    document.getElementById('closeModalBtn').onclick = () => document.getElementById('orderModal').style.display = "none";
+    // ЗАМОВЛЕННЯ ТА МЕНЮ
+    document.getElementById('mobile-toggle').onclick = () => {
+        document.getElementById('mobile-toggle').classList.toggle('active');
+        document.getElementById('nav-list').classList.toggle('active');
+    };
 
+    document.getElementById('closeModalBtn').onclick = () => document.getElementById('orderModal').style.display = "none";
     document.getElementById('confirmOrderBtn').onclick = async () => {
         const contact = document.getElementById('userTgInput').value.trim();
-        if(!contact) return alert("Вкажіть ваш Telegram!");
-        try {
-            await addDoc(collection(db, "orders"), {
-                name: currentItem.name, price: currentItem.price,
-                telegram: contact, status: "Новий", timestamp: new Date(), category: "Фігурки"
-            });
-            alert("Дякуємо! Замовлення вже в адмінці.");
-            document.getElementById('orderModal').style.display = "none";
-        } catch (e) { alert("Помилка відправки."); }
+        if(!contact) return alert("Вкажіть Telegram!");
+        await addDoc(collection(db, "orders"), {
+            name: window.currentItem.name, telegram: contact, status: "Новий", timestamp: new Date()
+        });
+        alert("Замовлення прийнято!");
+        document.getElementById('orderModal').style.display = "none";
     };
 </script>
+
 </body>
 </html>
