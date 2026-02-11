@@ -6,7 +6,7 @@
     <title>Деталі — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background-color: #000; color: #fff; margin: 0; font-family: sans-serif; }
+        body { background-color: #000; color: #fff; margin: 0; font-family: sans-serif; overflow-x: hidden; }
         .section { padding: 60px 5%; }
         .section-title { text-align: center; font-size: 32px; color: #f39c12; text-transform: uppercase; margin-bottom: 40px; }
 
@@ -16,22 +16,25 @@
             gap: 25px;
         }
 
+        /* КАРТКИ: ОДНАКОВА ВИСОТА */
         .card {
             background: #111; border: 1px solid #222; border-radius: 12px;
             overflow: hidden; transition: 0.3s; display: flex; flex-direction: column;
+            min-height: 500px; /* Базова висота */
             height: 100%;
+            box-sizing: border-box;
         }
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
         .card img.main-img {
             width: 100%; height: 250px; object-fit: contain;
             background: #0a0a0a; padding: 10px; display: block; cursor: pointer;
+            flex-shrink: 0;
         }
 
-        /* Стилі для галереї мініатюр */
         .card-gallery {
-            display: flex; gap: 8px; padding: 0 15px 10px; overflow-x: auto;
-            justify-content: center;
+            display: flex; gap: 8px; padding: 10px 15px; overflow-x: auto;
+            justify-content: center; flex-shrink: 0;
         }
         .thumb-img {
             width: 40px; height: 40px; object-fit: cover; border-radius: 4px;
@@ -41,6 +44,10 @@
 
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
+        
+        /* Цей блок заповнює простір, штовхаючи ціну і кнопку вниз */
+        .card-body p { color: #888; font-size: 14px; margin-bottom: 15px; flex-grow: 1; }
+
         .price { font-size: 20px; font-weight: bold; color: #f39c12; margin-bottom: 15px; }
 
         .btn {
@@ -50,6 +57,14 @@
         }
         .btn:hover { background: #e67e22; }
 
+        /* ЛАЙТБОКС (ПЕРЕГЛЯД ФОТО) */
+        #lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 11000; justify-content: center; align-items: center;
+        }
+        #lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 2px solid #f39c12; }
+
+        /* МОДАЛКА */
         #orderModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;
@@ -61,7 +76,13 @@
         }
         .modal-content input {
             width: 100%; padding: 12px; margin: 20px 0; background: #1a1a1a;
-            border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box;
+            border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; text-align: center;
+        }
+
+        /* АДАПТИВ ДЛЯ ТЕЛЕФОНІВ */
+        @media (max-width: 768px) {
+            .card { min-height: 420px; }
+            .card img.main-img { height: 200px; }
         }
     </style>
 </head>
@@ -77,7 +98,6 @@
         <a href="figures.html">Фігурки</a>
         <a href="parts.html" style="color: #f39c12;">Деталі</a>
         <a href="order.html">Замовити</a>
-        <a href="login.html">Кабінет</a>
     </nav>
 </header>
 
@@ -87,6 +107,10 @@
         <p style="text-align: center; width: 100%;">Завантаження деталей...</p>
     </div>
 </section>
+
+<div id="lightbox" onclick="this.style.display='none'">
+    <img id="lightboxImg" src="">
+</div>
 
 <div id="orderModal">
     <div class="modal-content">
@@ -121,6 +145,13 @@
     let currentItem = null;
     const githubURL = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/`;
 
+    // Функція для Лайтбоксу
+    window.openLightbox = (src) => {
+        const lb = document.getElementById('lightbox');
+        document.getElementById('lightboxImg').src = src;
+        lb.style.display = 'flex';
+    };
+
     const q = query(collection(db, "catalog"), where("category", "==", "parts"));
 
     onSnapshot(q, (snapshot) => {
@@ -129,22 +160,13 @@
         
         snapshot.forEach(doc => {
             const item = doc.data();
-            
-            // Логіка декількох зображень
             let images = [];
-            if (Array.isArray(item.img)) {
-                images = item.img;
-            } else if (typeof item.img === 'string' && item.img.includes(',')) {
-                images = item.img.split(',').map(s => s.trim());
-            } else if (item.img) {
-                images = [item.img];
-            }
+            if (Array.isArray(item.img)) images = item.img;
+            else if (typeof item.img === 'string' && item.img.includes(',')) images = item.img.split(',').map(s => s.trim());
+            else if (item.img) images = [item.img];
 
-            // Форматування посилань
             const formattedImages = images.map(url => {
-                if (url && !url.startsWith('http')) {
-                    return githubURL + url.replace(/^\//, '');
-                }
+                if (url && !url.startsWith('http')) return githubURL + url.replace(/^\//, '');
                 return url || 'log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg';
             });
 
@@ -153,7 +175,6 @@
             const card = document.createElement('div');
             card.className = 'card';
             
-            // Галерея мініатюр
             let galleryHtml = '';
             if (formattedImages.length > 1) {
                 galleryHtml = `<div class="card-gallery">`;
@@ -164,11 +185,11 @@
             }
 
             card.innerHTML = `
-                <img src="${mainImgSrc}" class="main-img" alt="${item.name}" onerror="this.src='log%20img/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF.jpg'">
+                <img src="${mainImgSrc}" class="main-img" onclick="openLightbox(this.src)" alt="${item.name}">
                 ${galleryHtml}
                 <div class="card-body">
                     <h3>${item.name}</h3>
-                    <p style="color: #888; font-size: 14px; margin-bottom: 15px;">${item.desc || 'Технічна деталь'}</p>
+                    <p>${item.desc || 'Технічна деталь'}</p>
                     <div class="price">від ${item.price} грн</div>
                     <button class="btn order-trigger">Замовити</button>
                 </div>`;
@@ -195,21 +216,18 @@
             await addDoc(collection(db, "orders"), {
                 name: currentItem.name,
                 price: currentItem.price,
-                desc: currentItem.desc || "Замовлення деталі з каталогу", 
                 telegram: contact,
                 status: "Новий",
                 timestamp: new Date(),
                 category: "Деталі"
             });
-            alert("Замовлення прийнято! Адмін зв'яжеться з вами.");
+            alert("Замовлення прийнято!");
             document.getElementById('orderModal').style.display = "none";
             document.getElementById('userTgInput').value = "";
         } catch (e) {
-            console.error("Помилка:", e);
             alert("Помилка відправки.");
         }
     };
 </script>
 </body>
 </html>
-
