@@ -1,6 +1,4 @@
-/* Базові стилі */
-* { box-sizing: border-box; }
-
+/* Основні стилі */
 body {
     margin: 0;
     padding: 0;
@@ -8,12 +6,6 @@ body {
     color: #fff;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     overflow-x: hidden;
-}
-
-/* Заборона скролу при відкритому фото */
-body.modal-open {
-    overflow: hidden !important;
-    height: 100vh;
 }
 
 header {
@@ -45,11 +37,6 @@ header {
     transition: 0.3s;
 }
 
-nav {
-    display: flex;
-    align-items: center;
-}
-
 nav a {
     color: #fff;
     text-decoration: none;
@@ -65,22 +52,7 @@ nav a:hover {
     opacity: 1;
 }
 
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    gap: 6px;
-    z-index: 1100;
-}
-
-.menu-toggle span {
-    width: 30px;
-    height: 3px;
-    background: #f39c12;
-    border-radius: 2px;
-    transition: 0.3s;
-}
-
+/* ЦЕНТРУВАННЯ ЗАГОЛОВКА */
 h2 {
     text-align: center;
     width: 100%;
@@ -89,6 +61,7 @@ h2 {
     color: #fff;
 }
 
+/* Hero Section */
 .hero {
     height: 75vh;
     display: flex;
@@ -110,6 +83,7 @@ h2 {
     text-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
 }
 
+/* КНОПКИ: СТИЛЬ ЯК НА СКРІНШОТІ */
 .cta, .card-btn, .card a, .btn {
     display: inline-block;
     padding: 12px 35px;
@@ -126,6 +100,13 @@ h2 {
     margin-top: auto;
 }
 
+.cta:hover, .card-btn:hover, .card a:hover, .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.5);
+    filter: brightness(1.1);
+}
+
+/* Скляні картки */
 .card {
     background: rgba(20, 20, 20, 0.8);
     backdrop-filter: blur(10px);
@@ -141,38 +122,27 @@ h2 {
     min-height: 480px;
 }
 
-.card img.main-img {
+.card img {
     width: 100%;
     height: 200px;
-    object-fit: contain;
-    background: #000;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    cursor: pointer;
-}
-
-/* ГАЛЕРЕЯ МІНІАТЮР В КАРТЦІ */
-.card-gallery {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
-    overflow-x: auto;
-    width: 100%;
-    justify-content: center;
-}
-
-.thumb-img {
-    width: 50px;
-    height: 50px;
     object-fit: cover;
-    border-radius: 5px;
-    border: 1px solid #333;
-    cursor: pointer;
-    transition: 0.2s;
+    border-radius: 10px;
+    margin-bottom: 20px;
 }
 
-.thumb-img:hover { border-color: #f39c12; }
+.card p {
+    margin-bottom: 20px;
+    color: #ccc;
+    text-align: center;
+}
 
+.card:hover {
+    border-color: rgba(243, 156, 18, 0.5);
+    transform: translateY(-10px);
+    background: rgba(30, 30, 30, 0.9);
+}
+
+/* СІТКА */
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
@@ -180,83 +150,73 @@ h2 {
     padding: 20px 5% 60px 5%;
 }
 
-/* --- LIGHTBOX (ВИПРАВЛЕНО МАСШТАБ) --- */
-#lightbox {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.98);
-    z-index: 20000;
-    justify-content: center;
+/* --- МОДАЛЬНЕ ВІКНО --- */
+#orderModal {
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); 
+    z-index: 10000; 
+    justify-content: center; 
     align-items: center;
-    touch-action: none;
+    backdrop-filter: blur(10px);
 }
 
-#lb-img {
-    max-width: 90%;  /* Виправлено: не на весь екран */
-    max-height: 75vh; /* Обмеження по висоті */
-    object-fit: contain;
-    border: 2px solid #f39c12;
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+.modal-content {
+    background: #0d0d0d; 
+    padding: 35px; 
+    border-radius: 20px; 
+    border: 1px solid rgba(243, 156, 18, 0.3);
+    width: 90%; 
+    max-width: 400px; 
+    text-align: center;
 }
 
-.lb-close {
-    position: absolute;
-    top: 20px; right: 25px;
-    font-size: 50px;
-    color: #f39c12;
-    cursor: pointer;
-    z-index: 20001;
+.modal-content h3 { color: #f39c12; margin-top: 0; }
+
+.modal-content input {
+    width: 100%; 
+    padding: 14px; 
+    margin: 20px 0; 
+    background: #151515;
+    border: 1px solid #333; 
+    color: #fff; 
+    border-radius: 10px; 
+    box-sizing: border-box;
+    text-align: center;
 }
 
-.lb-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(243, 156, 18, 0.2);
-    color: #fff;
-    border: none;
-    font-size: 40px;
-    padding: 15px;
-    cursor: pointer;
-    border-radius: 10px;
-    z-index: 20001;
+.modal-content input:focus {
+    border-color: #f39c12;
+    outline: none;
 }
-
-#lb-prev { left: 10px; }
-#lb-next { right: 10px; }
 
 /* --- МОБІЛЬНА ВЕРСІЯ --- */
+@media (max-width: 1024px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 768px) {
-    .menu-toggle { display: flex; }
-    
-    nav {
-        position: fixed;
-        top: 0; right: -100%;
-        width: 100%; height: 100vh;
-        background: #050505;
-        flex-direction: column;
-        justify-content: center;
-        transition: 0.4s;
-    }
-
-    nav.active { right: 0; }
-    
-    /* Масштаб фото для телефону */
-    #lb-img {
-        max-width: 95%;
-        max-height: 70vh;
-    }
-
-    .lb-btn { display: none; } /* Гортаємо свайпом, стрілки не заважають */
-    
-    .grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 34px; }
+    .grid { grid-template-columns: 1fr; padding: 0 20px 40px 20px; }
+    .card { min-height: auto; }
 }
 
 footer {
+    width: 100%;
     text-align: center;
     padding: 40px 0;
+    margin-top: 50px;
     border-top: 1px solid rgba(243, 156, 18, 0.1);
+    background-color: #050505;
 }
+
+footer span {
+    color: #555;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
