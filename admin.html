@@ -41,7 +41,7 @@
             <option value="parts">Деталь</option>
         </select>
         <textarea id="itemDesc" placeholder="Опис" rows="2"></textarea>
-        <input type="text" id="itemImg" placeholder="URL картинки">
+        <input type="text" id="itemImg" placeholder="URL картинки (кілька через кому)">
         <div class="btn-group">
             <button class="btn-action" id="saveItemBtn">ЗБЕРЕГТИ ТОВАР</button>
             <button id="cancelEditBtn" style="display:none; background:#444; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">СКАСУВАТИ</button>
@@ -137,7 +137,9 @@
                     </div>`;
                 div.querySelector('.btn-edit').onclick = () => {
                     editIdInp.value = d.id; nameInp.value = i.name; priceInp.value = i.price;
-                    catInp.value = i.category; descInp.value = i.desc; imgInp.value = i.img;
+                    catInp.value = i.category; descInp.value = i.desc; 
+                    // Якщо в базі масив, з'єднуємо комою для зручного редагування
+                    imgInp.value = Array.isArray(i.img) ? i.img.join(', ') : i.img;
                     document.getElementById('formTitle').innerText = "Редагування";
                     document.getElementById('cancelEditBtn').style.display = "block";
                     window.scrollTo({top:0, behavior:'smooth'});
@@ -167,30 +169,24 @@
                 const card = document.createElement('div');
                 card.className = "order-card";
                 
-                // --- РОЗШИРЕНИЙ ПОШУК ФАЙЛУ ---
-                // Ми перевіряємо всі можливі варіанти, куди сайт міг записати посилання
                 const fileLink = o.downloadURL || o.fileUrl || o.fileURL || o.file || o.stlUrl || o.url || o.imageUrl || null;
                 const finalDesc = o.desc || o.description || 'Опис відсутній';
                 
                 card.innerHTML = `
                     <div style="flex-grow: 1; text-align: left;">
                         <b style="color:#f39c12; font-size: 16px;">${o.name || 'Індивідуальне замовлення'}</b><br>
-                        
                         <div style="background: #111; padding: 10px; border-radius: 5px; margin: 8px 0; border-left: 3px solid #f39c12; font-size: 13px; color: #ddd;">
                             <strong>Деталі замовлення:</strong><br>
                             ${finalDesc}
                         </div>
-
                         <a href="https://t.me/${o.telegram?.replace('@','')}" target="_blank" class="tg-link">✈️ TG: ${o.telegram || 'Ні'}</a>
                     </div>
                     <div class="btn-group">
                         <span style="color: #fff; font-weight: bold; margin-right: 10px;">${o.price || 'рахуємо'} грн</span>
-                        
                         ${fileLink ? 
                             `<a href="${fileLink}" target="_blank" class="btn-download">⬇️ ВІДКРИТИ ФАЙЛ</a>` : 
                             `<span style="color: #555; font-size: 11px; border: 1px dashed #333; padding: 5px;">Файл не знайдено</span>`
                         }
-                        
                         ${!isWorking ? `<button class="btn-action btn-upd">ПРИЙНЯТИ</button>` : '👌'}
                         <button class="btn-delete btn-arch" style="background:#444">АРХІВ</button>
                     </div>`;
@@ -202,8 +198,24 @@
         });
 
         document.getElementById('saveItemBtn').onclick = async () => {
-            const data = { name: nameInp.value, price: priceInp.value, category: catInp.value, desc: descInp.value, img: imgInp.value, timestamp: new Date() };
-            editIdInp.value ? await updateDoc(doc(db, "catalog", editIdInp.value), data) : await addDoc(collection(db, "catalog"), data);
+            // Отримуємо рядок та перетворюємо його на масив посилань
+            const rawImg = imgInp.value;
+            const imagesArray = rawImg.split(',').map(s => s.trim()).filter(s => s !== "");
+
+            const data = { 
+                name: nameInp.value, 
+                price: priceInp.value, 
+                category: catInp.value, 
+                desc: descInp.value, 
+                img: imagesArray.length > 1 ? imagesArray : (imagesArray[0] || ""), 
+                timestamp: new Date() 
+            };
+
+            if(editIdInp.value) {
+                await updateDoc(doc(db, "catalog", editIdInp.value), data);
+            } else {
+                await addDoc(collection(db, "catalog"), data);
+            }
             resetForm();
         };
 
