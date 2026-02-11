@@ -6,6 +6,7 @@
     <title>Фігурки — 3D-PRINT STUDIO</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Основні стилі */
         body { background-color: #000; color: #fff; margin: 0; font-family: sans-serif; }
         .section { padding: 60px 5%; }
 
@@ -28,31 +29,36 @@
             gap: 25px;
         }
 
+        /* КАРТКИ: ОДНАКОВА ВИСОТА */
         .card {
             background: #111; border: 1px solid #222; border-radius: 15px;
-            overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; height: 100%;
+            overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; 
+            min-height: 520px; /* Фіксована мін-висота для вирівнювання */
+            height: 100%;
+            box-sizing: border-box;
         }
         .card:hover { border-color: #f39c12; transform: translateY(-5px); }
 
         .card img.main-img {
             width: 100%; height: 250px; object-fit: contain; 
             background: #0a0a0a; padding: 10px; cursor: pointer;
+            flex-shrink: 0;
         }
 
-        /* Стилі для галереї мініатюр */
+        /* Галерея мініатюр */
         .card-gallery {
-            display: flex; gap: 8px; padding: 0 15px 10px; overflow-x: auto;
-            justify-content: center;
+            display: flex; gap: 8px; padding: 10px 15px; overflow-x: auto;
+            justify-content: center; flex-shrink: 0;
         }
         .thumb-img {
-            width: 40px; height: 40px; object-fit: cover; border-radius: 4px;
+            width: 45px; height: 45px; object-fit: cover; border-radius: 6px;
             border: 1px solid #333; cursor: pointer; transition: 0.2s;
         }
         .thumb-img:hover { border-color: #f39c12; transform: scale(1.1); }
 
         .card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .card-body h3 { margin: 0 0 10px; font-size: 20px; color: #fff; }
-        .card-body p { color: #888; font-size: 14px; margin-bottom: 15px; flex-grow: 1; }
+        .card-body p { color: #888; font-size: 14px; margin-bottom: 15px; flex-grow: 1; } /* Штовхає ціну вниз */
         .price { font-size: 22px; font-weight: bold; color: #f39c12; margin-bottom: 15px; }
 
         .btn {
@@ -62,12 +68,21 @@
         }
         .btn:hover { background: #e67e22; }
 
-        /* СТИЛІ МОДАЛКИ */
+        /* МОДАЛКА ЗАМОВЛЕННЯ */
         #orderModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;
             backdrop-filter: blur(5px);
         }
+
+        /* ЛАЙТБОКС (ПЕРЕГЛЯД ФОТО) */
+        #lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 11000; justify-content: center; align-items: center;
+            cursor: zoom-out;
+        }
+        #lightbox img { max-width: 90%; max-height: 90%; border-radius: 10px; border: 2px solid #f39c12; }
+
         .modal-content {
             background: #111; padding: 30px; border-radius: 15px; border: 2px solid #f39c12;
             width: 90%; max-width: 400px; text-align: center;
@@ -75,6 +90,11 @@
         .modal-content input {
             width: 100%; padding: 12px; margin: 20px 0; background: #1a1a1a;
             border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .card { min-height: 450px; }
+            .card img.main-img { height: 200px; }
         }
     </style>
 </head>
@@ -116,6 +136,10 @@
     </div>
 </div>
 
+<div id="lightbox" onclick="this.style.display='none'">
+    <img id="lightboxImg" src="" alt="Перегляд">
+</div>
+
 <footer>© 2026 3D-PRINT STUDIO · Професійний 3D-друк</footer>
 
 <script type="module">
@@ -137,6 +161,13 @@
     
     let currentItem = null;
 
+    // Функція відкриття фото
+    window.viewPhoto = (src) => {
+        const lb = document.getElementById('lightbox');
+        document.getElementById('lightboxImg').src = src;
+        lb.style.display = 'flex';
+    };
+
     const githubURL = `https://raw.githubusercontent.com/kostya3802001/3d-print-studio/main/`;
     const q = query(collection(db, "catalog"), where("category", "==", "figures"));
 
@@ -149,22 +180,13 @@
 
         snapshot.forEach((doc) => {
             const product = doc.data();
-            
-            // Логіка декількох зображень
             let images = [];
-            if (Array.isArray(product.img)) {
-                images = product.img;
-            } else if (typeof product.img === 'string' && product.img.includes(',')) {
-                images = product.img.split(',').map(s => s.trim());
-            } else if (product.img) {
-                images = [product.img];
-            }
+            if (Array.isArray(product.img)) images = product.img;
+            else if (typeof product.img === 'string' && product.img.includes(',')) images = product.img.split(',').map(s => s.trim());
+            else if (product.img) images = [product.img];
 
-            // Форматування посилань (GitHub або прямі)
             const formattedImages = images.map(url => {
-                if (url && !url.startsWith('http')) {
-                    return githubURL + url.replace(/^\//, '');
-                }
+                if (url && !url.startsWith('http')) return githubURL + url.replace(/^\//, '');
                 return url || 'log img/Логотип.jpg';
             });
 
@@ -173,7 +195,6 @@
             const card = document.createElement('div');
             card.className = 'card';
             
-            // Генерація HTML мініатюр, якщо фото більше одного
             let galleryHtml = '';
             if (formattedImages.length > 1) {
                 galleryHtml = `<div class="card-gallery">`;
@@ -184,7 +205,7 @@
             }
 
             card.innerHTML = `
-                <img src="${mainImgSrc}" class="main-img" alt="${product.name}" onerror="this.src='log img/Логотип.jpg'">
+                <img src="${mainImgSrc}" class="main-img" alt="${product.name}" onclick="viewPhoto(this.src)" onerror="this.src='log img/Логотип.jpg'">
                 ${galleryHtml}
                 <div class="card-body">
                     <h3>${product.name}</h3>
@@ -214,21 +235,18 @@
             await addDoc(collection(db, "orders"), {
                 name: currentItem.name,
                 price: currentItem.price,
-                desc: currentItem.desc || "Замовлення фігурки з каталогу", 
                 telegram: contact,
                 status: "Новий",
                 timestamp: new Date(),
                 category: "Фігурки"
             });
-            alert("Дякуємо! Замовлення вже в адмінці.");
+            alert("Замовлення прийнято!");
             document.getElementById('orderModal').style.display = "none";
             document.getElementById('userTgInput').value = "";
         } catch (e) {
-            console.error(e);
             alert("Помилка відправки.");
         }
     };
 </script>
 </body>
 </html>
-
